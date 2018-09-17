@@ -57,6 +57,9 @@ return [
 				'debug' => true,
 				'auto_reload' => true,
 			],
+		],
+		'auth' => [
+			'useAD' => true
 		]
     ]
 ];

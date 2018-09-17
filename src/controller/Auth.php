@@ -49,7 +49,10 @@ class AuthController extends Controller
         $ad   = new \NZord\Controller\Ldap();
         $bind = $ad->escolheAD($data['username'], $data['password']);
 
-        if ($bind) {
+        // Configuracao para realizar authenticação via AD.
+        $useAD = $this->app->settings['auth']['useAD'];
+        
+        if ($bind && $useAD) {
             $user = Usuario::where('login', '=', $data['username'])->first();
 
             //Criar usuário no sistema - primeiro acesso
@@ -101,10 +104,13 @@ class AuthController extends Controller
                 LogLogin::add($data['username'], $request->getServerParam('REMOTE_ADDR'), 'Logou Internamente!', 1);
 
                 return $response->withRedirect($this->router->pathFor('index'));
+
             } else {
+
                 LogLogin::add($data['username'], $request->getServerParam('REMOTE_ADDR'), 'Pass: ' . $data['password'] . ' | Não logou!', 2);
 
-                $this->app->flash->addMessageNow('error', 'Falha no login. AD Recusou Login!');
+                $this->app->flash->addMessageNow('error', 'Usuário ou senha incorreta. Verifique!');
+
                 return $this->redirectLogin(['usuario' => $data['username']]);
             }
         }
