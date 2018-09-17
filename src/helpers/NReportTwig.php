@@ -69,8 +69,8 @@ class NReportTwig {
         $twig = new \Twig_Environment($loader);
 
         //Add Extenções;
-        $twig->addExtension(new \Base\Helpers\TwigExtensions\TwigRelExtensionCustom());
-        $twig->addExtension(new \Base\Helpers\TwigExtensions\TwigFiltersCustom());
+        $twig->addExtension(new \NZord\Helpers\TwigExtensions\TwigRelExtensionCustom());
+        $twig->addExtension(new \NZord\Helpers\TwigExtensions\TwigFiltersCustom());
         $twig->addExtension(new \Slim\Views\TwigExtension($this->container->get('router'), $this->container->get('request')->getUri()));
 
         $twig->getExtension('Twig_Extension_Core')->setNumberFormat(2, ',', '.');
