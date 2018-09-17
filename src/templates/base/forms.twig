@@ -1,0 +1,353 @@
+{% macro error_block(errors) %}
+  {% if errors %}
+    <span class="help-block">
+      <ul>
+        {% for err in errors %}
+          <li>{{ err }}</li>
+        {% endfor %}
+      </ul>
+    </span>
+  {% endif %}
+{% endmacro %}
+
+{% macro label(name, required ) %}
+    {% if name %}
+   		<label class="control-label" >{{ name|raw }}
+   		    {% if required %}
+   		    	<span style="color: red;" title="Campo Obrigatório"><b>*</b></span>
+	    	{% endif %}
+    	</label> 
+    {% endif %}
+{% endmacro %}
+
+
+{% macro hidden(name, value ) %}
+	<input class="form-control" type="hidden" name="{{ name }}" id="{{ name }}" value="{{ value }}">
+{% endmacro %}
+
+
+{% macro input(name, label, value, placeholder, errors, cols, options={ required:false,readonly:false,mask:false,decimalPrecision:0,valide:null,removeMask:false,action:false,mlenght:false,class:'' } ) %}
+	{% import _self as form %}
+    <div id="group-{{name}}" class="form-group {% if errors %} has-error {% endif %}{{convertColGrid(cols|default(12))}}">
+        {{ form.label(label, options.required ) }}    
+        <input class="form-control {{options.class}}" type="text" id="{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}" value="{{ value }}" 
+                {% if options.required %}required{% endif %} {% if options.readonly %} readonly {% endif %} {{ options.action }} 
+                {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %} >
+        {{ form.error_block(errors) }}
+    </div>
+    {# Validacoes #}
+    <script>
+        {% if options.valide %}
+            require(['nzord'],function(){
+                {% if options.valide == 'cnpjOrCpf' %}
+                    $('#{{ name }}').validCpfCnpj({
+                        removeMask: {{options.removeMask ? 'true' : 'false'}}
+                    });
+                {% endif %}
+                {% if options.valide == 'pis' %}
+                    $('#{{ name }}').validPis();
+                {% endif %}
+            });
+        {% endif %}
+
+        {# Mascaras #}
+        {% if options.mask != false and options.mask != 'money' %}
+            {# Mascaras Padrao  #}
+            {% set maskDefault = { 
+                cpfCnpj: ['999.999.999-99','99.999.999/9999-99'], 
+                cpf: '999.999.999-99',
+                cnpj: '99.999.999/9999-99',  
+                data: '99/99/9999',
+                phone:'(99) 9999[9]-9999',
+                cep:'99999-999',
+                placa:'AAA-9999'} %}
+            
+            {% if options.mask in maskDefault|keys %}
+                {% set maskValue = maskDefault[options.mask] %}
+            {% else %}
+                {% set maskValue = options.mask %}
+            {% endif %}
+        
+            //Chama modulo mask
+            require(['mask'],function(){
+                $('#{{ name }}').inputmask({
+                    mask:{{ maskValue |json_encode|raw }},
+                    placeholder: ' ',
+                    definitions: {
+                        'A': {
+                            validator: "[A-Za-z]",
+                            cardinality: 1,
+                            casing: "upper" //auto uppercasing
+                        }
+                    }
+                });
+            });
+        {% elseif options.mask == 'money' %}
+            require(['maskMoney'],function(){
+                $('#{{ name }}').maskMoney({
+                    prefix:'R$ ', 
+                    allowNegative: true,
+                    thousands:'.', 
+                    decimal:',', 
+                    affixesStay: false
+                });
+            });
+        {% elseif options.decimalPrecision > 0 %}
+            require(['maskMoney'],function(){
+                $('#{{ name }}').maskMoney({ 
+                        allowNegative: true, 
+                        thousands:'.', 
+                        decimal:',', 
+                        affixesStay: false, 
+                        precision: {{ options.decimalPrecision }} 
+                    });
+            });
+        {% endif %}
+   </script>
+{% endmacro %}
+
+{% macro password(name, label, value, placeholder, errors, cols, options={ required:false,readonly:false,action:false,mlenght:false,class:'' } ) %}
+	{% import _self as form %}
+    <div id="group-{{name}}" class="form-group {% if errors %} has-error {% endif %}{{convertColGrid(cols|default(12))}}">
+        {{ form.label(label, options.required ) }}    
+        <input class="form-control {{options.class}}" type="password" id="{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}" value="{{ value }}" 
+                {% if options.required %}required{% endif %} {% if options.readonly %} readonly {% endif %} {{ options.action }} 
+                {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %} >
+        {{ form.error_block(errors) }}
+    </div>
+{% endmacro %}
+
+{% macro textarea(name, label, value, placeholder, rows, errors, cols, options = { required: false, summernote: true ,codeStyle:null,summerAirMode:false,readonly: false,class:'',wysihtml5:false} ) %}
+{% import _self as form %}
+	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
+        {{ form.label(label, options.required ) }}  
+        {% if options.wysihtml5 != null %}  
+            <div id="toolbar" style="display: none;">
+                <a data-wysihtml-command="bold" title="CTRL+B">bold</a> |
+                <a data-wysihtml-command="italic" title="CTRL+I">italic</a>
+                <a data-wysihtml-action="change_view">switch to html view</a>
+        	</div>
+        {% endif %}
+        <textarea id="{{ name }}" name="{{ name }}" {% if options.required %} required {% endif %} rows="{{ rows|default(10) }}" 
+        		class="form-control" placeholder="{{ placeholder|default('Descreva...') }}" {% if options.readonly %} readonly {% endif %} >{{ value|raw }}</textarea>
+        {{ form.error_block(errors) }}
+        {% if options.summernote or options.codeStyle or options.wysihtml5 %}
+        <script>
+            {% if options.summernote != null %}
+                require(['summernote'],function(){
+                    $('#{{ name }}').summernote({ 
+                        height: {{ rows*10 }} ,
+                        tabsize: 2 {% if options.summerAirMode %},airMode: true {% endif %}
+                    });
+        
+                    {% if options.readonly %}
+                        $('#{{ name }}').summernote('disable');
+                    {% endif %}
+                });
+            {% endif %}
+            {% if options.wysihtml5 != null %}
+                require(['wysihtml5'],function(){
+                	$('#{{ name }}').wysihtml5({
+                		locale: "pt-BR",
+            		  	toolbar: {
+                		    "font-styles": false, //Font styling, e.g. h1, h2, etc. Default true
+                		    "emphasis": true, //Italics, bold, etc. Default true
+                		    "lists": true, //(Un)ordered lists, e.g. Bullets, Numbers. Default true
+                		    "html": true, //Button which allows you to edit the generated HTML. Default false
+                		    "link": true, //Button to insert a link. Default true
+                		    "image": false, //Button to insert an image. Default true,
+                		    "color": false, //Button to change color of font  
+                		    "blockquote": false, // Blockquote
+                		    "fa": true,  // Font Awesome
+                		    "size": 'sm' //default: none, other options are xs, sm, lg
+                		  }
+                		});
+                });
+            {% endif %}
+
+            {% if options.codeStyle != null %}
+                require(['codemirror'],function(){
+                    require(['codemirrorPlugins'],function(){
+                        var code = CodeMirror.fromTextArea(document.getElementById("{{ name }}"), {
+                            lineNumbers: true,
+                            theme: "monokai",
+                            mode: "text/x-sql",
+                            autoRefresh:true,
+                            height:'320px'
+                        });
+
+                        code.refresh();
+                    })
+                })
+            {% endif %}
+        </script>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro select(name, label, value, option_array, errors, cols, options = { multiple: false, include_blank: true, required: true, onchange:null, select2:null, placeholder:'', chosen:null, readonly: false,class:''} ) %}
+{% import _self as form %}
+	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
+        {{ form.label(label, options.required ) }}    
+        <select id="{{ name }}" name="{{ name }}" {% if options.required %}required{% endif %} class="selectpicker form-control disable-text-shadow" 
+        {% if value %} data-value="{{ value }}"{% endif %} {% if options.multiple %}multiple{% endif %} {% if options.onchange %} onChange="{{ options.onchange }}" {% endif %} {% if options.readonly %} readonly {% endif %} >
+            {% if options.include_blank %}
+              <option selected value="">{{options.placeholder}}</option>
+            {% endif %}
+           {% for row in option_array %}
+              <option value="{{ row.id }}" {% if row.id in value %}selected{% endif %} >{{ row.nome }} </option>
+           {% endfor %}      
+        </select>    
+        {{ form.error_block(errors) }}        
+    {% if options.select2 != null and options.readonly == false %}
+          <script>
+            require(['select2'],function(){
+                
+                $('#{{ name }}').select2({
+                    "placeholder": "{{options.placeholder}}",
+                    "allowClear": {{ options.include_blank ? 'true': 'false'}},
+                    "language": {
+                        "noResults": function(){
+                            return "Nenhum resultado encontrado";
+                        }
+                    }
+                });
+
+                $('#{{ name }}').change(function(){
+                    var value = $(this).val();
+                    $(this).data('value',value);
+                });
+            });
+        </script>
+    {% endif %}
+
+    {% if options.chosen != null %}
+          <script>
+            require(['chosen'],function(){
+            	$('select[name="{{ name }}"]').chosen();
+            });
+        </script>
+    {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro selectSearch(name,label,value={'id':'','val':''},url,errors,cols, options = { widthAddon:null,required: false, placeholder:'',placeholderAddon:'',readonly: false,params:null},btnsAddon={} ) %}
+    {% import _self as form %}
+
+  	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}}">
+        {{ form.label(label, options.required ) }}
+        <div class="input-group" style="width:100%">
+            <input type="text" class="form-control" style="height: 32px;" name="{{name}}" id="{{name}}" placeholder="{{ options.placeholder }}" aria-describedby="{{name}}_addon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" autocomplete="off" value="{{value.id}}"  {% if options.readonly %} readonly {% endif %}>
+            <div class="input-group-addon" style="width:{{options.widthAddon|default(80)}}%; padding: 0px !important;border:none !important;">
+                <input type="text" id="{{name}}_addon" class="form-control" style="height: 32px;" value="{{ value.val }}" placeholder="{{ options.placeholderAddon }}" disabled>
+            </div>
+            {% if btnsAddon %}
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-flat btn-addons {{btnsAddon.class}}" title="{{btnsAddon.title}}" onclick="{{btnsAddon.action}}">{{btnsAddon.label |raw}}</button>
+                </span>
+            {% endif %}
+        </div>
+        <script>
+            require(['nzord'],function(){
+                $('#{{name}}').autoComplete('{{url}}',{{params | json_encode()}} ,function(obj){
+                    if(obj){
+                        $('#{{name}}').val(obj.id);
+                        $('#{{name}}_addon').val(obj.val);
+                    }else{
+                        $('#{{name}}').val('');
+                        $('#{{name}}_addon').val('');
+                    }
+                });
+            });
+        </script>
+    </div>
+{% endmacro %}
+
+
+{% macro radio(name, label, value, option_array, errors, cols, options = { required: true  } ) %}
+{% import _self as form %}
+	<div class="form-group funkyradio {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}}">
+        {{ form.label(label, options.required ) }}    
+       	{% for row in option_array %}
+           	<label class="checkbox"><input type="radio" name="{{ name }}" value="{{ row.id }}" {% if options.required %}required{% endif %}
+    			{% if row.id in value %}selected="selected" {% endif %}> 
+    			{{ row.nome|convert_encoding('latin1', 'UTF-8') }} 
+    		</label>
+        {% endfor %} 
+        {{ form.error_block(errors) }}
+    </div>
+{% endmacro %}
+
+
+{% macro dateTime(name, label, value, placeholder, errors, cols, options = { required: false, format: 'DD/MM/YYYY HH:mm' }) %}
+{% import _self as form %}
+  	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}}">
+  	    {{ form.label(label, options.required ) }} 
+  		<div class='input-group datetimepicker'>
+  	    	<input class="form-control" type="text" id="{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}" 
+  	    			{% if value %} value="{{ value }}"{% endif %} data-date-format="{{ options.format }}" {% if options.required %}required{% endif %}>      
+        	<span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+        </div>
+        {{ form.error_block(errors) }}
+    </div>
+    {% block mScript %}
+       <script>
+            require(['datetimepicker'],function(){
+                setTimeout(function(){ 
+                    $('.datetimepicker').datetimepicker(); 
+                }, 2000);
+            })
+        </script>
+    {% endblock %}
+{% endmacro %}
+
+
+{% macro file(name, label, value, placeholder, errors, cols, options = { required: false, accept:'file_extension|audio/*|video/*|image/*|media_type'}) %}
+{% import _self as form %}
+  	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}}">
+      {{ form.label(label, options.required ) }} 
+      <input class="form-control" type="file" id="{{ name }}" name="{{ name }}" 
+          {% if options.required %}required{% endif %} 
+          {% if options.accept %}accept="{{ options.accept }}"{% endif %}>
+      {% if placeholder %}<p class="help-block">{{ placeholder }}</p>{% endif %}
+    </div>
+{% endmacro %}
+
+{% macro button( xs=12, pull, disabled, href, options = { clearForm:false } ) %}
+	<div class="col-xs-{{ xs }} margin-top-20 btns-default pull-{{ pull | default('left')}}">
+    	<button class="btn btn-success btn-xs {% if xs == 1 %} btn-block {% endif %}" {% if disabled | default(false) %} disabled {% endif %} tabindex="3"  type="submit"><i class="fa fa-save"></i> Salvar</button>
+        {% if options.clearForm %}
+            <button class="btn btn-danger btn-clearform btn-xs {% if xs == 1 %} btn-block {% endif %}" tabindex="9" type="button"><i class="fa fa-close"></i> Cancelar</button>
+            <script>
+                $('.btn-clearform').click(function(){
+                    var form = $(this).closest('form');
+                    jsClearForm('#'+form.attr('id'));
+                })
+            </script>
+        {% elseif href == null %}
+        	<button class="btn btn-danger btn-xs {% if xs == 1 %} btn-block {% endif %}" type="button" tabindex="9" data-dismiss="modal" aria-label="Close" ><i class="fa fa-close"></i> Cancelar</button>
+        {% else %}
+         	<button class="btn btn-danger btn-xs {% if xs == 1 %} btn-block {% endif %}" type="button" onclick='window.location="{{ base_url() }}/{{ href }}";return false;' ><i class="fa fa-close"></i> Cancelar</button>
+        {% endif %} 
+    </div>
+{% endmacro %}
+
+{% macro checkList(name, label, value, option_array, errors, cols, options = {id:'', multiple: true, include_blank: true, required: true, onchange:null, placeholder:'',readonly: false,class:''} ) %}
+{% import _self as form %}
+	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
+        {{ form.label(label, options.required ) }}
+        <select id="{{ options.id ? options.id : name }}" name="{{ name }}" {% if options.required %}required{% endif %} multiple class="checklist-hidden-accessible" 
+        {% if value %} data-value="{{ value }}"{% endif %} {% if options.onchange %} onChange="{{ options.onchange }}" {% endif %} {% if options.readonly %} readonly {% endif %} >
+            {# <option selected>{{options.placeholder}}</option> #}
+           {% for row in option_array %}
+              <option value="{{ row.id }}" {% if row.id in value %}selected{% endif %} >{{ row.nome|convert_encoding('latin1', 'UTF-8') }} </option>
+           {% endfor %}
+        </select>
+        {{ form.error_block(errors) }}
+        <script>
+            require(['nzord'],function(){
+                $('#{{ options.id ? options.id : name}}').checkList();
+            });
+        </script>
+    </div>
+{% endmacro %}

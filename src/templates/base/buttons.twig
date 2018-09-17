@@ -1,0 +1,60 @@
+
+{% macro btnAppArray( options = {label:null, link:null, href:null, title:null, img:null, style:null} ) %}
+    {% for row in options %}
+    	<a class="btn btn-app card " {% if row.href %} href="{{row.href}}" {% else %} onclick="{{ row.link }}" {% endif %}
+    		 title="{{ row.title }}" {% if row.style %} style="{{ row.style }}" {% endif %} >
+        	<i class="fa fa-{{ row.img|default('globe') }}"></i>{{ row.label|raw }}
+        </a>    
+	{% endfor %}
+{% endmacro %}
+
+{% macro button( options = {'label':null, 'link':null, 'title':null, 'img':null, 'style':null, 'js':true, 'size':'xs', 'btn':'info'} ) %}
+    {% for row in options %}
+		<a {% if row.js == true %} onclick="{{ row.link }}" {% else %} href="{{ row.link }}" {% endif %} 
+				class="btn btn-{{ row.btn|default('info') }} btn-{{ row.size|default('xs') }}" title="{{ row.title }}">
+			<i class="fa fa-{{ row.img|default('globe') }}"></i> {{ row.label|raw }}
+		</a> 
+	{% endfor %}
+{% endmacro %}
+
+{% macro btnApp(link,name,icon='',options= {'class':'','style':'','hint':'','badge':null,'badgeStyle':null,'onClick':null}) %}
+    <a class="btn btn-app {{options.class}}" {% if link %}href="{{link}}"{% else %}onClick="{{ options.onClick }}"{% endif %} style="{{ options.style }}" hint="{{options.hint}}">
+		{% if options.badge or options.badge == 0 %}
+			<span class="badge {{options.badgeStyle|default('bg-green')}}">{{options.badge}}</span>
+		{% endif %}
+		
+		{% if icon|length > 0 %}
+            <i class="{{icon|e}}" aria-hidden="true"></i>
+        {% endif %}
+        {{name | e}}
+    </a>
+{% endmacro %}
+
+{% macro btnAppBox(link,name,icon='links',options= {'class':'','badge':null,'onClick':null,'size':null}) %}
+	<div class="col-md-{{ size|default(4) }} col-xs-6">
+      <div class="small-box {{ options.class|default('bg-aqua') }}">
+        <div class="inner text-left">
+          <h3>{{ options.badge }}</h3>
+          <p>{{ name }}</p>
+        </div>
+        {% if icon|length > 0 %}        
+        	<div class="icon">
+            	<i class="{{icon|e}}" aria-hidden="true"></i>
+        	</div>
+        {% endif %}
+        <a {% if link %}href="{{link}}"{% else %}onClick="{{ options.onClick }}"{% endif %} class="small-box-footer"> 
+        		Acessar <i class="fa fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+{% endmacro %}
+
+
+{% macro btnArApp( options = {nome:null, link:null, hint:null, image:null, style:null,class:null} ) %}
+    {% for row in options %}
+    {% set name = row.nome|split('.') %}
+   	    <a class="btn btn-app {{ row.class }}" href="{{ row.link }}" style="{{ row.style|default('min-width: 190px;') }}" title="{{ row.hint }}">
+          {{ row.image|raw }}{{ name.1|convert_encoding('latin1', 'UTF-8') }}
+          </a>
+   	{% endfor %}
+   	   	
+{% endmacro %}

@@ -1,0 +1,207 @@
+{% macro error_block(errors) %}
+  {% if errors %}
+    <span class="help-block">
+      <ul>
+        {% for err in errors %}
+          <li>{{ err }}</li>
+        {% endfor %}
+      </ul>
+    </span>
+  {% endif %}
+{% endmacro %}
+
+{% macro valida(valor, exp='==', compara) %}
+    {% set arrExp = { '==':'==', '<=':'<=', '>=':'>=', '<>=':'<>', '<>':'<>', '!=':'!=' } %}
+    {% set expres = attribute(arrExp,exp) %}
+    {% if valor ~expres~ compara %}
+    	{{ valor }}
+    {% endif %} 
+{% endmacro %}
+
+{% macro grid(nome, dados, dTables=true,options={'height':null,'colunsHidden':null,'class':''},btnActions={}) %}
+{% import _self as grid %}
+     <div>
+        <div class="dataTable_wrapper" {% if options.height %} style="overflow: auto;max-height:{{options.height}}px;" {% endif %}>
+            {% if dados %}
+            <table id="dtb_{{ nome }}" style="font-size: 85%;" class="table table-striped table-bordered table-hover table-responsive table-condensed {{options.class}}" cellspacing="0" width="100%">
+                <thead>
+                    <tr>{# get table headers from the table row #}
+                    {% for row in dados.0|cast_to_array  %}
+                        <th {% if row.0 in options.colunsHidden %}style="display:none;"{% endif %}>{{ row.0 | replace({'_': ' '})|upper }}</th>
+                    {% endfor %}
+                    {% if btnActions %}
+                        <th>AÇÕES</th>
+                    {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                {% for row in dados %}
+                    <tr>
+                        {% for key, value in row|cast_to_array %}
+                            <td {% if value.0 in options.colunsHidden %}style="display:none;"{% endif %}>{{ value.1|raw }}</td>
+                        {% endfor %}
+                        {% if btnActions %}
+                            <td>
+                                {% for btn in btnActions %}
+                                {% set mostra = true %}
+                                {% if btn.valida %}
+                                    {% set campo = attribute(row, btn.valida.campo) %}
+                                    {% if campo == btn.valida.valor %}
+                                        {% set mostra = false %}
+                                    {% endif %}	
+                                {% endif %}
+                                {% if mostra %} 
+                                     <button type="button" class="btn-action-grid btn btn-xs {{btn.class}}" title="{{btn.title}}" data-action="{{btn.action}}">{{btn.label |raw}}</button>                                                                           	
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <div class="alert alert-danger" style="margin-top: 40px;"><b>Sem Dados para Mostrar!</b></div>
+            {% endif %}
+        </div>
+    </div>
+    {% if btnActions %}
+        <script>
+            // Adicionar eventos no botoes actions.
+            $(".btn-action-grid").click(function(){
+                var tr = $(this).closest('tr');
+                var row = getJsonRow(tr);
+                var action = $(this).data('action');
+
+                $("#dtb_{{ nome }}").trigger(action,[row]);
+            });
+        </script>   
+    {% endif %}
+{% endmacro %}
+
+{% macro gridSripts(nome, button={}, url, dados, options={'timeout':false,'interval':false,'select':false,'btnFilter':false,'refleshExitModal':true}) %}
+    <script>
+        require(['datatableJS'],function(){
+            $(document).ready(function() {
+                //Fix passa paramentro pela url.
+                function createdUrl(){
+                    var urlBase = "{{ url }}";
+                    var query = window.location.search;
+                    if(urlBase.indexOf('?') > -1){
+                        query = '&'+query.replace('?','');
+                    }
+                    return urlBase+query; 
+                }
+                function clearFilter(){
+                    var urlBase = "{{ url }}";
+                    window.location.href = urlBase;
+                }
+
+                var table = $('#dtb_{{ nome }}').DataTable({
+                    "language": {
+                        "url": "{{ base_url() }}/assets/nzord-app/src/libs/i18n/pt_BR.json"
+                    },
+                    "dom": 'Bfrtip',
+                    "displayLength": 10,
+                    "lengthChange": false,
+                    "processing": true,
+                    "serverSide": true,
+                    "order": [[ 0, "desc" ]],
+                    "info": true,
+                    "select": { style: 'single' },
+                    "deferRender": false,
+                    "pageResize": true,
+                    "filter": true,
+                    "lengthMenu": [[10, 50, 100, 250, 500, 1000, -1], ['10 linhas', '50 linhas', '100 linhas', '250 linhas', '500 linhas', '1000 linhas', 'Todas']],
+                    "ajax":{
+                        url: createdUrl(),
+                        type: "GET",
+                        dataType: 'json',
+                        error: function (res) {
+                            if(res.status == 500){
+                                var erro = res.responseJSON;
+                                jsAlertBox('error','Erro ao buscar registros.',erro.message+"<pre style='width: 482px;height: 200px;'>"+res.responseText+"</pre>");
+                            }else{
+                                jsMensageBox("warning","normal","Sem Registros","Correspondente a Pesquisa: " + $(".dataTables_filter input").val(),"10000",450);
+                                $(".dataTables_filter input").val("");
+                            }
+                        }
+                    },	        
+                    "buttons": [
+                        {% if button %} 
+                            {% for row in button %}
+                                { text: '<b>{{ row.label |raw }}</b>', action: function ( e, dt, node, config ) { {{ row.link|raw }}; } },
+                            {% endfor %}
+                        {% endif %}
+                        { extend: 'copy', text: '<u>C</u>opiar',key: { key: 'c', altKey: true} }
+                        , 'csv',
+                        , { extend: 'print', text: '<u>I</u>mprimir',key: { key: 'i', altKey: true} }
+                        , { extend: 'colvis', text: '<u>V</u>isivel',key: { key: 'v', altKey: true} }
+                        , { extend: 'pageLength', text: 'Registros' }
+                        {% if options.btnFilter %}
+                        , { text: '<b>Limpar Filtro</b>',className: 'btn-clerfilter', action: function ( e, dt, node, config ) { window.location="{{current_path()}}"}},
+                        {% endif %}
+                    ],
+                    "columns": [
+                        {% if dados %}
+                            {% for row in dados.0|cast_to_array  %}
+                                { "data": "{{ row.0 }}",
+                                "name": "{{ row.0 }}"  },
+                            {% endfor %}
+                        {% endif %}
+                    ]
+                });
+            });
+
+            {% if options.select != false %}
+                $('select').on('change', function () {
+                    $('#dtb_{{ nome }}').DataTable().search( $(this).val(), true, false ).draw();	
+                });
+            {% endif %}
+                    
+            {% if options.timeout != false %}
+                setTimeout(function(){ 
+                    if( $('#dtb_{{ nome }}').length === 1 ){
+                        $('#dtb_{{ nome }}').DataTable().draw();
+                    }
+                }, {{ options.timeout }});
+            {% endif %}
+
+            {% if options.interval != false %}
+                setInterval(function(){ 
+                    if( $('#dtb_{{ nome }}').length === 1 ){
+                        $('#dtb_{{ nome }}').DataTable().draw();
+                    }
+                }, {{ options.interval }});
+            {% endif %}
+        });
+
+        {% if options.refleshExitModal != false %}
+            function onExitModal(response){
+                if( $('#dtb_{{ nome }}').length === 1 ){
+                    $('#dtb_{{ nome }}').DataTable().draw();
+                }
+            }
+        {% endif %}
+    </script>
+{% endmacro %}
+
+{% macro ctMenuSripts(nome) %}
+    <script>
+        require(['contextMenu'],function(){
+            $(document).ready(function() {
+                $.contextMenu({
+                    selector: ".selected", 
+                    trigger: "left",
+                    autoHide: false,
+                    reposition: true, 
+                    items: $.contextMenu.fromMenu( $('#{{ nome }}') ),
+                    position: function(opt, x, y){
+                        opt.$menu.css({top: (y - 1), left: (x - 1)});
+                    }            		
+                });
+            });
+        })
+    </script>
+{% endmacro %}
+

@@ -1,0 +1,69 @@
+{% macro calendar(nome,urlEvents,options = { defaultView:'agendaWeek'}) %}
+    <div class='{{convertColGrid(cols|default(12))}}'>
+        <div class="alert alert-warning alert-dismissible"  id='script-warning' style="display:none;">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h4><i class="icon fa fa-warning"></i> Erro ao carregar!</h4>
+            <code>eventos</code> deve estar executando.
+        </div>
+        <div class="col-xs-12 text-center loading-modal" id="{{nome}}_loading">
+            <br>
+            <br>
+            <img src="{{base_url()}}/images/Preloader_3.gif" width="64" height="64">
+            <h4>Carregando</h4>
+        </div>
+
+        <div id='listaEventos' style='display: none;'></div>
+        <div id='{{nome}}'></div>
+	</div>
+    <script>
+        require(['fullCalendar'],function(){
+            require(['fullCalendarLocale'],function(){
+                 $('#{{nome}}').fullCalendar({
+                    locale:'pt-br',
+                    displayEventTime: false,
+                    header    : {
+                        left  : 'prev,next today',
+                        center: 'title',
+                        right : 'month,agendaWeek,agendaDay'
+                    },
+                    eventLimit: true,
+                    businessHours:{
+                        start: '07:00',
+                        end:   '17:30',
+                        dow: [ 1, 2, 3, 4, 5]
+                    },
+                    selectable: true,
+                    selectHelper: true,
+                    defaultDate: '{{"now"|date("Y-m-d")}}',
+                    select: function(start, end) {
+                        start = $.fullCalendar.moment(start).format("YYYY-MM-DD[T]HH:mm:ss");
+                        end = $.fullCalendar.moment(end).format("YYYY-MM-DD[T]HH:mm:ss");
+
+                        $('#{{nome}}').trigger('selectEvent',[$(this)]);
+                    }, 
+                    events: {
+                        url: '{{urlEvents}}',
+                        error: function(e) {
+                            $('#script-warning').show();
+                        },
+                        complete: function( response ) {
+                            evento = response.responseJSON;
+                            for(var i in evento ){
+                                var dataI = evento[i].start; dataF = evento[i].end;
+                                    dataI = dataI.split('+'); dataF = dataF.split('+');
+                                    
+                                $('#listaEventos').append('[ID: ' + evento[i].id + '] <b>Titulo:</b> '+ evento[i].title + ' <br /> <b>Data Inicial:</b> ' + dataI[0] + ' <br />  <b>Data Final:</b> ' + dataF[0] + '<br /><br />');
+                            }
+                        }
+                    }, 
+                    loading: function(bool) {
+                        $('#{{nome}}_loading').toggle(bool);
+                    },
+                    eventClick: function(calEvent, jsEvent, view) {
+                        $('#{{nome}}').trigger('eventClick',[calEvent]);
+                    }
+                });
+            });
+        });
+    </script>
+{% endmacro %}

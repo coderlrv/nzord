@@ -1,0 +1,211 @@
+<a href="{{ base_url() }}" class="logo">
+    <span class="logo-mini">
+        <b>{{ sys.mTitle }}</b>
+    </span>
+    <span class="logo-lg">
+        <b>{{ sys.gTitle }}</b>
+    </span>
+</a>
+<nav class="navbar navbar-static-top">
+    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+        <span class="sr-only">Toggle navigation</span>
+    </a>
+    <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+            <li class="dropdown calendar-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <div id="data-wrapper">{{ sys.diaSemana}}<br>
+                        <b>{{ sys.diaHoje}}</b>
+                    </div>
+                </a>
+                <ul class="dropdown-menu">
+                    <div class="calendar">
+                        {{ sys.miniCalendar}}
+                    </div>
+                </ul>
+            </li>
+            <li title="Hora atual do servidor">
+                <div id="clock-wrapper">{{ sys.horaAtual}}</div>
+                <div id="tools-wrapper">
+                    <i class="fa fa-clock-o"></i>
+                </div>
+            </li>
+            <li class="dropdown messages-menu" title="Mensagens do Correio Interno" id="navBarMsg">
+                <a href="{{ base_url() }}/app/system/mensagem" style="padding: 15px 10px 15px !important;">
+                    <i class="fa fa-envelope-o"></i>
+                </a>
+            </li>
+            <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding: 15px 10px 15px !important;">
+                    <img src="{{ base_url() }}/{{session.app.userAvatar}}" class="user-image img-circle">
+                    <span class="hidden-xs">{{session.app.login}}</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li class="user-header" style="height:initial">
+                        <img src="{{ base_url() }}/{{session.app.userAvatar}}" class="img-circle">
+                        <p>{{session.app.login}}
+                            <small>{{session.app.userNome}}</small>
+                        </p>
+                    </li>
+                    <li class="user-footer">
+                        <div class="pull-left">
+                            <a href="{{ base_url() }}/app/system/suasessao" class="btn btn-default btn-flat" title="Sessão::Dados da Sessão Atual">
+                                <i class="fa fa-id-card-o"></i>Sessão</a>
+                        </div>
+                        <div class="pull-right">
+                            <a href="{{ path_for('logout') }}" title="Sair::Sair do Sistema" class="btn btn-default btn-flat">
+                                <i class="fa fa-power-off"></i>
+                                Sair</a>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown hide-phone user-menu" title="Tela cheia">
+                <a href="#" onclick="javascript:toggle_fullscreen()" style="padding-top: 15px !important; padding-bottom: 15px !important;">
+                    <i class="fa fa-expand"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+</header>
+
+<aside class="main-sidebar">
+<section class="sidebar" id="style-4">
+    <div class="user-panel">
+        <div class="pull-left image">
+            <img src="{{ base_url() }}/{{session.app.userAvatar}}" class="img-circle" alt="User Image">
+        </div>
+        <div class="pull-left info">
+            <p>{{session.app.login}}</p>
+            <a href="{{ base_url() }}/app/system/suasessao">
+                <i class="fa fa-circle text-success"></i>
+                Online</a>
+        </div>
+    </div>
+
+    <form action="{{ base_url() }}/app/system/search" method="post" class="sidebar-form">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Buscar...">
+            <span class="input-group-btn">
+                <button type="submit" class="btn btn-flat">
+                    <i class="fa fa-search"></i>
+                </button>
+            </span>
+        </div>
+    </form>
+
+    <ul class="sidebar-menu" data-widget="tree" id="side-menu">
+        <li class="header">MENU</li>
+        <li class="treeview ">
+            <a href="#" class="">
+                <i class="fa fa-cog "></i>
+                <span>System</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu level-2" style="display: none;">
+                {% if session.app.userPerfil == 1 %}
+                    <li>
+                        <a href="{{base_url()}}/app/system/usuario">
+                            <i class="fa fa-users" aria-hidden="true"></i>
+                            Usuários</a>
+                    </li>
+                    <li>
+                        <a href="{{base_url()}}/app/system/parametro">
+                            <i class="fa fa-cogs" aria-hidden="true"></i>
+                            Parâmetros</a>
+                    </li>
+                    <li>
+                        <a href="{{base_url()}}/app/system/perfil">
+                            <i class="fa fa-meh-o" aria-hidden="true"></i>
+                            Perfil</a>
+                    </li>
+                    <li>
+                        <a href="{{base_url()}}/app/system/log">
+                            <i class="fa fa-exchange" aria-hidden="true"></i>
+                            Logs do Sistema</a>
+                    </li>
+                    <li>
+                        <a href="{{base_url()}}/app/system/menu">
+                            <i class="fa fa-align-justify" aria-hidden="true"></i>
+                            Menu Painel</a>
+                    </li>
+                    <li>
+                        <a href="{{base_url()}}/app/system/modelo">
+                            <i class="fa fa-files-o" aria-hidden="true"></i>
+                            Modelo de Relatório</a>
+                    </li>
+                    <li>
+                        <a href="{{base_url()}}/app/system/sessao">
+                            <i class="fa fa-info-circle" aria-hidden="true"></i>
+                            Log Sessão</a>
+                    </li>
+                    <li>
+                        <a href="{{base_url()}}/app/system/config">
+                            <i class="fa fa-wrench" aria-hidden="true"></i>
+                            Configurações</a>
+                    </li>
+                    <hr>
+                {% endif %}
+                <li>
+                    <a href="{{base_url()}}/app/system/suasessao">
+                        <i class="fa fa-hourglass-start" aria-hidden="true"></i>
+                        Sua Sessão</a>
+                </li>
+                <li>
+                    <a href="{{ path_for('logout') }}">
+                        <i class="fa fa-sign-out" aria-hidden="true"></i>
+                        Sair</a>
+                </li>
+            </ul>
+        </li>
+        {% if session.app.menuArr %}
+            {% for menu in session.app.menuArr %}
+                {% set mname = menu.nome | split('.') %}
+                <li class="treeview">
+                    <a href="#">
+                        {{ menu.image|raw }}
+                        <span>{{ mname.1 }}</span>
+                        {% if menu.sub %}
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i></span>{% endif %}
+                    </a>
+                    {% if menu.sub %}
+                        <ul class="treeview-menu" style="display: none;">
+                            {% for row in menu.sub %}
+                                <li {% if row.sub %} class="treeview" {% endif %}>
+                                    <a href="{% if row.sub %}#{% else %}{{ row.link }}{% endif %}">
+                                        {{ row.image|raw }}
+                                        {{ row.nome }}
+                                        {% if row.sub %}
+                                            <span class="pull-right-container">
+                                                <i class="fa fa-angle-left pull-right"></i></span>{% endif %}
+                                    </a>
+                                    {% if row.sub %}
+                                        <ul class="treeview-menu" style="display: none;">
+                                            {% for sub in row.sub %}
+                                                <li>
+                                                    <a href="{{ sub.link }}">{{ sub.image|raw }}
+                                                        {{ sub.nome }}</a>
+                                                </li>
+                                                {% if sub.divider == 1 %}
+                                                    <hr>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </li>
+                                {% if row.divider == 1 %}
+                                    <hr>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        {% endif %}
+    </ul>
+</section>
+</aside>

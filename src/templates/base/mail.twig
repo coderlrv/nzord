@@ -1,0 +1,44 @@
+{% macro error_block(errors) %}
+  {% if errors %}
+    <span class="help-block">
+      <ul>
+        {% for err in errors %}
+          <li>{{ err }}</li>
+        {% endfor %}
+      </ul>
+    </span>
+  {% endif %}
+{% endmacro %}
+
+{% macro menuMail( qtde ) %}
+		<div class="col-md-3">
+          <a href="{{ base_url() }}/app/system/mensagem/nova" class="btn btn-primary btn-block margin-bottom {% if url.act == 'nova' %} disabled {% endif %}">Nova Mensagem</a>
+
+          <div class="box box-solid">
+            <div class="box-header with-border">
+              <h3 class="box-title">Pastas</h3>
+
+              <div class="box-tools">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="box-body no-padding">
+              <ul class="nav nav-pills nav-stacked">
+                <li {% if url.act == 'index' %} class="active" {% endif %}><a href="{{ base_url() }}/app/system/mensagem"><i class="fa fa-inbox"></i>Caixa de Entrada             		
+            		{% if qtde.msgs >= 1 %} <span class="label label-default pull-right">{{ qtde.msgs }}</span>&nbsp; {% endif %}
+            		{% if qtde.nlida >= 1 %} <span class="label label-success pull-right" data-toggle="tooltip" title="Não Lidas!">{{ qtde.nlida }}</span> {% endif %}
+            		</a></li>
+                <li {% if url.act == 'enviados' %} class="active" {% endif %}><a href="{{ base_url() }}/app/system/mensagem/enviados"><i class="fa fa-send"></i> Envidados     		
+            		{% if qtde.enviado >= 1 %} <span class="label label-default pull-right">{{ qtde.enviado }}</span>&nbsp; {% endif %}
+                	</a></li>
+                <li {% if url.act == 'contato' %} class="active" {% endif %}><a href="{{ base_url() }}/app/system/mensagem/contato"><i class="fa fa-users"></i> Contatos
+                	{% if qtde.nlida >= 1 %} <span class="label label-default pull-right">{{ qtde.contatos }}</span> {% endif %}
+                	</a></li>
+              </ul>
+            </div>
+            <!-- /.box-body -->
+          </div>
+        </div>
+{% endmacro %}
+

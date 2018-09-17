@@ -1,0 +1,7 @@
+{% extends "layout.html.twig" %}
+{% block title %} {{ url.modulo }} {% endblock %}
+{% block content %}
+    sdfa - {{ url.modulo }}/{{ url.pagina }}<br> 
+    {{ path }}
+     {% include '@twMod/'~url.urlPagina~'' %}  
+{% endblock %}

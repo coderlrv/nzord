@@ -1,0 +1,168 @@
+{% macro error_block(errors) %}
+  {% if errors %}
+    <span class="help-block">
+      <ul>
+        {% for err in errors %}
+          <li>{{ err }}</li>
+        {% endfor %}
+      </ul>
+    </span>
+  {% endif %}
+{% endmacro %}
+
+{% macro widget( name, label, content, img='home', efect='default', xs=12, options = { remove:false,minimiza:false,class:false,solid:false,closed:false }, footer={} ) %}
+{% import _self as form %}
+     <div class="col-md-{{ xs }}"  id="area_{{ name }}">
+        <!-- .box-body -->
+		<div class="box box-{{ efect }}{% if options.solid %} box-solid {% endif %}{% if options.closed %} collapsed-box{% endif %}" id="{{ name }}">
+		{% if label %}
+			<div class="box-header with-border ui-sortable-handle" >
+				<i class="fa fa-{{ img }}"></i>
+                <h3 class="box-title">{{ label }}</h3>
+              	<div class="box-tools pull-right">
+              	{% if options.minimiza %}
+        			<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-{% if options.closed %}plus{% else %}minus{% endif %}"></i></button>
+        		{% endif %}
+    			{% if options.remove %}
+        			<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        		{% endif %}	
+				</div>
+        	</div>
+        	{% endif %}	
+        	<div class="box-body with-border {{ options.class }}">{{ content|raw }}</div>
+        </div>
+        <!-- /.box-body -->   
+        {# label, link, img#}     
+        {% if footer %}
+        <div class="box-footer clearfix no-border">
+            {% for row in footer %}
+							{{ row.text }}
+          		<button type="button" onclick="{{ row.link }}" class="btn btn-default pull-right">
+          			<i class="fa fa-{{ row.img|default('plus') }}"></i> {{ row.label }}
+          		</button>
+          	{% endfor %}
+        </div>
+        {% endif %}
+        {{ form.error_block(errors) }}
+    </div>
+{% endmacro %}
+
+
+{% macro boxLink( options = { link:'null', js:'0', xs:'3', efect:'default', title:'null', img:'home', label:'null' } ) %}
+	{% for opt in options %}
+    	<a {% if opt.js == 1 %} onclick="{{ opt.link }}" {% else %} href="{{ opt.link }}"{% endif %} 
+    			class="col-xs-{{ opt.xs|default(3) }} alert alert-{{ opt.efect|default('default') }} tex-center card" 
+    			style="border: 1px solid;" title="{{ opt.title|default(null) }}" >
+    		<h3>
+    		    {% if opt.img matches '/^\\d+$/' %}  
+    		    	<span class="grande fa-2x"><b>{{ opt.img }}</b></span>
+    		    {% else %} 
+    		    	<i class="fa fa-{{ opt.img|default('home') }} fa-3x" aria-hidden="true"></i>
+		    	{% endif %}
+	    	</h3>
+    		<h4><b>{{ opt.label|default(null) }}</b></h4>
+    	</a>
+	{% endfor %}
+{% endmacro %}
+
+
+{% macro appLink( options = { link:'null', btn:'null',js:'0', style:'null', title:'null', img:'home', label:'null' } ) %}
+	{% for opt in options %}
+    	<a {% if opt.js == 1 %} onclick="{{ opt.link }}" {% else %} href="{{  opt.link  }}"{% endif %} 
+			class="btn btn-{{ opt.btn|default('app') }} tex-center card" 
+			{% if opt.style %} style="{{  opt.style }}"{% endif %} title="{{ opt.title|default(null) }}" >
+    		<i class="fa fa-{{ opt.img|default('home') }}"></i>
+    		{{ opt.label|default(null) }}
+    	</a>
+	{% endfor %}
+{% endmacro %}
+
+
+{% macro btnDropdown(name, label, efect, xs, img, link={label:null,link:null,img:null,title:null}) %}	
+	<div class="btn-group" id="{{ name }}">
+		<button type="button" class="btn btn-{{ efect|default('default') }} dropdown-toggle btn-{{ xs|default('sm') }}" 
+			data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			<i class="fa fa-{{ img|default('th-list') }}"></i> {{ label|default('Action') }} <span class="caret"></span>
+		</button>
+	{% if link != null %}
+		<ul class="dropdown-menu">
+		{% for row in link %}
+		    {% if row.label == 'divider' %}
+		    	<li role="separator" class="divider"></li>
+		    {% else %}
+		    	<li><a onclick="{{ row.link }}" title="{{ row.title }}"><i class="fa fa-{{ row.img|default('link') }}"></i>{{ row.label }}</a></li>
+		    {% endif %}
+		{% endfor %}
+		</ul>
+	{% endif %}
+	</div>
+{% endmacro %}
+
+
+{% macro ulToDoTiAgenda(options={}) %}
+	<ul class="todo-list ui-sortable">
+		{% if options %}
+    		{% for row in options %}
+            <li>
+              {# <input type="checkbox" value="{{ row.id }}"> #}
+              <span class="text" 
+                  {% if row.detalhe %} data-html="true" data-toggle="tooltip" title="{{ row.detalhe|convert_encoding('latin1', 'UTF-8') }}" {% endif %} >
+                  {{ row.id }} - {{ row.label|convert_encoding('latin1', 'UTF-8') }}
+              </span>
+              {% if row.qtde %} <span class="label label-info" data-toggle="tooltip" title="O.S. relacionadas: {{ row.servico }}">
+              		<i class="fa fa-cog"></i> {{ row.qtde }}</span> {% endif %}                       
+              {% if row.status %} <small class="pull-right">{{ row.status|raw }}</small> {% endif %}
+              
+              <div class="tools">
+              {% if row.edit %} <i class="fa fa-edit" title="Editar" onclick="{{ row.edit }}"></i> {% endif %}
+              {% if row.remove %} <i class="fa fa-trash-o" title="Remover" onclick="{{ row.remove }}"></i> {% endif %}
+              </div>              
+            </li>               
+		    {% endfor %}
+        {% endif %}             
+	</ul>
+{% endmacro %}
+
+{% macro ulUserList(options={}) %}
+	<ul class="users-list clearfix ui-sortable">
+		{% if options %}
+    		{% for row in options %}
+    			<li {% if row.secretario %} class="bg-yellow-gradient" {% elseif row.matricula == session.app.userMatricula %} class="bg-teal-gradient" style="border-radius: 4px;" {% endif %}>
+                  <img src="{{ row.avatar }}" title="{{ row.matricula }}-{{ row.nome|convert_encoding('latin1', 'UTF-8')|raw }}" >
+                  <a class="users-list-name">{{ row.login }}</a>
+                  <span class="users-list-date">{{ row.matricula }}</span>
+                </li>        
+		    {% endfor %}
+        {% endif %}             
+	</ul>
+{% endmacro %}
+
+{% macro ulBdayList(options={},height,msgBday) %}
+	<div style="height: {{ height|default(30) }}vh; overflow: auto;" id="ulBday">
+	<ul class="users-list ui-sortable small">	
+		{% if options %}
+		    {% set posBday = null %}
+		    {% set funcBday = null %}
+    		{% for row in options %}
+    			<li class="well{% if row.dia == now|date('d') %} 
+    			    {% if posBday == null %} {% set posBday = row.id %}  {% endif %}					    
+    				bg-teal-gradient  
+					{% if row.matricula == session.app.userMatricula %} {% set funcBday = 1 %}  {% endif %}
+			        {% endif %}" id="bday_{{ row.id }}">
+                  <span>{{ row.data }}</span>           
+                  <span class="users-list-name">{{ row.nome|convert_encoding('latin1', 'UTF-8')|raw }}</span>
+                </li>        
+		    {% endfor %}
+        {% endif %}             
+	</ul>
+	</div>
+	<script>
+    	setTimeout(function(){
+    		var pos = $('#bday_{{ posBday }}').position();
+    		$('#ulBday').animate({scrollTop: pos.top-52 }, "slow");
+    		{% if funcBday %}
+                    {{ msgBday.valor|raw }}
+    		{% endif %}
+    	},1000);
+	</script>
+{% endmacro %}

@@ -1,0 +1,191 @@
+<?php
+namespace NZord\Helpers;
+
+class NAcl{
+    protected $app;
+    protected $session;
+    protected $permissions = null;
+    protected $permissionsAlias = [];
+
+    /**
+     *  Construtor NAcl
+     *
+     * @param \Slim\Container $c
+     * @param \Base\Controller\Session $session
+     */
+    function __construct($c,$session){
+        $this->app = $c;
+        $this->session = $session;
+    }
+    /**
+     * Defini as permissões para rotas dos modulos.
+     * Ex:
+     *  __construct($app){
+     *      $app->acl->->authorize(['deptos'=>[ 4 ] ],['index','novoComInterno','geral','gridJson']);
+     * }
+     *
+     * @param array $permission -  lista de permições por perfil. Ex:
+     * ```php
+     * $permissions = [
+     *      'deptos'=>[]
+     *      'setores'=>[]
+     *      'perfils'=>[],
+     *      'users'=> [1,2],
+     * ]
+     * ```
+     * @param array|string $actions / Alias  - lista de actions a ser protegidas. ou alias para usar
+     * @return void
+     */
+    public function authorize(array $permission,$actions,$alias=''){
+       
+        if(!$this->permissions){
+            $this->permissions = [];
+        }
+        //Caso tive actions e alias entao adicionar nos duas listas.
+        if(is_array($actions) && $alias){
+            array_push($this->permissions,['permissions' => $permission , 'actions'=> $actions ,'not'=>false]);
+            array_push($this->permissionsAlias,['permissions' => $permission , 'alias'=>$alias,'not'=>false]);
+        }else if(is_array($actions)){
+            array_push($this->permissions,['permissions' => $permission , 'actions'=> $actions,'not'=>false]);
+        }else{
+            array_push($this->permissionsAlias,['permissions' => $permission , 'alias'=> $actions,'not'=>false]);
+        }
+        return $this;
+    }
+
+        /**
+     * Defini as permissões para rotas dos modulos.
+     * Ex:
+     *  __construct($app){
+     *      $app->acl->->authorize(['deptos'=>[ 4 ] ],['index','novoComInterno','geral','gridJson']);
+     * }
+     *
+     * @param array $permission -  lista de permições por perfil. Ex:
+     * ```php
+     * $permissions = [
+     *      'deptos'=>[]
+     *      'setores'=>[]
+     *      'perfils'=>[],
+     *      'users'=> [1,2],
+     * ]
+     * ```
+     * @param array|string $actions / Alias  - lista de actions a ser protegidas. ou alias para usar
+     * @return void
+     */
+    public function authorizeNot(array $permission,$actions,$alias=null){
+        if(!$this->permissions){
+            $this->permissions = [];
+        }
+        //Caso tive actions e alias entao adicionar nos duas listas.
+        if(is_array($actions) && $alias){
+            array_push($this->permissions,['permissions' => $permission , 'actions'=> $actions ,'not'=>true]);
+            array_push($this->permissionsAlias,['permissions' => $permission , 'alias'=> $alias,'not'=>true]);
+        }else if(is_array($actions)){
+            array_push($this->permissions,['permissions' => $permission , 'actions'=> $actions ,'not'=>true]);
+        }else{
+            array_push($this->permissionsAlias,['permissions' => $permission , 'alias'=> $actions,'not'=>true]);
+        }
+
+        return $this;
+    }
+    /**
+     *  Checa permissão ou permissao com alias 
+     * 
+     * @param array | string - ['users'=>[],'perfils'=>[]]
+     */
+    public function can($permissions){
+        if(is_array($permissions) || is_numeric($permissions)){
+            return $this->checkPermission((array) $permissions);
+        }
+
+        $perm = array_values(array_filter($this->permissionsAlias,function($item) use ($permissions){
+                return $item['alias'] == $permissions;
+            }));
+
+        if(!isset($perm[0])){
+            return false;
+        }
+        if($perm[0]['not']){
+            return !$this->checkPermission($perm[0]['permissions']);
+        }else{
+            return $this->checkPermission($perm[0]['permissions']);
+        }
+    }
+    /**
+     *  Checa permissão ou permissao com alias 
+     * 
+     * @param array | string
+     */
+    public function canNot($permissions){
+        if(is_array($permissions)){
+            return  !$this->checkPermission($permissions);
+        }
+        
+        $perm = array_filter($this->permissionsAlias,function($item) use ($permissions){ return $item['alias'] == $permissions;});
+        if(isset($perm[0])){
+            return !$this->checkPermission($perm[0]['permissions']);
+        }else{
+            return !true;
+        }
+    }
+    /**
+     *  Passa nome action da rota para verificar oque ta definido no construtor do controller; 
+     * 
+     * @param [string] $action
+     * @return void
+     */
+    public function checkPermissionAction($action){
+        //Caso nao for aplicado nenhuma permissao entao deixa liberado.
+        if(!$this->permissions){
+            return true;
+        }
+
+        foreach($this->permissions as $perm){
+            //Verifica se possui a rota configurada. Caso nao exista, passe como possui acesso.
+            if(in_array($action,$perm['actions'])){
+                // caso ja ache ja retorna porque ja possui acesso.
+                //caso for para ser negativo.
+                if($perm['not']){
+                    return !$this->checkPermission($perm['permissions']);
+                }else{
+                    return $this->checkPermission($perm['permissions']);
+                }
+            }else{
+                return true;
+            }
+        }
+
+        return false;
+    }
+    /**
+     * Checa permissoes na sessao do usuário. 
+     *  Depto \ Setor \ Perfil \ Usuario
+     * @param [array] $permission
+     * @return void
+     */
+    private function checkPermission($permission){
+        extract ($permission, EXTR_PREFIX_SAME, "wddx");
+        $permit = false;
+        //Checa departamento / organizacao
+        if(isset($deptos) && in_array($this->session->get('userDpto'),(array) $deptos)){
+            $permit = true;
+        }
+
+        //Checa setor
+        if(isset($setores) && in_array($this->session->get('userSetor'),(array) $setores)){
+            $permit = true;
+        }
+
+        //Checa perfils
+        if(isset($perfils) && in_array($this->session->get('userPerfil'),(array) $perfils)){
+            $permit = true;
+        }
+
+        //Checa users
+        if(isset($users) && in_array($this->session->get('user'),(array) $users)){
+            $permit = true;
+        }
+
+        return $permit;
+    }
+}

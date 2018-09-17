@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pt_br">
+<head>
+  <meta charset="utf-8">
+</head>
+<body>
+{% if modulo %}
+	
+	{% block mHead %} {% endblock %}
+    
+    {% block mContent %} {% endblock %}
+    
+    {% block mScript %} {% endblock %}
+    
+{% else %}
+<div class=" text-center">
+	<img src="{{ base_url() }}/images/Preloader_3.gif" width="64" height="64"><br>
+	Carregando...
+</div>
+{% endif %}
+
+</body>
+</html>

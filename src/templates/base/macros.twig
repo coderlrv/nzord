@@ -1,0 +1,53 @@
+{% macro error_block(errors) %}
+  {% if errors %}
+    <span class="help-block">
+      <ul>
+        {% for err in errors %}
+          <li>{{ err }}</li>
+        {% endfor %}
+      </ul>
+    </span>
+  {% endif %}
+{% endmacro %}
+
+{% macro input_text(name, label, placeholder, value, errors) %}
+  {% import _self as form %}
+
+  <div class="form-group {% if errors %}has-error{% endif %}">
+    <label class="control-label col-sm-3" for="input_{{ name }}">{{ label }}</label>
+    <div class="col-sm-8">
+      <input class="form-control" type="text" id="input_{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}" value="{{ value }}">
+      {{ form.error_block(errors) }}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro input_select(name, label, placeholder, option_array, value, errors, options = { multiple: false, include_blank: true }) %}
+  {% import _self as form %}
+  <div class="form-group {% if errors %}has-error{% endif %}">
+    <label class="control-label col-sm-3" for="input_{{ name }}">{{ label }}</label>
+    <div class="col-sm-8">
+      <select id="input_{{ name }}" name="{{ name }}" class="selectpicker form-control disable-text-shadow" {% if options.multiple %}multiple{% endif %}>
+        {% if options.include_blank %}
+          <option disabled selected></option>
+        {% endif %}
+        {% for title in option_array %}
+          <option {% if value == title %}selected{% endif %}>{{ title }}</option>
+        {% endfor %}
+      </select>
+      {{ form.error_block(errors) }}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro input_textarea(name, label, placeholder, value, errors) %}
+  {% import _self as form %}
+
+  <div class="form-group {% if errors %}has-error{% endif %}">
+    <label class="control-label col-sm-3" for="input_{{ name }}">{{ label }}</label>
+    <div class="col-sm-8">
+      <textarea rows="6" class="form-control" id="input_{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}">{{ value }}</textarea>
+      {{ form.error_block(errors) }}
+    </div>
+  </div>
+{% endmacro %}

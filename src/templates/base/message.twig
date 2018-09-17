@@ -1,0 +1,80 @@
+{# 
+
+
+ #}
+{% for msg in flash('error')  %}
+    <div class="alert alert-danger alert-dismissible custom-alert">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        {% if msg is iterable  %}
+            <h4><i class="icon fa fa-ban"></i> {{msg.title|raw}}</h4>
+            {{ msg.text|raw}}
+        {% else %}
+            {{msg|raw}}
+        {% endif %}
+        <script>
+            $(document).ready (function(){
+                $(".alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $(".alert").slideUp(500);
+                });
+            });
+        </script>
+    </div>
+{% endfor %}
+
+{% for msg in flash('info')  %}
+    <div class="alert alert-info alert-dismissible custom-alert">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        {% if msg is iterable  %}
+            <h4><i class="icon fa fa-info"></i> {{msg.title|raw}}</h4>
+            {{msg.text|raw}}
+        {% else %}
+            {{msg|raw}}
+        {% endif %}
+         <script>
+            $(document).ready (function(){
+                $(".alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $(".alert").slideUp(500);
+                });
+            });
+        </script>
+    </div>
+{% endfor %}
+
+{% for msg in flash('warning')  %}
+    <div class="alert alert-warning alert-dismissible custom-alert">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        {% if msg is iterable  %}
+            <h4><i class="icon fa fa-warning"></i> {{msg.title|raw}}</h4>
+            {{msg.text|raw}}
+        {% else %}
+            {{msg|raw}}
+        {% endif %}
+        <script>
+            $(document).ready (function(){
+                $(".alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $(".alert").slideUp(500);
+                });
+            });
+        </script>
+    </div>
+{% endfor %}
+
+{% for msg in flash('success')  %}
+    <div class="alert alert-success alert-dismissible custom-alert">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        {% if msg is iterable  %}
+            <h4><i class="icon fa fa-check"></i> {{msg.title|raw}}</h4>
+            {{msg.text|raw}}
+        {% else %}
+            {{msg|raw}}
+        {% endif %}
+        
+        <script>
+            $(document).ready (function(){
+                $(".alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $(".alert").slideUp(500);
+                });
+            });
+        </script>
+    </div>
+{% endfor %}

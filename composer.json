@@ -1,0 +1,46 @@
+{
+    "name": "preflrv/nzord",
+    "description": "O NZord Framework.",
+    "keywords" : [ "slim", "php", "Zord", "megaZord"],
+    "license": "MIT",
+    "require": {
+        "slim/slim": "^3.10",
+        "slim/extras": "^2.0.3",
+        "slim/flash": "^0.4.0",
+        "twig/twig": "^1.35",
+        "slim/twig-view": "^2.1",
+        "twig/extensions": "^1.5",
+        "slim/http-cache": "^0.3.0",
+        "monolog/monolog": "^1.17",
+        "slimcontroller/slimcontroller": "^0.1.3",
+        "symfony/twig-bridge": "^3.1",
+        "cartalyst/sentinel": "^2.0",
+        "illuminate/database": "^5.4",
+        "illuminate/events": "^5.4",
+        "adbario/php-dot-notation": "^2.0",
+        "sinergi/browser-detector": "^6.1",
+        "kanellov/slim-twig-flash": "^0.2.0",
+        "dompdf/dompdf": "^0.8.2",
+        "awurth/slim-validation": "^2.1"
+    },
+    "autoload": {
+        "files": [
+            "src/helpers/functions.php"
+        ],
+        "psr-4": {
+            "NZord\\": "src"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7",
+        "there4/slim-test-helpers": "^2.1"
+    },
+    "authors": [
+        {
+            "name": "TI Lucas do Rio Verde",
+            "email": "ti@lucasdorioverde.gov.mt.br"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

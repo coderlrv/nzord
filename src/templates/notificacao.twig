@@ -1,0 +1,71 @@
+{% block notification %}
+
+<script>
+$(document).ready(function(){
+	{% if messages.error %}    
+    {% for item in messages.error %}
+    	Lobibox.notify('error', {
+            title: 'Erro',
+            size: 'mini',
+            showClass: 'fadeInDown',
+            hideClass: 'fadeUpDown',
+            delay: 15000,
+            msg: '{{ item }}'
+        });
+        
+    {% endfor %}
+    {% endif %} 
+	{% if messages.success %}    
+    {% for item in messages.success %}
+    	Lobibox.notify('success', {
+            title: 'Sucesso',
+            size: 'mini',
+            showClass: 'fadeInDown',
+            hideClass: 'fadeUpDown',
+            delay: 15000,
+            msg: '{{ item }}'
+        });
+        
+    {% endfor %}
+    {% endif %} 
+	{% if messages.warning %}    
+    {% for item in messages.warning %}
+    	Lobibox.notify('warning', {
+            title: 'Atenção',
+            size: 'mini',
+            showClass: 'fadeInDown',
+            hideClass: 'fadeUpDown',
+            delay: 15000,
+            msg: '{{ item }}'
+        });
+        
+    {% endfor %}
+    {% endif %} 
+	{% if messages.info %}    
+    {% for item in messages.info %}
+    	Lobibox.notify('info', {
+            title: 'Info',
+            size: 'mini',
+            showClass: 'fadeInDown',
+            hideClass: 'fadeUpDown',
+            delay: 15000,
+            msg: '{{ item }}'
+        });
+        
+    {% endfor %}
+    {% endif %}  
+	{% if messages.default %}    
+    {% for item in messages.default %}
+    	Lobibox.notify('default', {
+            size: 'mini',
+            showClass: 'fadeInDown',
+            hideClass: 'fadeUpDown',
+            delay: 15000,
+            msg: '{{ item }}'
+        });
+        
+    {% endfor %}
+    {% endif %}    
+});
+</script>
+{% endblock %}

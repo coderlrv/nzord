@@ -1,0 +1,16 @@
+{% if url.pagina %}
+	{% if page_title is empty %}
+		<h1 title="{{ url.pagina }}"><i class="fa fa-home"></i> {{ url.pagina }}</h1>
+	{% else %}
+		{{ page_title |raw}}
+	{% endif %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ base_url() }}"><i class="fa fa-home"></i> Home</a></li>
+		<li class="active">{{ url.pagina}}</li> 
+		{% if url.act %}
+			<li>{{ url.act }}</li>
+		{% endif %}
+		| <ll class="text-muted"><b>Modificado em </b> {{ url.pagdate}}</ll>
+	</ol>
+{% endif %}

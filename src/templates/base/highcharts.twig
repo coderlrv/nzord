@@ -1,0 +1,118 @@
+{% macro pieChart(name, data, cols,title, options = { ajax: false, showInLegend: false,dataLabels:false,border:false } ) %}
+    <div id="chart-{{name}}" class="{{convertColGrid(cols|default(12))}}">
+        <div id="{{name}}" style="min-width: 100%; height:100%; max-width: 100%; margin: 0 auto; margin-top:0px;"></div>
+    </div>
+    
+    {# Validacoes #}
+    <script>
+        require(['highcharts'],function(){
+            require(['highchartModules'],function(){
+                Highcharts.chart('{{name}}', {
+                    lang: {
+                        noData: "Sem dados"
+                    },
+                    noData: {
+                        style: {
+                            fontWeight: 'bold',
+                            fontSize: '15px',
+                        }
+                    },
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie',
+                        alignTicks: true,
+                        animation: true,
+                        backgroundColor: '#FFFFFF',
+                        {% if options.border %}
+                            borderColor: '#d2d6de',
+                            borderRadius: 0,
+                            borderWidth: 1
+                        {% endif %}
+                    },
+                    credits: { enabled: false },
+                    title: { text: '{{title | default('')}}' },
+                    tooltip: { pointFormat: '<b>{point.percentage:.1f}%</b> - (<b>{point.y}</b>) ' },
+                    
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: false,
+                            cursor: 'pointer',
+                            depth: 35,
+                            dataLabels: {
+                                enabled: {{ options.dataLabels ? 'true' : 'false'}} ,
+                                format: '<b>{point.name}</b>: {point.percentage:.1f} % - (<b>{point.y}</b>)',
+                                style: {
+                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                }
+                            },
+                            showInLegend: {{ options.showInLegend ? 'true' : 'false' }}
+                        }
+                    },
+                    series: [{
+                        type: 'pie',
+                        data: JSON.parse('{{ data | json_encode | raw }}')
+                    }]
+                });
+            });
+        });
+   </script>
+{% endmacro %}
+
+
+{% macro columnChart(name, data, cols,title, options = { ajax: false, showInLegend: false,dataLabels:false,titleY:'',titleX:'' } ) %}
+    <div id="chart-{{name}}" class="{{convertColGrid(cols|default(12))}}">
+        <div id="{{name}}" style="min-width: 100%; height:100%; max-width: 100%; margin: 0 auto; margin-top:0px;"></div>
+    </div>
+    
+    {# Validacoes #}
+    <script>
+        require(['highcharts'],function(){
+            require(['highchartModules'],function(){
+                Highcharts.chart('{{name}}', {
+                    lang: {
+                        noData: "Sem dados"
+                    },
+                    noData: {
+                        style: {
+                            fontWeight: 'bold',
+                            fontSize: '15px',
+                        }
+                    },
+                    chart: {
+                        type: 'column'
+                    },
+                    credits: { enabled: false },
+                    title: { text: '{{title | default('')}}' },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: '{{options.titleY}}'
+                        }
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: '{{options.titleX}}'
+                        }
+                    },
+                    tooltip: {
+                        headerFormat: '<table>',
+                        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                        '<td style="padding:0"><b>{point.y} Total</b></td></tr>',
+                        footerFormat: '</table>',
+                        shared: false,
+                        useHTML: true
+                    },
+                    plotOptions: {
+                        series: {
+                            groupPadding: 0,
+                        }
+                    },
+                    series: JSON.parse('{{ data | json_encode | raw }}'),
+                });
+            });
+        });
+   </script>
+{% endmacro %}
