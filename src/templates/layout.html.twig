@@ -51,26 +51,5 @@
 	<script src="{{ base_url() }}/assets/moment/min/moment.min.js"></script>
 	<script src="{{ base_url() }}/assets/moment/locale/pt-br.js"></script> 
 	
-	<script>
-		
-		function fileManager(){
-			sysModalBox('File Manager','libs/kcfinder/kcfinder.php?type=images&lang=pt-br',null,'info','fileManager');
-		}
-
-		function openKCFinder(field) {
-			window.KCFinder = {
-				callBack: function(url) {
-					field.value = url;
-					window.KCFinder = null;
-				}
-			};
-			window.open(''+$('#urlBase').val()+'/libs/kcfinder/browse.php?type=images&lang=pt-br', 'kcfinder_textbox',
-				'status=0, toolbar=0, location=0, menubar=0, directories=0, ' +
-				'resizable=1, scrollbars=0, width=800, height=600'
-			);
-		}
-	</script>
-
-
 	{% block scripts %}{% endblock %}
 {% endblock %} 
