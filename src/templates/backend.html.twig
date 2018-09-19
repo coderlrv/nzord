@@ -37,7 +37,7 @@
         <!-- Modulo do nzord -->
         <script src="{{ base_url() }}/js/app.modules.js"></script>
 
-		<link rel="stylesheet" href="{{ base_url() }}/css/ionicons.min.css">
+		<link rel="stylesheet" href="{{ base_url() }}/assets/ionicons-min/css/ionicons.min.css">
 		
         <!-- Bootstrap 3.3.6 -->
 		<link href="{{ base_url() }}/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -92,16 +92,15 @@
         <!--  Arquivo js customizado  -->
    	 	<script src="{{ base_url() }}/js/custom.js"></script>
 
-                
         {% block bScripts %}{% endblock %} 
-        
-		<div class="control-sidebar-bg"></div>
-        <div id="divNotification" > 
+
+        <div class="control-sidebar-bg"></div>
+        <div id="divNotification">
         {% if flash['message'] %}
           <div class="alert alert-info">
             <p>{{flash['message']}}</p>
           </div>
-        {% endif %}    
+        {% endif %}
             {% include 'notificacao.twig' only %}
         </div>  
     </body>
