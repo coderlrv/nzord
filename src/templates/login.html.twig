@@ -43,7 +43,7 @@ body {
 		{% endfor %}
 		
 		<div class="col-md-12 text-center margin-top-10">
-			<img src="{{ sys.config.image_logo|raw }}" style="max-width: 70%;" />
+			<img src="{{ base_url() }}/{{ sys.config.image_logo|raw }}" style="max-width: 70%;" />
 			<form name="login" class="form-signin" method="POST" action="{{ path_for('postLogin') }}" autocomplete="off">
 				<div class="form-login text-left">
 					<h3>
