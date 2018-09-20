@@ -30,7 +30,7 @@
         	</div>
         	{% endif %}	
         	<div class="box-body with-border {{ options.class }}">{{ content|raw }}</div>
-        </div>
+        </div>		
         <!-- /.box-body -->   
         {# label, link, img#}     
         {% if footer %}
@@ -106,8 +106,8 @@
             <li>
               {# <input type="checkbox" value="{{ row.id }}"> #}
               <span class="text" 
-                  {% if row.detalhe %} data-html="true" data-toggle="tooltip" title="{{ row.detalhe|convert_encoding('latin1', 'UTF-8') }}" {% endif %} >
-                  {{ row.id }} - {{ row.label|convert_encoding('latin1', 'UTF-8') }}
+                  {% if row.detalhe %} data-html="true" data-toggle="tooltip" title="{{ row.detalhe|raw }}" {% endif %} >
+                  {{ row.id }} - {{ row.label|raw }}
               </span>
               {% if row.qtde %} <span class="label label-info" data-toggle="tooltip" title="O.S. relacionadas: {{ row.servico }}">
               		<i class="fa fa-cog"></i> {{ row.qtde }}</span> {% endif %}                       
@@ -128,7 +128,7 @@
 		{% if options %}
     		{% for row in options %}
     			<li {% if row.secretario %} class="bg-yellow-gradient" {% elseif row.matricula == session.app.userMatricula %} class="bg-teal-gradient" style="border-radius: 4px;" {% endif %}>
-                  <img src="{{ row.avatar }}" title="{{ row.matricula }}-{{ row.nome|convert_encoding('latin1', 'UTF-8')|raw }}" >
+                  <img src="{{ row.avatar }}" title="{{ row.matricula }}-{{ row.nome|raw }}" >
                   <a class="users-list-name">{{ row.login }}</a>
                   <span class="users-list-date">{{ row.matricula }}</span>
                 </li>        
@@ -150,7 +150,7 @@
 					{% if row.matricula == session.app.userMatricula %} {% set funcBday = 1 %}  {% endif %}
 			        {% endif %}" id="bday_{{ row.id }}">
                   <span>{{ row.data }}</span>           
-                  <span class="users-list-name">{{ row.nome|convert_encoding('latin1', 'UTF-8')|raw }}</span>
+                  <span class="users-list-name">{{ row.nome|raw }}</span>
                 </li>        
 		    {% endfor %}
         {% endif %}             
