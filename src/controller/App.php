@@ -32,6 +32,7 @@ class AppController extends Controller
 
             //Nao existe a função
             if (!class_exists($class)) {
+                $response = $response->withStatus(404);
                 return $this->view->render($response, '404.html.twig');
             }
             $ctrl = new $class($this->app);
@@ -52,7 +53,10 @@ class AppController extends Controller
 
             //Checa permissao ACL definido no controller.
             if (!$this->app->acl->checkPermissionAction($act)) {
-                if ($request->isXhr()) { //Caso for ajax retorna json.
+                
+                //Caso for ajax retorna json.
+                if ($request->isXhr()) { 
+                    $response = $response->withStatus(403);
                     return $response
                         ->withJson(['statusCode' => 403, 'message' => 'Você não tem permissão de acesso!'], 403);
                 } else {
@@ -61,6 +65,7 @@ class AppController extends Controller
             }
 
             if (!method_exists($ctrl, $act)) {
+                $response = $response->withStatus(404);
                 return $this->view->render($response, '404.html.twig');
             }
             return $ctrl->$act($request, $response, $args, new \NZord\Helpers\NParams($params));
@@ -104,6 +109,7 @@ class AppController extends Controller
 
             //Nao existe a função
             if (!class_exists($class)) {
+                $response = $response->withStatus(404);
                 return $this->view->render($response, '404.html.twig');
             }
 
@@ -126,6 +132,8 @@ class AppController extends Controller
             //Checa permissao ACL definido no controller.
             if (!$this->app->acl->checkPermissionAction($act)) {
                 if ($request->isXhr()) { //Caso for ajax retorna json.
+
+                    $response = $response->withStatus(403);
                     return $response
                         ->withJson(['statusCode' => 403, 'message' => 'Você não tem permissão de acesso!'], 403);
                 } else {
@@ -134,6 +142,7 @@ class AppController extends Controller
             }
 
             if (!method_exists($ctrl, $act)) {
+                $response = $response->withStatus(404);
                 return $this->view->render($response, '404.html.twig');
             }
             return $ctrl->$act($request, $response, $args, new \NZord\Helpers\NParams($params));

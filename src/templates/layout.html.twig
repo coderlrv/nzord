@@ -20,7 +20,6 @@
 			</section> <!-- /container -->
 		{% endblock %}
 	</div>
-	<div id="kcfinder_div"></div>
 	<footer class="main-footer">
 		<div class="pull-right hidden-xs"> 
 			<a class="btn btn-sm btn-xs btn-default"> <i class="fa fa-file-o" aria-hidden="true"></i> Notes </a>
@@ -37,6 +36,7 @@
 	</footer>
 	<!-- Control Sidebar -->
   	<aside class="control-sidebar control-sidebar-dark"></aside>
+	<div id="kcfinder_div"></div>
 	<div class="control-sidebar-bg"></div>
 	<input type="hidden" id="urlBase" value="{{ base_url() }}">
 	<input type="hidden" id="sesId" value="{{ session.app.sessao }}">
@@ -51,26 +51,5 @@
 	<script src="{{ base_url() }}/assets/moment/min/moment.min.js"></script>
 	<script src="{{ base_url() }}/assets/moment/locale/pt-br.js"></script> 
 	
-	<script>
-		
-		function fileManager(){
-			sysModalBox('File Manager','libs/kcfinder/kcfinder.php?type=images&lang=pt-br',null,'info','fileManager');
-		}
-
-		function openKCFinder(field) {
-			window.KCFinder = {
-				callBack: function(url) {
-					field.value = url;
-					window.KCFinder = null;
-				}
-			};
-			window.open(''+$('#urlBase').val()+'/libs/kcfinder/browse.php?type=images&lang=pt-br', 'kcfinder_textbox',
-				'status=0, toolbar=0, location=0, menubar=0, directories=0, ' +
-				'resizable=1, scrollbars=0, width=800, height=600'
-			);
-		}
-	</script>
-
-
 	{% block scripts %}{% endblock %}
 {% endblock %} 

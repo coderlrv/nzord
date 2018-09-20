@@ -34,8 +34,10 @@
         <script src="{{ base_url() }}/assets/nzord-app/src/js/nzord.require.js"></script>
         <!-- Fim Loadjs-->
         
+        <!-- Modulo do nzord -->
         <script src="{{ base_url() }}/js/app.modules.js"></script>
-		<link rel="stylesheet" href="{{ base_url() }}/css/ionicons.min.css">
+
+		<link rel="stylesheet" href="{{ base_url() }}/assets/ionicons-min/css/ionicons.min.css">
 		
         <!-- Bootstrap 3.3.6 -->
 		<link href="{{ base_url() }}/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -47,8 +49,8 @@
    	 	<link rel="stylesheet" href="{{ base_url() }}/assets/pace/themes/white/pace-theme-minimal.css">
         
         <!-- AdminLTE -->
-		<link rel="stylesheet" href="{{ base_url() }}/assets/adminlte/dist/css/AdminLTE.min.css">
-		<link rel="stylesheet" href="{{ base_url() }}/assets/adminlte/dist/css/skins/_all-skins.min.css">
+		<link rel="stylesheet" href="{{ base_url() }}/assets/admin-lte/dist/css/AdminLTE.min.css">
+		<link rel="stylesheet" href="{{ base_url() }}/assets/admin-lte/dist/css/skins/_all-skins.min.css">
 		<link rel="stylesheet" type="text/css" href="{{ base_url() }}/assets/lobibox/dist/css/lobibox.css"/>
 
             
@@ -58,9 +60,12 @@
           <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
 
-
-        <link href="{{ base_url() }}/assets/nzord-app/src/css/nzrod-app.css" rel="stylesheet">
+        <!-- CSS padrões NZord -->
+        <link href="{{ base_url() }}/assets/nzord-app/src/css/nzord-app.css" rel="stylesheet">
 		<link href="{{ base_url() }}/assets/nzord-app/src/css/nzord-essentials.css" rel="stylesheet">
+
+        <!--  Arquivo js customizado  -->
+        <link href="{{ base_url() }}/css/custom.css" rel="stylesheet">
 
          <!-- Google Font -->
      	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic"> 
@@ -79,20 +84,23 @@
 		<script src="{{ base_url() }}/assets/fastclick/lib/fastclick.js"></script>
 		
         <!-- AdminLTE -->
-        <script src="{{ base_url() }}/assets/adminlte/dist/js/adminlte.min.js"></script>
-        <script src="{{ base_url() }}/assets/adminlte/dist/js/demo.js"></script>
+        <script src="{{ base_url() }}/assets/admin-lte/dist/js/adminlte.min.js"></script>
+        <script src="{{ base_url() }}/assets/admin-lte/dist/js/demo.js"></script>
         <script src="{{ base_url() }}/assets/lobibox/dist/js/lobibox.js"></script>
    	 	<script src="{{ base_url() }}/assets/jquery.blockui/jquery.blockUI.js"></script>
-                
+
+        <!--  Arquivo js customizado  -->
+   	 	<script src="{{ base_url() }}/js/custom.js"></script>
+
         {% block bScripts %}{% endblock %} 
-        
-		<div class="control-sidebar-bg"></div>
-        <div id="divNotification" > 
+
+        <div class="control-sidebar-bg"></div>
+        <div id="divNotification">
         {% if flash['message'] %}
           <div class="alert alert-info">
             <p>{{flash['message']}}</p>
           </div>
-        {% endif %}    
+        {% endif %}
             {% include 'notificacao.twig' only %}
         </div>  
     </body>
