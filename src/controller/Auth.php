@@ -41,17 +41,21 @@ class AuthController extends Controller
      * @return mixed
      */
     public function postLogin(Request $request, Response $response, $args)
-    {
-        $this->session->set('pg', 'PostLogin');
-        $auth = new Login($this->app);
-
+    {   
         $data = $request->getParsedBody();
-        $ad   = new \NZord\Controller\Ldap();
-        $bind = $ad->escolheAD($data['username'], $data['password']);
+        $bind = null;
 
+        $this->session->set('pg', 'PostLogin');
+    
         // Configuracao para realizar authenticação via AD.
         $useAD = $this->app->settings['auth']['useAD'];
         
+        if($useAD){
+            $ad   = new Ldap();
+            $bind = $ad->escolheAD($data['username'], $data['password']);
+        }
+
+        $auth = new Login($this->app);
         if ($bind && $useAD) {
             $user = Usuario::where('login', '=', $data['username'])->first();
 
@@ -89,14 +93,19 @@ class AuthController extends Controller
             }
 
         } else {
-
-            $perfLog = Parametro::get('perfLogInterno', function ($value) {return explode(',', $value);});
-
             $user = Usuario::where('login', $data['username'])
-                ->where('senha', md5($data['password']))
-                ->whereIn('perfil', $perfLog)
-                ->where('status', 'A')
-                ->first();
+                            ->where('senha', md5($data['password']))
+                            ->where('status', 'A');
+
+            if($useAD){
+                $perfLog = Parametro::get('perfLogInterno', function ($value) { 
+                                            return isset($value)? explode(',', $value) : [];
+                                        });
+
+                $user->whereIn('perfil', $perfLog);
+            }
+
+            $user = $user->first();
 
             if ($user) {
                 //Grava sessao.
@@ -106,7 +115,6 @@ class AuthController extends Controller
                 return $response->withRedirect($this->router->pathFor('index'));
 
             } else {
-
                 LogLogin::add($data['username'], $request->getServerParam('REMOTE_ADDR'), 'Pass: ' . $data['password'] . ' | Não logou!', 2);
 
                 $this->app->flash->addMessageNow('error', 'Usuário ou senha incorreta. Verifique!');

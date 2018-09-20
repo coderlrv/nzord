@@ -86,3 +86,23 @@ $ ./phpDoc.sh
 ```bash
 $ composer test
 ```
+
+##### Configura para login via Active Directory (AD) 
+- Adicionar configuração. 
+    
+    Arquivo:  ```base\settings.php```
+~~~ php
+'auth' => [
+    'useAD' => true
+]
+~~~
+
+- Configurar paramentros. podendo colocar varios servidores para verificação.
+    - userAccesAD (JSON)
+    ~~~ json
+        [
+            {"server":"192.168.1.2","user":"admin1","domain":"AD1","pass":"senhaAD1"},
+            {"server":"192.168.1.3","user":"admin1","domain":"AD2","pass":"senhaAD2"},
+            {"server":"192.168.1.4","user":"admin1","domain":"AD2","pass":"senhaAD3"}
+        ]
+    ~~~

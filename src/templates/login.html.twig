@@ -1,86 +1,77 @@
 {% extends "backend.html.twig" %}
 
 {% block head %}
-<link href='{{ base_url() }}/css/index.css' rel='stylesheet'
-	type='text/css'>
-<style>
-body {
-	margin: 0px;
-	padding: 0px;
-	background: url('{{ sys.config.image_idx }}') #3c8dbc;
-	background-repeat: no-repeat;
-	background-size: 100%;
-}
-</style>
+	<link href='{{ base_url() }}/css/index.css' rel='stylesheet' type='text/css'>
+
+	<style>
+		body {
+			margin: 0px;
+			padding: 0px;
+			background: url('{{ sys.config.image_idx }}') #3c8dbc;
+			background-repeat: no-repeat;
+			background-size: 100%;
+		}
+	</style>
 {% endblock %}
 
 {% block body %}
 
-<div class="container">
-	<div class="card card-container auth-component-form" style="margin-top: 5%;">
-		{% for msg in flash('error')  %}
-			<div class="alert alert-danger text-center">
-				<h4>
-					<i class="glyphicon glyphicon-remove"></i> {{msg|raw}}
-				</h4>
-			</div>
-		{% endfor %}
-
-		{% for msg in flash('warning') %}
-			<div class="alert alert-warning text-center">
-				<h4>
-					<i class=" glyphicon glyphicon-warning-sign"></i> {{msg|raw}}
-				</h4>
-			</div>
-		{% endfor %}
-
-		{% for msg in flash('success') %}
-			<div class="alert alert-success text-center">
-				<h4>
-					<i class="glyphicon glyphicon-ok"></i> {{msg|raw}}
-				</h4>
-			</div>
-		{% endfor %}
-		
-		<div class="col-md-12 text-center margin-top-10">
-			<img src="{{ sys.config.image_logo|raw }}" style="max-width: 70%;" />
-			<form name="login" class="form-signin" method="POST" action="{{ path_for('postLogin') }}" autocomplete="off">
-				<div class="form-login text-left">
-					<h3>
-						{{ sys.config.title_idx|raw }}
-					</h3>
-					<input type="text" name="username" placeholder="Login/Usuário" class="form-control username" maxlength="30" autofocus required="required" value="{{ login.usuario }}" /> 
-					<input type="password" name="password" placeholder="Senha" class="form-control password" maxlength="20" required="required" />
-				
-					<span class="group-btn">
-						<button type="submit" class="btn btn-primary btn-block">
-							<i class="fa fa-sign-in"></i> Entrar
-						</button>
-					</span>
+	<div class="container">
+		<div class="card card-container auth-component-form" style="margin-top: 5%;">
+			{% for msg in flash('error')  %}
+				<div class="alert alert-danger text-center">
+					<h4><i class="glyphicon glyphicon-remove"></i> {{msg|raw}}</h4>
 				</div>
-			</form>
-			<br />
-		</div>
-		<div class="col-md-12 text-justify bg-warning">
-			<small>{{ sys.config.login_msg|raw }}</small>
+			{% endfor %}
+
+			{% for msg in flash('warning') %}
+				<div class="alert alert-warning text-center">
+					<h4><i class=" glyphicon glyphicon-warning-sign"></i> {{msg|raw}}</h4>
+				</div>
+			{% endfor %}
+
+			{% for msg in flash('success') %}
+				<div class="alert alert-success text-center">
+					<h4><i class="glyphicon glyphicon-ok"></i> {{msg|raw}}</h4>
+				</div>
+			{% endfor %}
+			
+			<div class="col-md-12 text-center margin-top-10">
+				<img src="{{ sys.config.image_logo|raw }}" style="max-width: 70%;" />
+				<form name="login" class="form-signin" method="POST" action="{{ path_for('postLogin') }}" autocomplete="off">
+					<div class="form-login text-left">
+						<h3>{{ sys.config.title_idx|raw }}</h3>
+						<input type="text" name="username" placeholder="Login/Usuário" class="form-control username" maxlength="30" autofocus required="required" value="{{ login.usuario }}" /> 
+						<input type="password" name="password" placeholder="Senha" class="form-control password" maxlength="20" required="required" />
+					
+						<span class="group-btn">
+							<button type="submit" class="btn btn-primary btn-block">
+								<i class="fa fa-sign-in"></i> Entrar
+							</button>
+						</span>
+					</div>
+				</form>
+				<br />
+			</div>
+			{% if sys.config.login_msg is not empty %}
+				<div class="col-md-12 text-justify bg-warning">
+					<small>{{ sys.config.login_msg|raw }}</small>
+				</div>
+			{% endif %}
 		</div>
 	</div>
-
-</div>
 
 {% endblock %}
 
 {% block bScripts %}
-<script type="text/javascript">
-  window.setTimeout(function() {
-	  $(".alert").fadeTo(8000, 0).slideUp(900, function(){
-		  $(this).remove(); 
-	  });
-	  $(".alert").fadeTo(8000, 0).slideUp(900, function(){
-		  $(this).remove(); 
-	  });
-  }, 5000);
-</script>
-	
+	<script type="text/javascript">
+		window.setTimeout(function() {
+			$(".alert").fadeTo(8000, 0).slideUp(900, function(){
+				$(this).remove(); 
+			});
+			$(".alert").fadeTo(8000, 0).slideUp(900, function(){
+				$(this).remove(); 
+			});
+		}, 5000);
+	</script>
 {% endblock %}
-
