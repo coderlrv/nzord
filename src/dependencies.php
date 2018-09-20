@@ -28,6 +28,9 @@ $container['config'] = function ($container) {
     $sys = $container->get('settings')['app'];
 
     $config   = \Modulos\System\Models\Config::first();
+    if(!$config){
+        throw new Exception('Nenhum registro de configuração encontrado Obs."sys_config" . Verifique!');
+    }
     $base_url = str_replace($container->get('request')->getUri()->getPath(), '', $container->get('request')->getUri());
 
     $gUrl = $container->get('request')->getServerParams();
