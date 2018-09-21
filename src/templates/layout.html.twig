@@ -22,8 +22,13 @@
 	</div>
 	<footer class="main-footer">
 		<div class="pull-right hidden-xs"> 
-			<a class="btn btn-sm btn-xs btn-default"> <i class="fa fa-file-o" aria-hidden="true"></i> Notes </a>
-			<a class="btn btn-sm btn-xs btn-default" onclick="fileManager()"> <i class="fa fa-th-list" aria-hidden="true"></i> File Manager </a>
+			{% if sys.config.manager_notes %}
+				<a class="btn btn-sm btn-xs btn-default"> <i class="fa fa-file-o" aria-hidden="true"></i> Notes </a>
+			{% endif %}
+
+			{% if sys.config.manager_files %}
+				<a class="btn btn-sm btn-xs btn-default" onclick="fileManager()"> <i class="fa fa-th-list" aria-hidden="true"></i> File Manager </a>
+			{% endif %}
 			<b>Versão:</b> {{ sys.version }}
 		</div>
 		<small title="Dados da Sessão"> 

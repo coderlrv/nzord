@@ -30,11 +30,13 @@
                     <i class="fa fa-clock-o"></i>
                 </div>
             </li>
-            <li class="dropdown messages-menu" title="Mensagens do Correio Interno" id="navBarMsg">
-                <a href="{{ base_url() }}/app/system/mensagem" style="padding: 15px 10px 15px !important;">
-                    <i class="fa fa-envelope-o"></i>
-                </a>
-            </li>
+            {% if sys.config.manager_messages %}
+                <li class="dropdown messages-menu" title="Mensagens do Correio Interno" id="navBarMsg">
+                    <a href="{{ base_url() }}/app/system/mensagem" style="padding: 15px 10px 15px !important;">
+                        <i class="fa fa-envelope-o"></i>
+                    </a>
+                </li>
+            {% endif %}
             <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding: 15px 10px 15px !important;">
                     <img src="{{ base_url() }}/{{session.app.userAvatar}}" class="user-image img-circle">
