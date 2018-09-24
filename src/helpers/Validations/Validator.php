@@ -8,7 +8,7 @@ namespace NZord\Helpers\Validations;
 class Validator extends \Respect\Validation\Validator{
 
     public static function __callStatic($ruleName, $arguments){
-        parent::with('\\Base\\Helpers\\Validations\\Rules');
+        parent::with('\\NZord\\Helpers\\Validations\\Rules');
         return parent::__callStatic($ruleName,$arguments);
     }
 }

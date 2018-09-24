@@ -11,12 +11,14 @@
 				{% include 'pagTitle.html.twig' with {page_title : block('page_title')} %}
 			</section>
 			<section class="content">
-				<div class="col-xs-12 box box-skin">
-					<div class="box-body">
-						{% block content %}{% endblock %}
-						{% block container %}{% endblock %}
+				{% block contentBox %}
+					<div class="col-xs-12 box box-skin">
+						<div class="box-body">
+							{% block content %}{% endblock %}
+							{% block container %}{% endblock %}
+						</div>
 					</div>
-				</div>
+				{% endblock %}
 			</section> <!-- /container -->
 		{% endblock %}
 	</div>

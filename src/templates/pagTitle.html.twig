@@ -6,11 +6,15 @@
 	{% endif %}
 
 	<ol class="breadcrumb">
-		<li><a href="{{ base_url() }}"><i class="fa fa-home"></i> Home</a></li>
-		<li class="active">{{ url.pagina}}</li> 
-		{% if url.act %}
-			<li>{{ url.act }}</li>
+		<li><a href="{{ base_url() }}"><i class="fa fa-home"></i> Principal</a></li>
+		{% if ucwords(url.pagina) == 'Index' %}
+			<li class="active">{{ucwords(url.modulo)}}</li>
+		{% else %}
+			<li><a href="{{path_for_model(url.modulo)}}">{{ucwords(url.modulo)}}</a></li>
 		{% endif %}
-		| <ll class="text-muted"><b>Modificado em </b> {{ url.pagdate}}</ll>
+
+		{% if url.pagina and ucwords(url.pagina) != 'Index' %}
+			<li class="active">{{ ucwords(url.pagina)}}</li>
+		{% endif %}
 	</ol>
 {% endif %}
