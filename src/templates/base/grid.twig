@@ -18,7 +18,7 @@
     {% endif %} 
 {% endmacro %}
 
-{% macro grid(nome, dados, dTables=true,options={'height':null,'colunsHidden':null,'class':''},btnActions={}) %}
+{% macro grid(nome, dados, dTables=true,options={'height':null,'colunsHidden':null,'class':'','click':null},btnActions={}) %}
 {% import _self as grid %}
      <div>
         <div class="dataTable_wrapper" {% if options.height %} style="overflow: auto;max-height:{{options.height}}px;" {% endif %}>
@@ -65,6 +65,17 @@
             {% endif %}
         </div>
     </div>
+    {% if options.click %}
+        <script>
+            $(function(){
+                $("#dtb_{{ nome }} tbody").on( 'click', function ( e) {
+                    setTimeout(function(){
+                        {{ options.click }}
+                    }, 400);
+                });
+            });
+        </script>
+    {% endif %}
     {% if btnActions %}
         <script>
             // Adicionar eventos no botoes actions.

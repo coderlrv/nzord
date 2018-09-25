@@ -28,7 +28,7 @@ class NReportTwig {
     public function gerar($chave,$tipo ='pdf',$id,$args=[], array $options=[]){
         $header = '';
         $footer = '';
-
+        $nameDoc = 'report_'.$id.'_'.date('YmdHis');
         //Aplica options default
         $options = $this->getOptions($options,[
             'namePrint'=>'report_'.$id.'_'.date('YmdHis').'.pdf',
@@ -54,12 +54,16 @@ class NReportTwig {
             // Adiciona cabeçalho
             if($rel->cabecalho){
                 $cabecalho = DB::table('tab_parametro')->where('id',$rel->cabecalho)->first();
+                $dhHeader = $nameDoc.'<br /><b>Data: </b>'.date('d/m/Y').' <br /><b>Hora: </b>'.date('H:i:s');
+                $cabecalho->valor = str_replace('{DATAHORA}',$dhHeader,$cabecalho->valor);
                 if($cabecalho) $header = $cabecalho->valor;
             }
             
             // Adiciona rodapé
             if($rel->rodape){
-                $rodape = DB::table('tab_parametro')->where('id',$rel->rodape)->first();
+                $rodape = DB::table('tab_parametro')->where('id',$rel->rodape)->first();                
+                $dhRodape = date('d/m/Y H:i:s').' | '.$nameDoc;
+                $rodape->valor = str_replace('{DATAHORA}',$dhRodape,$rodape->valor);
                 if($rodape) $footer = $rodape->valor;
             }
         }
@@ -112,8 +116,7 @@ class NReportTwig {
         $body = '';
         
         if($btnPrint){
-            $body =  "<script src='http://192.168.12.202/nzord/public/js/app.js'></script>
-            <button fieldtype='button' class='btn btn-sm btn-primary hidden-print' onclick='printDiv(\"prtReport\")'>
+            $body =  "<button class='btn btn-sm btn-primary hidden-print' onclick='printDiv(\"prtReport\")'>
                 <span class='fa fa-print'></span> Imprimir
             </button>";
         }
