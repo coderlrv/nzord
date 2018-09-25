@@ -37,10 +37,10 @@
 			{% endfor %}
 			
 			<div class="col-md-12 text-center margin-top-10">
-				<img src="{{ base_url() }}/{{ sys.config.image_logo|raw }}" style="max-width: 70%;" />
+				<img src="{{ base_url() }}/{{ sys.config.image_logo|raw }}" style="max-width: 70%;" alt="Logomarca"/>
 				<form name="login" class="form-signin" method="POST" action="{{ path_for('postLogin') }}" autocomplete="off">
 					<div class="form-login text-left">
-						<h3>{{ sys.config.title_idx|raw }}</h3>
+						<div>{{ sys.config.title_idx|raw }}</div>
 						<input type="text" name="username" placeholder="Login/Usuário" class="form-control username" maxlength="30" autofocus required="required" value="{{ login.usuario }}" /> 
 						<input type="password" name="password" placeholder="Senha" class="form-control password" maxlength="20" required="required" />
 					
@@ -64,7 +64,7 @@
 {% endblock %}
 
 {% block bScripts %}
-	<script type="text/javascript">
+	<script>
 		window.setTimeout(function() {
 			$(".alert").fadeTo(8000, 0).slideUp(900, function(){
 				$(this).remove(); 

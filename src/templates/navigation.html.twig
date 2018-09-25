@@ -39,12 +39,12 @@
             {% endif %}
             <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding: 15px 10px 15px !important;">
-                    <img src="{{ base_url() }}/{{session.app.userAvatar}}" class="user-image img-circle">
+                    <img src="{{ file_public(session.app.userAvatar) }}" class="user-image img-circle">
                     <span class="hidden-xs">{{session.app.login}}</span>
                 </a>
                 <ul class="dropdown-menu">
                     <li class="user-header" style="height:initial">
-                        <img src="{{ base_url() }}/{{session.app.userAvatar}}" class="img-circle">
+                        <img src="{{ file_public(session.app.userAvatar) }}" class="img-circle">
                         <p>{{session.app.login}}
                             <small>{{session.app.userNome}}</small>
                         </p>

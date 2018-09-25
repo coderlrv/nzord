@@ -1,5 +1,5 @@
 <?php
-namespace Nzord\Responses;
+namespace NZord\Responses;
 
 use Slim\Http\Headers;
 use Slim\Http\Response;

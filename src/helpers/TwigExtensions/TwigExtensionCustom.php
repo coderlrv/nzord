@@ -18,7 +18,8 @@ class TwigExtensionCustom extends \Twig_Extension
         return [
             new \Twig_SimpleFunction('path_for_model', [$this, 'pathForModel'],['is_safe' => ['html']]),
             new \Twig_SimpleFunction('path_for_modal', [$this, 'pathForModal'],['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('path_for_report', array($this, 'pathForReport'))
+            new \Twig_SimpleFunction('path_for_report', array($this, 'pathForReport')),
+            new \Twig_SimpleFunction('file_public', array($this, 'filePublic'))
         ];
     }
     /**
@@ -83,8 +84,12 @@ class TwigExtensionCustom extends \Twig_Extension
         
         return $url;
     }
-
-
+    /**
+     *  Url base
+     *  ex: https://localhost/
+     * 
+     * @return string
+     */
     public function baseUrl()
     {
         if (is_string($this->uri)) {
@@ -93,5 +98,14 @@ class TwigExtensionCustom extends \Twig_Extension
         if (method_exists($this->uri, 'getBaseUrl')) {
             return $this->uri->getBaseUrl();
         }
+    }
+    /**
+     *  Retorna o caminho publico para arquivo.
+     *
+     * @param string $path
+     * @return string
+     */
+    public function filePublic($path){
+        return $this->baseUrl().'/files'.$path;
     }
 }

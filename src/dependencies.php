@@ -98,6 +98,7 @@ $container['view'] = function ($c) {
 
     // Functions ---------------------------------------------------------------------------------------------------
     $view->getEnvironment()->addFunction('zdebug', new Twig_Function_Function('zdebug'));
+    $view->getEnvironment()->addFunction('ucwords', new Twig_Function_Function('ucwords'));
     $view->getEnvironment()->addFunction('convertColGrid', new Twig_Function_Function('convertColGrid'));
     $view->getEnvironment()->addFunction('json_decode', new Twig_Function_Function('json_decode'));
     $view->getEnvironment()->getExtension('Twig_Extension_Core')->setNumberFormat(2, ',', '.');

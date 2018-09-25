@@ -21,7 +21,8 @@
         "sinergi/browser-detector": "^6.1",
         "kanellov/slim-twig-flash": "^0.2.0",
         "dompdf/dompdf": "^0.8.2",
-        "awurth/slim-validation": "^2.1"
+        "awurth/slim-validation": "^2.1",
+        "intervention/image": "^2.4"
     },
     "autoload": {
         "files": [
