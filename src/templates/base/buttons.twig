@@ -53,7 +53,7 @@
     {% for row in options %}
     {% set name = row.nome|split('.') %}
    	    <a class="btn btn-app {{ row.class }}" href="{{ row.link }}" style="{{ row.style|default('min-width: 190px;') }}" title="{{ row.hint }}">
-          {{ row.image|raw }}{{ name.1|convert_encoding('latin1', 'UTF-8') }}
+          {{ row.image|raw }}{{ name.1 }}
           </a>
    	{% endfor %}
    	   	

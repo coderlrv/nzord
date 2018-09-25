@@ -76,7 +76,7 @@
 <section class="sidebar" id="style-4">
     <div class="user-panel">
         <div class="pull-left image">
-            <img src="{{ base_url() }}/{{session.app.userAvatar}}" class="img-circle" alt="User Image">
+            <img src="{{ file_public(session.app.userAvatar) }}" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
             <p>{{session.app.login}}</p>
@@ -130,7 +130,7 @@
                             Logs do Sistema</a>
                     </li>
                     <li>
-                        <a href="{{base_url()}}/app/system/menu">
+                        <a href="{{base_url()}}/app/system/n-menu">
                             <i class="fa fa-align-justify" aria-hidden="true"></i>
                             Menu Painel</a>
                     </li>

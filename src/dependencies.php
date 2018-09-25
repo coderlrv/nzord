@@ -171,6 +171,7 @@ $container['validator'] = function () {
         'date'     => 'O campo <b>{{name}}</b> não é uma data válida.',
         'numeric'  => 'O campo <b>{{name}}</b> deve ser um número.',
         'cpf'      => 'O campo <b>{{name}}</b> deve ser um número de CPF válido.',
+        'cnpj'      => 'O campo <b>{{name}}</b> deve ser um número de CNPJ válido.'
     ];
 
     return new \NZord\Helpers\NValidator(true, $defaultMessages);

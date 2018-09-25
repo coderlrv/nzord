@@ -128,7 +128,7 @@
 		{% if options %}
     		{% for row in options %}
     			<li {% if row.secretario %} class="bg-yellow-gradient" {% elseif row.matricula == session.app.userMatricula %} class="bg-teal-gradient" style="border-radius: 4px;" {% endif %}>
-                  <img src="{{ row.avatar }}" title="{{ row.matricula }}-{{ row.nome|raw }}" >
+                  <img src="{{ file_public(row.avatar) }}" title="{{ row.matricula }}-{{ row.nome|raw }}" >
                   <a class="users-list-name">{{ row.login }}</a>
                   <span class="users-list-date">{{ row.matricula }}</span>
                 </li>        

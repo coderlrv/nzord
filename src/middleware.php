@@ -27,7 +27,7 @@ $app->add(function ($request,$response,$next) {
      *
      * @var \Modulos\System\MenuController $menu
      */
-    $menu    = new \Modulos\System\MenuController($this);
+    $menu    = new \Modulos\System\NMenuController($this);
     $menuArr = $menu->getMenuArr($request, $response);
     $menu    = $menu->getMenuAccess($request, $response);
 
