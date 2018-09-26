@@ -1,10 +1,6 @@
-{# 
-
-
- #}
 {% for msg in flash('error')  %}
-    {% set id = date('U') %}
-    <div class="alert alert-danger alert-dismissible custom-alert" id="{{id}}">
+    {% set id = random(9999) %}
+    <div class="alert alert-danger alert-dismissible margin-bottom-10" id="{{id}}">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
         {% if msg is iterable  %}
             <h4><i class="icon fa fa-ban"></i> {{msg.title|raw}}</h4>
@@ -25,8 +21,8 @@
 {% endfor %}
 
 {% for msg in flash('info')  %}
-    {% set id = date('U') %}
-    <div class="alert alert-info alert-dismissible custom-alert" id="{{id}}">
+    {% set id = random(9999) %}
+    <div class="alert alert-info alert-dismissible margin-bottom-10" id="{{id}}">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
         {% if msg is iterable  %}
             <h4><i class="icon fa fa-info"></i> {{msg.title|raw}}</h4>
@@ -47,8 +43,8 @@
 {% endfor %}
 
 {% for msg in flash('warning')  %}
-    {% set id = date('U') %}
-    <div class="alert alert-warning alert-dismissible custom-alert" id="{{id}}">
+    {% set id = random(9999) %}
+    <div class="alert alert-warning alert-dismissible margin-bottom-10" id="{{id}}">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
         {% if msg is iterable  %}
             <h4><i class="icon fa fa-warning"></i> {{msg.title|raw}}</h4>
@@ -69,8 +65,8 @@
 {% endfor %}
 
 {% for msg in flash('success')  %}
-    {% set id = date('U') %}
-    <div class="alert alert-success alert-dismissible custom-alert" id="{{id}}">
+    {% set id = random(9999) %}
+    <div class="alert alert-success alert-dismissible margin-bottom-10" id="{{id}}">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
         {% if msg is iterable  %}
             <h4><i class="icon fa fa-check"></i> {{msg.title|raw}}</h4>

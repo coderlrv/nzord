@@ -185,11 +185,11 @@
     </div>
 {% endmacro %}
 
-{% macro select(name, label, value, option_array, errors, cols, options = { multiple: false, include_blank: true, required: true, onchange:null, select2:null, placeholder:'', chosen:null, readonly: false,class:''} ) %}
+{% macro select(name, label, value, option_array, errors, cols, options = {id:'', multiple: false, include_blank: true, required: true, onchange:null, select2:null, placeholder:'', chosen:null, readonly: false,class:''} ) %}
 {% import _self as form %}
 	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
         {{ form.label(label, options.required ) }}    
-        <select id="{{ name }}" name="{{ name }}" {% if options.required %}required{% endif %} class="selectpicker form-control disable-text-shadow" 
+        <select id="{{ options.id ? options.id : name }}" name="{{ name }}" {% if options.required %}required{% endif %} class="selectpicker form-control disable-text-shadow" 
         {% if value %} data-value="{{ value }}"{% endif %} {% if options.multiple %}multiple{% endif %} {% if options.onchange %} onChange="{{ options.onchange }}" {% endif %} {% if options.readonly %} readonly {% endif %} >
             {% if options.include_blank %}
               <option selected value="">{{options.placeholder}}</option>
@@ -203,7 +203,7 @@
           <script>
             require(['select2'],function(){
                 
-                $('#{{ name }}').select2({
+                 $('#{{ options.id ? options.id : name}}').select2({
                     "placeholder": "{{options.placeholder}}",
                     "allowClear": {{ options.include_blank ? 'true': 'false'}},
                     "language": {
@@ -213,7 +213,7 @@
                     }
                 });
 
-                $('#{{ name }}').change(function(){
+                 $('#{{ options.id ? options.id : name}}').change(function(){
                     var value = $(this).val();
                     $(this).data('value',value);
                 });
@@ -224,7 +224,7 @@
     {% if options.chosen != null %}
           <script>
             require(['chosen'],function(){
-            	$('select[name="{{ name }}"]').chosen();
+            	$('#{{ options.id ? options.id : name}}').chosen();
             });
         </script>
     {% endif %}
@@ -271,7 +271,7 @@
        	{% for row in option_array %}
            	<label class="checkbox"><input type="radio" name="{{ name }}" value="{{ row.id }}" {% if options.required %}required{% endif %}
     			{% if row.id in value %}selected="selected" {% endif %}> 
-    			{{ row.nome|convert_encoding('latin1', 'UTF-8') }} 
+    			{{ row.nome }} 
     		</label>
         {% endfor %} 
         {{ form.error_block(errors) }}
@@ -313,11 +313,12 @@
     </div>
 {% endmacro %}
 
-{% macro button( xs=12, pull, disabled, href, options = { clearForm:false } ) %}
-	<div class="col-xs-{{ xs }} margin-top-20 btns-default pull-{{ pull | default('left')}}">
-    	<button class="btn btn-success btn-xs {% if xs == 1 %} btn-block {% endif %}" {% if disabled | default(false) %} disabled {% endif %} tabindex="3"  type="submit"><i class="fa fa-save"></i> Salvar</button>
+{% macro button( cols, pull, disabled, href, options = { clearForm:false, label:false, icon:false } ) %}
+	<div class="{{convertColGrid(cols|default(12))}} margin-top-20 btns-default pull-{{ pull | default('left')}}">
+    	<button class="btn btn-success btn-xs {% if cols == 1 %} btn-block {% endif %}" {% if disabled | default(false) %} disabled {% endif %} tabindex="3"  type="submit">
+            <i class="fa fa-{{ options.icon| default('save') }}"></i> {{ options.label| default('Salvar') }}</button>
         {% if options.clearForm %}
-            <button class="btn btn-danger btn-clearform btn-xs {% if xs == 1 %} btn-block {% endif %}" tabindex="9" type="button"><i class="fa fa-close"></i> Cancelar</button>
+            <button class="btn btn-danger btn-clearform btn-xs {% if cols == 1 %} btn-block {% endif %}" tabindex="9" type="button"><i class="fa fa-close"></i> Cancelar</button>
             <script>
                 $('.btn-clearform').click(function(){
                     var form = $(this).closest('form');
@@ -325,9 +326,9 @@
                 })
             </script>
         {% elseif href == null %}
-        	<button class="btn btn-danger btn-xs {% if xs == 1 %} btn-block {% endif %}" type="button" tabindex="9" data-dismiss="modal" aria-label="Close" ><i class="fa fa-close"></i> Cancelar</button>
+        	<button class="btn btn-danger btn-xs {% if cols == 1 %} btn-block {% endif %}" type="button" tabindex="9" data-dismiss="modal" aria-label="Close" ><i class="fa fa-close"></i> Cancelar</button>
         {% else %}
-         	<button class="btn btn-danger btn-xs {% if xs == 1 %} btn-block {% endif %}" type="button" onclick='window.location="{{ base_url() }}/{{ href }}";return false;' ><i class="fa fa-close"></i> Cancelar</button>
+         	<button class="btn btn-danger btn-xs {% if cols == 1 %} btn-block {% endif %}" type="button" onclick='window.location="{{ base_url() }}/{{ href }}";return false;' ><i class="fa fa-close"></i> Cancelar</button>
         {% endif %} 
     </div>
 {% endmacro %}

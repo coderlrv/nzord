@@ -795,6 +795,25 @@ function strToListSelect($str){
 }
 
 /**
+ * Undocumented function
+ *
+ * @param [type] $str
+ * @return void
+ */
+function strToHash($str){
+    $opts = explode(',',$str);
+    if(count($opts) == 0) return [];
+
+    $values = [];
+    foreach($opts as $opt){
+		$value = explode('=',$opt);
+        $values[$value[0]] = $value[1];
+    }
+
+    return $values;
+}
+
+/**
  * Retorna valor de array sem quebra de index.
  *
  * @param mixed $value
@@ -855,4 +874,45 @@ function moveUploadedFile($directory, \Slim\Http\UploadedFile $uploadedFile){
 function getPathClass($class){
     $a = new \ReflectionClass($class);
     return dirname($a->getFileName());
+}
+
+/**
+ *  Converte dados para tipo passado por paramentros.
+ *
+ * @param string $value
+ * @param string $type
+ *   INT  = 1, 
+ *   STRING = 'teste'
+ *   LIST = '1=ATIVO,2=INATIVO' para [ [ 'id'=>'1','nome'=>'ATIVO' ] ]
+ *   ARRAY = 'ATIVO,INATIVO' para ['ATIVO','INATIVO']
+ *   HASH =  '1=ATIVO,2=INATIVO' PARA [['1'=>'ATIVO','2'=>'INATIVO' ]]
+ *   JSON = '{"OPCAO":[1,2]}' para object(stdClass)#1 (1) { ["OPCAO"]=> array(2) { [0]=> int(1) [1]=> int(2) } }
+ * @return mixed
+ */
+function convertToType($value,$type){
+    if($type){
+        switch ($type) {
+            case 'INT':
+                return (int) $value;
+                break;
+            case 'STRING':
+                return (string) $value;
+                break;
+            case 'LIST':
+                return strToListSelect($value);
+                break;
+            case 'ARRAY':
+                return explode(',',$value);
+                break;
+            case 'HASH':
+                return strToHash($value);
+                break;
+            case 'JSON':
+                return json_decode($value);
+                break;
+            default:
+                return $type;
+                break;
+        }
+    }
 }

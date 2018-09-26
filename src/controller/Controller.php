@@ -1,8 +1,6 @@
 <?php
 namespace NZord\Controller;
 
-use NZord\Responses\ModalResponse;
-
 /**
  *  Controller base nzord.
  */
@@ -113,33 +111,48 @@ class Controller
      *
      * @return mixed
      */
-    public function redirectToback(){
+    public function redirectToback()
+    {
         $url = $this->app->request->getHeader('HTTP_REFERER');
-        return $this->app->response->withRedirect($url?$url[0]:'');
+
+        return $this->app->response->withRedirect($url ? $url[0] : '');
     }
 
+    public function redirect($modulo, $controler = '', $action = '', $args = [], $queryParams = [], $absolute = true)
+    {
+        $url = $this->url->to(
+            $modulo,
+            $controler = '',
+            $action = '',
+            $args = [],
+            $queryParams = [],
+            $absolute = true
+        );
+        return $this->app->response->withRedirect($url);
+    }
 
     /**
-     * Retorna json 
+     * Retorna json
      *
      * @param string $message
      * @param integer $status
      * @param \Exception $ex
      * @return void
      */
-    public function responseJson($message, $status = 200,$ex = null){
-        $msg = ['statusCode'=> $status,'message' => $message ];
-        if($ex){
-            Logger($ex->getMessage(),null,500);
+    public function responseJson($message, $status = 200, $ex = null)
+    {
+        $msg = ['statusCode' => $status, 'message' => $message];
+        if ($ex) {
+            Logger($ex->getMessage(), null, 500);
 
             //Envia erro usuario somente quando debug tiver ativo.
-            if($this->app->get('settings')['debug']){
+            if ($this->app->get('settings')['debug']) {
                 $msg['error'] = $ex->getMessage();
             }
         }
 
         return $this->app->response
-                ->withHeader('Content-Type', 'application/json')
-                ->withJson($msg, $status);
+            ->withHeader('Content-Type', 'application/json')
+            ->withJson($msg, $status);
     }
 }

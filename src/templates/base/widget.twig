@@ -48,11 +48,11 @@
 {% endmacro %}
 
 
-{% macro boxLink( options = { link:'null', js:'0', xs:'3', efect:'default', title:'null', img:'home', label:'null' } ) %}
+{% macro boxLink( options = { link:'null', js:'0', xs:'3', efect:'default', title:'null', img:'home', label:'null', style:'null' } ) %}
 	{% for opt in options %}
     	<a {% if opt.js == 1 %} onclick="{{ opt.link }}" {% else %} href="{{ opt.link }}"{% endif %} 
-    			class="col-xs-{{ opt.xs|default(3) }} alert alert-{{ opt.efect|default('default') }} tex-center card" 
-    			style="border: 1px solid;" title="{{ opt.title|default(null) }}" >
+    			class="col-xs-{{ opt.xs|default(3) }} bg-{{ opt.efect|default('default') }} tex-center" 
+    			{% if opt.style %} style="{{  opt.style }}"{% endif %} title="{{ opt.title|default(null) }}" >
     		<h3>
     		    {% if opt.img matches '/^\\d+$/' %}  
     		    	<span class="grande fa-2x"><b>{{ opt.img }}</b></span>
