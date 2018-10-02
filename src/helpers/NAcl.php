@@ -7,6 +7,9 @@ class NAcl{
     protected $permissions = null;
     protected $permissionsAlias = [];
 
+    //Fica definiçções de modulos
+    protected $permissiosMods = null;
+
     /**
      *  Construtor NAcl
      *
@@ -41,6 +44,7 @@ class NAcl{
         if(!$this->permissions){
             $this->permissions = [];
         }
+        
         //Caso tive actions e alias entao adicionar nos duas listas.
         if(is_array($actions) && $alias){
             array_push($this->permissions,['permissions' => $permission , 'actions'=> $actions ,'not'=>false]);
@@ -53,7 +57,12 @@ class NAcl{
         return $this;
     }
 
-        /**
+    public function authorizeMod($modulo,array $actions){
+        $this->permissiosMods = [ strtolower($modulo) => $actions ];
+        return $this;
+    }
+    
+    /**
      * Defini as permissões para rotas dos modulos.
      * Ex:
      *  __construct($app){
@@ -134,27 +143,40 @@ class NAcl{
      * @param [string] $action
      * @return void
      */
-    public function checkPermissionAction($action){
+    public function checkPermissionAction($mod,$controller,$action){
+        ///
         //Caso nao for aplicado nenhuma permissao entao deixa liberado.
-        if(!$this->permissions){
-            return true;
-        }
 
-        foreach($this->permissions as $perm){
-            //Verifica se possui a rota configurada. Caso nao exista, passe como possui acesso.
-            if(in_array($action,$perm['actions'])){
-                // caso ja ache ja retorna porque ja possui acesso.
-                //caso for para ser negativo.
-                if($perm['not']){
-                    return !$this->checkPermission($perm['permissions']);
-                }else{
-                    return $this->checkPermission($perm['permissions']);
-                }
-            }else{
+        if(!$this->permissiosMods){
+            if(!$this->permissions){
                 return true;
             }
-        }
 
+            foreach($this->permissions as $perm){
+                //Verifica se possui a rota configurada. Caso nao exista, passe como possui acesso.
+                if(in_array($action,$perm['actions'])){
+                    // caso ja ache ja retorna porque ja possui acesso.
+                    //caso for para ser negativo.
+                    if($perm['not']){
+                        return !$this->checkPermission($perm['permissions']);
+                    }else{
+                        return $this->checkPermission($perm['permissions']);
+                    }
+                }else{
+                    return true;
+                }
+            }
+        }else{
+            /**
+             * Permissões de modulos. Verifica dados com array  de permissoes na sessao userModAccess
+             */
+            if(!$this->permissiosMods){
+                return true;
+            }
+            
+            return $this->checkAccessModAction($mod,$controller,$action);
+        }
+      
         return false;
     }
     /**
@@ -187,5 +209,30 @@ class NAcl{
         }
 
         return $permit;
+    }
+
+    private function checkAccessModAction($mod,$controller,$action){
+        $modAccess = $this->session->get('userModAccess');
+        
+        //Checa se existe definição no constroller
+        $nameModule = strtolower($mod).'::'.strtolower($controller);
+        $permissionMod = $this->permissiosMods[$nameModule];
+   
+        //Caso nao exista definição no construtor do controller retornar com acesso
+        if(!$permissionMod || !in_array($action,$permissionMod)) return true;
+
+        //Verifica se usuário tem acesso ao controller
+        $access = array_filter($modAccess,function($item) use ($mod,$controller,$action){
+        
+            if(strtolower($item->modulo) == strtolower($mod) 
+                && strtolower($item->controller) == strtolower($controller) 
+                && strtolower($item->action) == strtolower($action)){
+                return true;
+            }else{
+                return false;
+            }
+        });
+        
+        return count($access) == 0 ? false : true;
     }
 }

@@ -58,7 +58,7 @@ class Ldap
             return null;
         }
     }
-
+    //--------------------------------------------------------------------------------
     public function getInfoUser($user)
     {
         $result = ['displayname' => null];
@@ -79,7 +79,7 @@ class Ldap
 
         return $result;
     }
-
+    //--------------------------------------------------------------------------------
     public function setDomain($domain)
     {
         //$this->domain = '@'.$domain.'.local';
@@ -89,4 +89,5 @@ class Ldap
             $this->dnAD = 'dc=' . $domain . ',dc=LOCAL';
         }
     }
+    //--------------------------------------------------------------------------------
 }

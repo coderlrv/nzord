@@ -43,8 +43,7 @@ class AppController extends Controller
                     'modulo'    => $modulo,
                     'urlPagina' => $pagina . '.twig',
                     'pagina'    => ucfirst($pagina),
-                    'act'       => $act,
-                    'pagdate'   => @$dataArq,
+                    'act'       => $act
                 ));
 
             //Seta caminha template do modulos.
@@ -52,7 +51,7 @@ class AppController extends Controller
             $this->view->getLoader()->addPath($pathTemplates, 'twMod');
 
             //Checa permissao ACL definido no controller.
-            if (!$this->app->acl->checkPermissionAction($act)) {
+            if (!$this->app->acl->checkPermissionAction($modulo,$pagina,$act)) {
                 
                 //Caso for ajax retorna json.
                 if ($request->isXhr()) { 
@@ -130,7 +129,7 @@ class AppController extends Controller
             $this->view->getLoader()->addPath($pathTemplates, 'twMod');
 
             //Checa permissao ACL definido no controller.
-            if (!$this->app->acl->checkPermissionAction($act)) {
+            if (!$this->app->acl->checkPermissionAction($modulo,$pagina,$act)) {
                 if ($request->isXhr()) { //Caso for ajax retorna json.
 
                     $response = $response->withStatus(403);

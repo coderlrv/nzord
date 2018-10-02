@@ -8,7 +8,7 @@
  */
 function printR($var){
     echo '<pre>';
-    print_r($var);
+        print_r($var);
     echo '</pre>';
 }
 /**
@@ -691,6 +691,15 @@ function bytesHumanSize(Float $Bytes){
 }
 
 /**
+ * file_exists - Valida se arquivo existe no servidor
+ * 
+ * @param [string] $file
+ */
+/*function file_exists($file){
+    return file_exists($file);
+}*/
+
+/**
  * zdebug - Visualizar dados em highlight em box fixado topo.
  *
  * @param [mixed] $data
@@ -915,4 +924,16 @@ function convertToType($value,$type){
                 break;
         }
     }
+}
+
+function win2unix($wtime) {
+    return ($wtime * 0.0000001) - 11644473600;
+}
+
+function formmat_oz($oztime) {
+    return substr($oztime, 0, 4) . "-" . substr($oztime, 4, 2) . "-" . substr($oztime, 6, 2) . " " . substr($oztime, 8, 2) . ":" . substr($oztime, 10, 2) . ":" . substr($oztime, 12, 2);
+}
+
+function win2unixFmt($wtime) {
+    return date('Y-m-d H:i:s', bcsub(bcdiv($wtime, '10000000'), '11644473600'));
 }

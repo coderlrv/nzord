@@ -185,11 +185,11 @@
     </div>
 {% endmacro %}
 
-{% macro select(name, label, value, option_array, errors, cols, options = {id:'', multiple: false, include_blank: true, required: true, onchange:null, select2:null, placeholder:'', chosen:null, readonly: false,class:''} ) %}
+{% macro select(name, label, value, option_array, errors, cols, options = {id:'', multiple: false, include_blank: true, required: true, onchange:null, select2:null, placeholder:'', chosen:null, readonly: false,class:'',classInput:''} ) %}
 {% import _self as form %}
 	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
         {{ form.label(label, options.required ) }}    
-        <select id="{{ options.id ? options.id : name }}" name="{{ name }}" {% if options.required %}required{% endif %} class="selectpicker form-control disable-text-shadow" 
+        <select id="{{ options.id ? options.id : name }}" name="{{ name }}" {% if options.required %}required{% endif %} class="selectpicker form-control disable-text-shadow {{options.classInput}}" 
         {% if value %} data-value="{{ value }}"{% endif %} {% if options.multiple %}multiple{% endif %} {% if options.onchange %} onChange="{{ options.onchange }}" {% endif %} {% if options.readonly %} readonly {% endif %} >
             {% if options.include_blank %}
               <option selected value="">{{options.placeholder}}</option>
@@ -281,7 +281,7 @@
 
 {% macro dateTime(name, label, value, placeholder, errors, cols, options = { required: false, format: 'DD/MM/YYYY HH:mm' }) %}
 {% import _self as form %}
-  	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}}">
+  	<div class="form-group{% if errors %} has-error {% endif %}{{convertColGrid(cols|default(12))}}">
   	    {{ form.label(label, options.required ) }} 
   		<div class='input-group datetimepicker'>
   	    	<input class="form-control" type="text" id="{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}" 
@@ -350,5 +350,14 @@
                 $('#{{ options.id ? options.id : name}}').checkList();
             });
         </script>
+    </div>
+{% endmacro %}
+
+{% macro checkbox(name, label, value,checked, errors, cols, options = {id:'',include_blank: true, required: true, onchange:null, placeholder:'',readonly: false,class:''} ) %}
+{% import _self as form %}
+    <div class="form-check  {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
+        <input type="checkbox" class="form-check-input" id="{{ options.id ? options.id : name }}" name="{{name}}" value="{{value}}" {% if checked %} checked {% endif %}>
+        <label class="form-check-label" for="{{ options.id ? options.id : name }}">{{ form.label(label, options.required ) }}</label>
+        {{ form.error_block(errors) }}
     </div>
 {% endmacro %}

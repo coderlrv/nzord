@@ -30,8 +30,7 @@ class Modal extends Controller
         $this->app->view->getLoader()->addPath($pathTemplates, 'twigModal');
 
         //Checa permissão de acesso.
-        if (!$this->app->acl->checkPermissionAction($action)) {
-            $response = $response->withStatus(403);
+        if (!$this->app->acl->checkPermissionAction($modulo,$pagina,$action)) {
             return $this->app->view->render($response, '403_modal.html.twig');
         }
         //Checa se existe metodo no controller.

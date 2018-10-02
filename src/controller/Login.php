@@ -3,6 +3,7 @@ namespace NZord\Controller;
 
 use Modulos\System\Models\Sessao;
 use Modulos\System\Models\Usuario;
+use Modulos\System\Models\ModAcesso;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -108,6 +109,9 @@ class Login
         $this->session->set('remoteIp', $this->request->getServerParam('REMOTE_ADDR'));
 
         $this->session->set('sessao', $sessao);
+
+        $accessMods = ModAcesso::getPermissaoPerfils([$user->perfil]);
+        $this->session->set('userModAccess',$accessMods);
 
         //Usuário tercerizado
         if ($user->perfil == 2) {
