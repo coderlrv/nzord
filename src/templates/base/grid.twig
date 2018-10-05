@@ -18,49 +18,76 @@
     {% endif %} 
 {% endmacro %}
 
-{% macro grid(nome, dados, dTables=true,options={'height':null,'colunsHidden':null,'class':'','click':null},btnActions={}) %}
+{# 
+//
+// Grid
+//
+    'nome':'gridTeste',
+    'dados': [], array com as informações a ser visualizadas
+    'dTables':true, ??? Nao utilizada no momemento
+    'options':{
+        'height':200,// Tamanho maximo do grid em PX.
+        'colunsHidden':[ 'id', 'id_os' ] // Nome da coluna para fica invisivel  (ultilizar somente quando não utiliza  gridSripts)
+        'class':'table-custom', //Nome da class customizada para table,
+        'click':'funcaoClick', // Nome da função a ser executada ao clickar na linha da tabela.
+    },
+    { //Paramentro para adicionar botao na ultima coluna "Ações",  (ultilizar somente quando não utiliza  gridSripts)
+        {
+            'title':'Download',
+            'label':'<i class="fa fa-download"></i>', //Texto do botão ou icone
+            'action':'donwload', //Nome do evento será executado ao clickar  ex:  $('#dtb_nometabela').on('donwload',function(e ,row ){ //sua ação aqui. })
+            'class':'btn-success' // Clase do botão se visulizado
+        },
+    }
+ #}
+{% macro grid(nome, dados, dTables=true,options={'height':null,'colunsHidden':null,'class':'','click':null,'actionNew':null},btnActions={}) %}
 {% import _self as grid %}
      <div>
         <div class="dataTable_wrapper" {% if options.height %} style="overflow: auto;max-height:{{options.height}}px;" {% endif %}>
             {% if dados %}
-            <table id="dtb_{{ nome }}" style="font-size: 85%;" class="table table-striped table-bordered table-hover table-responsive table-condensed {{options.class}}" cellspacing="0" width="100%">
-                <thead>
-                    <tr>{# get table headers from the table row #}
-                    {% for row in dados.0|cast_to_array  %}
-                        <th {% if row.0 in options.colunsHidden %}style="display:none;"{% endif %}>{{ row.0 | replace({'_': ' '})|upper }}</th>
-                    {% endfor %}
-                    {% if btnActions %}
-                        <th>AÇÕES</th>
-                    {% endif %}
-                    </tr>
-                </thead>
-                <tbody>
-                {% for row in dados %}
-                    <tr>
-                        {% for key, value in row|cast_to_array %}
-                            <td {% if value.0 in options.colunsHidden %}style="display:none;"{% endif %}>{{ value.1|raw }}</td>
+                <table id="dtb_{{ nome }}" style="font-size: 85%;" class="table table-striped table-bordered table-hover table-responsive table-condensed {{options.class}}" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>{# get table headers from the table row #}
+                        {% for row in dados.0|cast_to_array  %}
+                            <th {% if row.0 in options.colunsHidden %}style="display:none;"{% endif %}>{{ row.0 | replace({'_': ' '})|upper }}</th>
                         {% endfor %}
                         {% if btnActions %}
-                            <td>
-                                {% for btn in btnActions %}
-                                {% set mostra = true %}
-                                {% if btn.valida %}
-                                    {% set campo = attribute(row, btn.valida.campo) %}
-                                    {% if campo == btn.valida.valor %}
-                                        {% set mostra = false %}
-                                    {% endif %}	
-                                {% endif %}
-                                {% if mostra %} 
-                                     <button type="button" class="btn-action-grid btn btn-xs {{btn.class}}" title="{{btn.title}}" data-action="{{btn.action}}">{{btn.label |raw}}</button>                                                                           	
-                                {% endif %}
-                                {% endfor %}
-                            </td>
+                            <th>AÇÕES</th>
                         {% endif %}
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in dados %}
+                        <tr>
+                            {% for key, value in row|cast_to_array %}
+                                <td {% if value.0 in options.colunsHidden %}style="display:none;"{% endif %}>{{ value.1|raw }}</td>
+                            {% endfor %}
+                            {% if btnActions %}
+                                <td>
+                                    {% for btn in btnActions %}
+                                    {% set mostra = true %}
+                                    {% if btn.valida %}
+                                        {% set campo = attribute(row, btn.valida.campo) %}
+                                        {% if campo == btn.valida.valor %}
+                                            {% set mostra = false %}
+                                        {% endif %}	
+                                    {% endif %}
+                                    {% if mostra %} 
+                                        <button type="button" class="btn-action-grid btn btn-xs {{btn.class}}" title="{{btn.title}}" data-action="{{btn.action}}">{{btn.label |raw}}</button>                                                                           	
+                                    {% endif %}
+                                    {% endfor %}
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             {% else %}
+                {% if options.actionNew %}
+                    <div class="dt-buttons btn-group"><button class="btn btn-default" tabindex="0" onClick="{{ options.actionNew }}">
+                        <span><b> <i class="fa fa-files-o"></i> Novo</b></span></button>
+                    </div>
+                {% endif %}
                 <div class="alert alert-danger" style="margin-top: 40px;"><b>Sem Dados para Mostrar!</b></div>
             {% endif %}
         </div>
@@ -90,10 +117,44 @@
     {% endif %}
 {% endmacro %}
 
-{% macro gridSripts(nome, button={}, url, dados, options={'timeout':false,'interval':false,'select':false,'btnFilter':false,'refleshExitModal':true}) %}
+
+{# 
+//
+//  Grid Datatable
+//
+    'nome':'gridTeste', // nome do grid a ser aplicado 
+    'button':[
+        {   
+            'label':'<i class="fa fa-plus"></i> Novo', //Texto ou icone para aparecer no botão
+            'link':"novo()" //Função a ser executada ao clickar no botão
+        }
+    ]
+    'url': '/system/usuarios/gridJson' ,// Link para busca da informação em JSON
+    'dados': [], array com as informações a ser visualizadas, passa somente 1 linha para montagem.
+    'options':{ 
+        'timeout':10, ??
+        'interval':200, // Faz reflesh no tempo passado por paramentro em milisegundos
+        'select':true, //Ativa para qualquer alteração em select no mesmo lugar passa falor para campo filtro.
+        'btnFilter': true, //Ativa botão para limpa filtro. ele é ativado somente quando possui paramnetro &fill=true na url.
+        'refleshExitModal':true, // faz reflesh ao fecha qualquer moda que implementa exitModal
+        'order':[
+            [0,'desc'] // Coluna tag e tipo de ordenação.
+        ]
+        'columnsDefs':[
+            {
+                'render':'minhafuncao',  //função de callback para tratar dados coluna
+                'target':0 ou [0,1]     // Coluna que é para executar a ação.
+                'type': 'date' ou 'num' ou 'num-fmt' ou 'html-num' ou 'html-num-fmt' ou 'html' ou 'string'
+            }
+        ]
+    }
+ #}
+
+{% macro gridSripts(nome, button={}, url, dados, options={'timeout':false,'interval':false,'select':false,'btnFilter':false,'refleshExitModal':true,'order':null,'columnsDefs':null}) %}
     <script>
         require(['datatableJS'],function(){
             $(document).ready(function() {
+                $('#dtb_{{ nome }} tbody').empty();
                 //Fix passa paramentro pela url.
                 function createdUrl(){
                     var urlBase = "{{ url }}";
@@ -118,7 +179,7 @@
                     "processing": true,
                     "serverSide": true,
                     "responsive": true,
-                    "order": [[ 0, "desc" ]],
+                    "order": {{ options.order|default([[0,'desc']])|json_encode|raw}},
                     "info": true,
                     "select": { style: 'single' },
                     "deferRender": false,
@@ -161,8 +222,29 @@
                                 "name": "{{ row.0 }}"  },
                             {% endfor %}
                         {% endif %}
+                    ],
+                    "columnDefs":[
+                        {% if options.columnsDefs %}
+                            {% for row in options.columnsDefs  %}
+                                {
+                                    {% if row.action %}
+                                        "render":{{row.action}} ,
+                                    {% endif %}
+                                    "targets":{{row.targets |json_encode|raw}} ,
+                                    {% if row.type %}
+                                       "type": {{row.type |json_encode|raw}} ,
+                                    {% endif %}
+                                }
+                            {% endfor %}
+                        {% endif %}
                     ]
                 });
+
+                {% if options.order %}
+                    setTimeout(function(){
+                        table.order( {{ options.order|json_encode|raw}} ).draw();
+                    },2000)
+                {% endif %}
             });
 
             {% if options.select != false %}

@@ -102,22 +102,36 @@ class NAcl{
      * 
      * @param array | string - ['users'=>[],'perfils'=>[]]
      */
-    public function can($permissions){
-        if(is_array($permissions) || is_numeric($permissions)){
-            return $this->checkPermission((array) $permissions);
-        }
+    public function can($permissions,$action=null){
+      
+        if(is_string($permissions) && isset($action)){
+            
+            $definicao = explode('::',$permissions);
+          
+            if(count($definicao) < 2 ){
+                throw new \Exception('Formato incorreto de permissão. Correto can("modulo::nomeController","permissao")');
+            }
 
-        $perm = array_values(array_filter($this->permissionsAlias,function($item) use ($permissions){
-                return $item['alias'] == $permissions;
-            }));
+            return $this->checkAccessModAction($definicao[0] ,$definicao[1],$action,false);
 
-        if(!isset($perm[0])){
-            return false;
-        }
-        if($perm[0]['not']){
-            return !$this->checkPermission($perm[0]['permissions']);
         }else{
-            return $this->checkPermission($perm[0]['permissions']);
+
+            if(is_array($permissions) || is_numeric($permissions)){
+                return $this->checkPermission((array) $permissions);
+            }
+    
+            $perm = array_values(array_filter($this->permissionsAlias,function($item) use ($permissions){
+                    return $item['alias'] == $permissions;
+                }));
+    
+            if(!isset($perm[0])){
+                return false;
+            }
+            if($perm[0]['not']){
+                return !$this->checkPermission($perm[0]['permissions']);
+            }else{
+                return $this->checkPermission($perm[0]['permissions']);
+            }
         }
     }
     /**
@@ -211,28 +225,30 @@ class NAcl{
         return $permit;
     }
 
-    private function checkAccessModAction($mod,$controller,$action){
+    private function checkAccessModAction($mod,$controller,$action,$checkController=true){
         $modAccess = $this->session->get('userModAccess');
         
         //Checa se existe definição no constroller
-        $nameModule = strtolower($mod).'::'.strtolower($controller);
-        $permissionMod = $this->permissiosMods[$nameModule];
-   
-        //Caso nao exista definição no construtor do controller retornar com acesso
-        if(!$permissionMod || !in_array($action,$permissionMod)) return true;
-
+        if($checkController){
+            $nameModule = strtolower($mod).'::'.strtolower($controller);
+            $permissionMod = $this->permissiosMods[$nameModule];
+            
+            //Caso nao exista definição no construtor do controller retornar com acesso
+            if(!$permissionMod || !in_array($action,$permissionMod)) return true;
+        }
+    
         //Verifica se usuário tem acesso ao controller
         $access = array_filter($modAccess,function($item) use ($mod,$controller,$action){
-        
-            if(strtolower($item->modulo) == strtolower($mod) 
-                && strtolower($item->controller) == strtolower($controller) 
-                && strtolower($item->action) == strtolower($action)){
+            
+            if(strtolower(trim($item->modulo)) == strtolower(trim($mod))
+                && strtolower(trim($item->controller)) == strtolower(trim($controller)) 
+                && strtolower(trim($item->action)) == strtolower(trim($action))){
                 return true;
             }else{
                 return false;
             }
         });
-        
+     
         return count($access) == 0 ? false : true;
     }
 }

@@ -57,8 +57,18 @@ class File{
      *
      * @return boolean
      */
-    public function isFile(){
-        return is_uploaded_file($this->file->name);
+    public function isDoc(){
+        $types = [
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-excel',
+            'application/msword',
+            'application/vnd.oasis.opendocument.text',
+            'application/vnd.oasis.opendocument.presentation',
+            'application/vnd.oasis.opendocument.spreadsheet'
+        ];
+        return in_array($this->file->getClientMediaType(),$types);
     }
     /**
      * Checa se arquivo é do tipo imagem.

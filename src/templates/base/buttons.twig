@@ -1,8 +1,11 @@
 
-{% macro btnAppArray( options = {label:null, link:null, href:null, title:null, img:null, style:null} ) %}
+{% macro btnAppArray( options = {'label':null,'link':null,'href':null,'title':null,'img':null,'badge':null,'badgeStyle':null,'style':null} ) %}
     {% for row in options %}
-    	<a class="btn btn-app card " {% if row.href %} href="{{row.href}}" {% else %} onclick="{{ row.link }}" {% endif %}
-    		 title="{{ row.title }}" {% if row.style %} style="{{ row.style }}" {% endif %} >
+    	<a class="btn btn-app card" {% if row.href %} href="{{row.href}}" {% else %} onclick="{{ row.link }}" {% endif %}
+    		 title="{{ row.title }}-{{options.badge }}" {% if row.style %} style="{{ row.style }}" {% endif %} >
+            {% if options.badge or options.badge > 0 %}
+                <span class="badge {{options.badgeStyle|default('bg-green')}}">{{options.badge}}</span>
+            {% endif %}
         	<i class="fa fa-{{ row.img|default('globe') }}"></i>{{ row.label|raw }}
         </a>    
 	{% endfor %}
@@ -17,9 +20,9 @@
 	{% endfor %}
 {% endmacro %}
 
-{% macro btnApp(link,name,icon='',options= {'class':'','style':'','hint':'','badge':null,'badgeStyle':null,'onClick':null}) %}
-    <a class="btn btn-app {{options.class}}" {% if link %}href="{{link}}"{% else %}onClick="{{ options.onClick }}"{% endif %} style="{{ options.style }}" hint="{{options.hint}}">
-		{% if options.badge or options.badge == 0 %}
+{% macro btnApp(link,name,icon='',options= {'class':'','style':'','title':'','badge':null,'badgeStyle':null,'onClick':null}) %}
+    <a class="btn btn-app {{options.class}}" {% if link %}href="{{link}}"{% else %}onClick="{{ options.onClick }}"{% endif %} style="{{ options.style }}" title="{{options.title}}">
+		{% if options.badge or options.badge > 0 %}
 			<span class="badge {{options.badgeStyle|default('bg-green')}}">{{options.badge}}</span>
 		{% endif %}
 		

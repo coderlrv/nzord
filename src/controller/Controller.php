@@ -54,9 +54,9 @@ class Controller
      * @param string|array $permission - Alias da permissão ou array permissao , users | perfils | depto
      * @return boolean
      */
-    public function authorize($permission)
+    public function can($permission,$action=null)
     {
-        return $this->app->acl->can($permission);
+        return $this->app->acl->can($permission,$action);
     }
     /**
      *  Checa se permissão nao seja igual a passada por paramentro
@@ -65,7 +65,7 @@ class Controller
      * @param string|array $permission - Alias da permissão ou array permissao , users | perfils | depto
      * @return boolean
      */
-    public function authorizeNot($permission)
+    public function canNot($permission)
     {
         return $this->app->acl->canNot($permission);
     }
@@ -154,5 +154,32 @@ class Controller
         return $this->app->response
             ->withHeader('Content-Type', 'application/json')
             ->withJson($msg, $status);
+    }
+    /**
+     *  Retorna arquivo do arquivo passado.
+     *
+     * @param string $file - Arquivo a ser retornado.
+     * @return mixed
+     */
+    public function responseFile($file,$forceDownload=false){
+        $fh = fopen($file, 'rb');
+        $stream = new \Slim\Http\Stream($fh); // create a stream instance for the response body
+
+        $response =  $this->app->response
+                        ->withHeader('Content-Type', 'application/octet-stream')
+                        ->withHeader('Content-Type', 'application/download')
+                        ->withHeader('Content-Description', 'File Transfer')
+                        ->withHeader('Content-Transfer-Encoding', 'binary')
+                        ->withHeader('Content-Disposition', 'attachment; filename="' . basename($file) . '"')
+                        ->withHeader('Expires', '0')
+                        ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+                        ->withHeader('Pragma', 'public')
+                        ->withBody($stream); // all stream contents will be sent to the response
+
+        if($forceDownload){
+            $response = $response->withHeader('Content-Type', 'application/force-download');
+        }
+        
+        return  $response;
     }
 }
