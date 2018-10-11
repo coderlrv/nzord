@@ -60,7 +60,10 @@
                 data: '99/99/9999',
                 phone:'(99) 9999[9]-9999',
                 cep:'99999-999',
-                placa:'AAA-9999'} %}
+                placa:'AAA-9999',
+                number:'9{0,}',
+                time:'9{2}:9{2}'
+            } %}
             
             {% if options.mask in maskDefault|keys %}
                 {% set maskValue = maskDefault[options.mask] %}
@@ -237,7 +240,7 @@
   	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}}">
         {{ form.label(label, options.required ) }}
         <div class="input-group" style="width:100%">
-            <input type="text" class="form-control" style="height: 32px;" name="{{name}}" id="{{name}}" placeholder="{{ options.placeholder }}" aria-describedby="{{name}}_addon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" autocomplete="off" value="{{value.id}}"  {% if options.readonly %} readonly {% endif %}>
+            <input type="text" class="form-control" style="height: 32px;" name="{{name}}" id="{{name}}" placeholder="{{ options.placeholder }}" {% if options.required %}required{% endif %} aria-describedby="{{name}}_addon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" autocomplete="off" value="{{value.id}}"  {% if options.readonly %} readonly {% endif %}>
             <div class="input-group-addon" style="width:{{options.widthAddon|default(80)}}%; padding: 0px !important;border:none !important;">
                 <input type="text" id="{{name}}_addon" class="form-control" style="height: 32px;" value="{{ value.val }}" placeholder="{{ options.placeholderAddon }}" disabled>
             </div>
@@ -341,7 +344,7 @@
         {% if value %} data-value="{{ value }}"{% endif %} {% if options.onchange %} onChange="{{ options.onchange }}" {% endif %} {% if options.readonly %} readonly {% endif %} >
             {# <option selected>{{options.placeholder}}</option> #}
            {% for row in option_array %}
-              <option value="{{ row.id }}" {% if row.id in value %}selected{% endif %} >{{ row.nome|convert_encoding('latin1', 'UTF-8') }} </option>
+              <option value="{{ row.id }}" {% if row.id in value %}selected{% endif %} >{{ row.nome|raw}} </option>
            {% endfor %}
         </select>
         {{ form.error_block(errors) }}

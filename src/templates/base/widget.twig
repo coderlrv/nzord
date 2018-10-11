@@ -129,7 +129,7 @@
     		{% for row in options %}
 				{% set avatar = file_public('/avatar/user.png') %} 
     			<li {% if row.secretario %} class="bg-yellow-gradient" {% elseif row.matricula == session.app.userMatricula %} class="bg-teal-gradient" style="border-radius: 4px;" {% endif %}>
-					{% if file_exists( file_public(row.avatar) ) %} {% set avatar = file_public(row.avatar) %} {% endif %}
+					{% if file_exists( file_dir(row.avatar) ) %} {% set avatar = file_public(row.avatar) %} {% endif %}
 					<img src="{{ avatar }}" alt="{{ file_public('/avatar/user.png') }}" title="{{ row.matricula }}-{{ row.nome|raw }}" >
                   	<a class="users-list-name">{{ row.login }}</a>
                   	<span class="users-list-date">{{ row.matricula }}</span>

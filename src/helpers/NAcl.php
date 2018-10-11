@@ -213,7 +213,7 @@ class NAcl{
         }
 
         //Checa perfils
-        if(isset($perfils) && in_array($this->session->get('userPerfil'),(array) $perfils)){
+        if(isset($perfils) && in_array($this->session->get('userPerfilAdic'),(array) $perfils)){
             $permit = true;
         }
 
@@ -227,7 +227,9 @@ class NAcl{
 
     private function checkAccessModAction($mod,$controller,$action,$checkController=true){
         $modAccess = $this->session->get('userModAccess');
-        
+        if( !$modAccess ){
+            return false;            
+        }
         //Checa se existe definição no constroller
         if($checkController){
             $nameModule = strtolower($mod).'::'.strtolower($controller);
@@ -239,7 +241,6 @@ class NAcl{
     
         //Verifica se usuário tem acesso ao controller
         $access = array_filter($modAccess,function($item) use ($mod,$controller,$action){
-            
             if(strtolower(trim($item->modulo)) == strtolower(trim($mod))
                 && strtolower(trim($item->controller)) == strtolower(trim($controller)) 
                 && strtolower(trim($item->action)) == strtolower(trim($action))){

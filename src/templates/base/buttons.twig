@@ -2,9 +2,9 @@
 {% macro btnAppArray( options = {'label':null,'link':null,'href':null,'title':null,'img':null,'badge':null,'badgeStyle':null,'style':null} ) %}
     {% for row in options %}
     	<a class="btn btn-app card" {% if row.href %} href="{{row.href}}" {% else %} onclick="{{ row.link }}" {% endif %}
-    		 title="{{ row.title }}-{{options.badge }}" {% if row.style %} style="{{ row.style }}" {% endif %} >
-            {% if options.badge or options.badge > 0 %}
-                <span class="badge {{options.badgeStyle|default('bg-green')}}">{{options.badge}}</span>
+    		 title="{{ row.title }}" {% if row.style %} style="{{ row.style }}" {% endif %} >
+            {% if row.badge or row.badge > 0 %}
+                <span class="badge {{row.badgeStyle|default('bg-green')}}">{{row.badge}}</span>
             {% endif %}
         	<i class="fa fa-{{ row.img|default('globe') }}"></i>{{ row.label|raw }}
         </a>    
@@ -54,9 +54,9 @@
 
 {% macro btnArApp( options = {nome:null, link:null, hint:null, image:null, style:null,class:null} ) %}
     {% for row in options %}
-    {% set name = row.nome|split('.') %}
+    {% set name = row.nome %}
    	    <a class="btn btn-app {{ row.class }}" href="{{ row.link }}" style="{{ row.style|default('min-width: 190px;') }}" title="{{ row.hint }}">
-          {{ row.image|raw }}{{ name.1 }}
+          {{ row.image|raw }}{{ name }}
           </a>
    	{% endfor %}
    	   	

@@ -296,7 +296,6 @@ class NQuery{
 
         return $this;
     }
-
     /**
      *  Executa sql e converte para collection
      *

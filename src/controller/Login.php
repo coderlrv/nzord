@@ -19,13 +19,14 @@ class Login
         $this->session = $app->session;
         $this->request = $this->app->request;
     }
-    
+    //--------------------------------------------------------------------------------
     public function abreSessao($idUser, $bind)
     {
-        $user            = Usuario::find($idUser);
+        $user       = Usuario::find($idUser);
         if(!$user){
             return false;
         }
+        $uConfig   = \Modulos\System\Models\UserConfig::find($idUser);
 
         $req       = $this->request->getHeaders();
         $phpsessid = $this->request->getCookieParam('PHPSESSID');
@@ -47,13 +48,11 @@ class Login
 
         if ($sessaook) {
             //Seta na sessao infomações.
-            $this->setSessao($user, $sessaook->id, $bind);
-
+            $this->setSessao($user, $sessaook->id, $bind, $uConfig);
             return $sessaook->id;
         } else {
             $sessao     = new Sessao();
             $dataAcesso = date('Y-m-d H:i:s');
-
             $sessao->session_id = $phpsessid;
             $sessao->url        = (string) $this->request->getUri();
             $sessao->browser    = $this->request->getHeader('HTTP_USER_AGENT')[0];
@@ -68,15 +67,12 @@ class Login
             $sessao->save();
 
             //Seta na sessao infomações.
-            $this->setSessao($user, $sessao->id, $bind);
-
+            $this->setSessao($user, $sessao->id, $bind, $uConfig);
             $user->access_at = $dataAcesso;
             $user->save();
-
             return $sessao->id;
         }
     }
-
     //--------------------------------------------------------------------------------
     public static function fechaSessao()
     {
@@ -90,8 +86,8 @@ class Login
         }
         return true;
     }
-
-    private function setSessao($user, $sessao, $bind)
+    //--------------------------------------------------------------------------------
+    private function setSessao($user, $sessao, $bind, $config=null)
     {
         $this->session->set('user', $user->id);
         $this->session->set('login', $user->login);
@@ -109,13 +105,26 @@ class Login
         $this->session->set('remoteIp', $this->request->getServerParam('REMOTE_ADDR'));
 
         $this->session->set('sessao', $sessao);
+        $perfil[] = $user->perfil;
+        
+        if( $config ){
+            $pAdic = $config->perfil;
+            $this->session->set('userUrlPadrao', $config->padrao);            
+            if( $pAdic ){
+                array_push( $perfil, $pAdic );
+            }
+        }
+        $perfil  = implode(',',$perfil);        
+        $perfilArr = explode(',',$perfil);
+        $accessMods = ModAcesso::getPermissaoPerfils($perfilArr);
 
-        $accessMods = ModAcesso::getPermissaoPerfils([$user->perfil]);
-        $this->session->set('userModAccess',$accessMods);
+        $this->session->set('userModAccess',$accessMods);        
+        $this->session->set('userPerfilAdic', $perfil);
 
         //Usuário tercerizado
         if ($user->perfil == 2) {
             $this->session->set('userEmpresa', $user->empresa);
         }
     }
+    //--------------------------------------------------------------------------------
 }

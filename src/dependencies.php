@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Capsule\Manager as DB;
+use Modulos\System\Models\Parametro;
 
 setlocale(LC_ALL, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
 date_default_timezone_set('America/Cuiaba');
@@ -52,6 +53,10 @@ $container['config'] = function ($container) {
 
     $sys['config'] = $config;
 
+    //$beta = Parametro::get('VERSAO_BETA');
+    //$sys['versaoBeta'] = $beta;
+
+
     return $sys;
 };
 
@@ -78,14 +83,16 @@ $container['view'] = function ($c) {
 
     // Extesions / Advance funcitions ------------------------------------------------------------------------------
     $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
-    $view->addExtension(new \NZord\Helpers\TwigExtensions\TwigExtensionCustom($c->get('request')->getUri()));
+    $view->addExtension(new \NZord\Helpers\TwigExtensions\TwigExtensionCustom($c->get('request')->getUri(),$c));
     $view->addExtension(new \NZord\Helpers\TwigExtensions\TwigFiltersCustom());
     $view->addExtension(new \NZord\Helpers\TwigExtensions\NAclTwigExtension($c['acl']));
     $view->addExtension(new Twig_Extension_Debug());
     $view->addExtension(new Knlv\Slim\Views\TwigMessages($c->get('flash')));
     $view->addExtension(new Awurth\SlimValidation\ValidatorExtension($c->get('validator')));
-
+    $view->addExtension(new Twig_Extension_StringLoader());
     // Filters -----------------------------------------------------------------------------------------------------
+    $view->getEnvironment()->addFilter(new Twig_SimpleFilter('highlight', 'highlight'));
+    $view->getEnvironment()->addFilter(new Twig_SimpleFilter('dataExtenso', 'dataExtenso'));
     $view->getEnvironment()->addFilter(new Twig_SimpleFilter('cast_to_array', function ($stdClassObject) {
         $response = array();
         if ($stdClassObject) {
@@ -95,7 +102,6 @@ $container['view'] = function ($c) {
         }
         return $response;
     }));
-
     // Functions ---------------------------------------------------------------------------------------------------
     $view->getEnvironment()->addFunction('zdebug', new Twig_Function_Function('zdebug'));
     $view->getEnvironment()->addFunction('file_exists', new Twig_Function_Function('file_exists'));
@@ -103,6 +109,7 @@ $container['view'] = function ($c) {
     $view->getEnvironment()->addFunction('convertColGrid', new Twig_Function_Function('convertColGrid'));
     $view->getEnvironment()->addFunction('json_decode', new Twig_Function_Function('json_decode'));
     $view->getEnvironment()->getExtension('Twig_Extension_Core')->setNumberFormat(2, ',', '.');
+    $view->getEnvironment()->getExtension('Twig_Extension_Core')->setTimezone('America/Cuiaba');
 
     // Variables global --------------------------------------------------------------------------------------------
     $view->getEnvironment()->addGlobal('session', $_SESSION);

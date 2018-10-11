@@ -7,10 +7,12 @@ class TwigExtensionCustom extends \Twig_Extension
      * @var string|\Slim\Http\Uri
      */
     private $uri;
+    private $app;
 
-    public function __construct($uri)
+    public function __construct($uri,$app)
     {
         $this->uri = $uri;
+        $this->app = $app;
     }
 
     public function getFunctions()
@@ -19,7 +21,8 @@ class TwigExtensionCustom extends \Twig_Extension
             new \Twig_SimpleFunction('path_for_model', [$this, 'pathForModel'],['is_safe' => ['html']]),
             new \Twig_SimpleFunction('path_for_modal', [$this, 'pathForModal'],['is_safe' => ['html']]),
             new \Twig_SimpleFunction('path_for_report', array($this, 'pathForReport')),
-            new \Twig_SimpleFunction('file_public', array($this, 'filePublic'))
+            new \Twig_SimpleFunction('file_public', array($this, 'filePublic')),
+            new \Twig_SimpleFunction('file_dir', array($this, 'fileDir'))
         ];
     }
     /**
@@ -107,5 +110,14 @@ class TwigExtensionCustom extends \Twig_Extension
      */
     public function filePublic($path){
         return $this->baseUrl().'/files'.$path;
+    }
+    /**
+     *  Retorna o caminho publico para arquivo.
+     *
+     * @param string $path
+     * @return string
+     */
+    public function fileDir($path){
+        return $this->app->settings['files']['pathPublic'].$path;
     }
 }

@@ -182,4 +182,60 @@ class Controller
         
         return  $response;
     }
+    /**
+     * Grava SysLogger no banco de dados
+     *
+     * @param string $msg
+     * @param string $tela
+     * @param integer $statusCode
+     * @return void 
+     */
+    public function logger($msg,$tela=null,$statusCode=200 ){
+        $pathTemp = $this->app->settings['logger']['path_tmp'].'/logs';
+        $data = date("Y-m-d");
+        $hora = date("Y-m-d H:i:s");
+        $ip = $this->app->request->getServerParam('REMOTE_ADDR');
+        
+        if( $tela != null ){
+            $tela = 'origen: '.$tela.'; ';
+        }else{
+            $tela = (string) $this->app->request->getUri();
+        }        
+        if( $this->app->session->get('user') != null ){
+            $user = $this->app->session->get('user');
+            $sessao = $this->app->session->get('sessao');
+            $userName = ' - '.$this->app->session->get('login');
+        }        
+        //Nome do arquivo:
+        if($statusCode == 200){
+            $arquivo = $pathTemp."/nz_$data.log";
+        }else{
+            $arquivo = $pathTemp."/nz_error_$data.log";
+        }
+        if( is_array($msg) ){
+            $msg = json_encode($msg);
+            $msg = str_replace('","','", "',$msg);
+        }        
+        //Texto a ser impresso no log:
+        $texto = "Date: [$hora] | Ip: [$ip] | User: [$user $userName] | Source: [ $tela ] | Log: [ $msg ] \n";
+
+        if( file_exists($pathTemp.'/') ){
+            // Gravando log no arquivo
+            $manipular = fopen($arquivo, "a+b");
+            fwrite($manipular, $texto);
+            fclose($manipular);
+        }        
+        // Gravar no Banco de Dados
+        if($statusCode == 200){
+            $save = new \Modulos\System\Models\Log();
+            $save->data = $hora;
+            $save->sessao = $sessao;
+            $save->ip = $ip;
+            $save->tela = $tela;
+            $save->user = $user;
+            $save->detalhe = $texto;
+            $save->save(); 
+        }
+    }
+
 }

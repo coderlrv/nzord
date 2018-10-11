@@ -97,6 +97,11 @@ function limpaStr($string) {
     return $string;
 }
 
+
+function highlight($text, $terms) {
+    return str_replace($terms, '<kbd>'.$terms.'</kbd>', $text);
+}
+
 /**
  * Tira acentos de letras na string.
  *
@@ -116,14 +121,14 @@ function tirarAcento($str) {
     return $str;
 }
 /**
- * Grava Logger no banco de dados
+ * Grava SysLogger no banco de dados
  *
  * @param string $msg
  * @param string $tela
  * @param integer $statusCode
  * @return void
  */
-function Logger($msg,$tela=null,$statusCode=200){
+/*function SysLogger($msg,$tela=null,$statusCode=200){
     $data = date("m-Y");
     $hora = date("Y-m-d H:i:s");
     if( $_SESSION['app']['remoteIp'] == null ){
@@ -183,7 +188,7 @@ function Logger($msg,$tela=null,$statusCode=200){
         $save->detalhe = $texto;
         $save->save(); 
     }
-}
+}*/
 
 /**
  * ##UTILIZAR SEMPRE PARA GRAVAR NO BANCO
@@ -584,6 +589,21 @@ function diaSemana($day){
             break;
     }
     return  $dia_semana;
+}
+
+/**
+* Função para calcular o próximo dia útil de uma data
+* Formato de entrada da $data: YYYY-MM-DD
+*/
+function proximoDiaUtil($data, $saida = 'd/m/Y') {
+    $timestamp = strtotime($data);
+    $dia = date('N', $timestamp);
+    if ($dia >= 6) {
+        $timestamp_final = $timestamp + ((8 - $dia) * 3600 * 24);
+    } else {
+        $timestamp_final = $timestamp;
+    }
+    return date($saida, $timestamp_final);
 }
 
 /**

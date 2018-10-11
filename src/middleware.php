@@ -25,9 +25,9 @@ $app->add(function ($request,$response,$next) {
     /**
      * Carrega ao Menu de acordo com as permissões na session
      *
-     * @var \Modulos\System\MenuController $menu
+     * @var \Modulos\System\SysMenuController $menu
      */
-    $menu    = new \Modulos\System\NMenuController($this);
+    $menu    = new \Modulos\System\SysMenuController($this);
     $menuArr = $menu->getMenuArr($request, $response);
     $menu    = $menu->getMenuAccess($request, $response);
 

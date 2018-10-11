@@ -75,7 +75,7 @@
          <!-- Google Font -->
      	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic"> 
     </head>
-    <body class="hold-transition fixed {{ sys.config.theme }} sidebar-mini sidebar-collapse ">
+    <body class="{{ sys.config.theme }} sidebar-mini sidebar-collapse fixed sidebar-mini-expand-feature">
         {% block body %}
         <!--
             Template's Body Content
@@ -83,17 +83,17 @@
         {% endblock %}
 
         <!-- Bootstrap core JavaScript
-        ================================================== -->
-        <!-- Placed at the end of the document so the pages load faster -->
-		<!-- FastClick -->
-		<script src="{{ base_url() }}/assets/fastclick/lib/fastclick.js"></script>
-		
+        ================================================== -->	
         <!-- AdminLTE -->
         <script src="{{ base_url() }}/assets/admin-lte/dist/js/adminlte.min.js"></script>
         <script src="{{ base_url() }}/assets/admin-lte/dist/js/demo.js"></script>
         <script src="{{ base_url() }}/assets/lobibox/dist/js/lobibox.js"></script>
    	 	<script src="{{ base_url() }}/assets/jquery.blockui/jquery.blockUI.js"></script>
-
+        <!-- SlimScroll -->
+        <script src="{{ base_url() }}/assets/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+        <!-- Placed at the end of the document so the pages load faster -->
+		<!-- FastClick -->
+		<script src="{{ base_url() }}/assets/fastclick/lib/fastclick.js"></script>	
         <!--  Arquivo js customizado  -->
    	 	<script src="{{ base_url() }}/js/custom.js"></script>
 

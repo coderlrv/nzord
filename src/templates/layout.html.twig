@@ -22,8 +22,18 @@
 			</section> <!-- /container -->
 		{% endblock %}
 	</div>
-	<footer class="main-footer">
-		<div class="pull-right hidden-xs"> 
+	<footer class="main-footer text-muted hidden-xs">
+		<div class="col-md-4 pull-left text-muted">
+			<small title="Dados da Sessão"> 
+				<span class="glyphicon glyphicon-user"> </span> 
+				<a href="{{ base_url() }}/app/system/suasessao" title="Informações da sessão">{{ session.app.login }}</a> 
+				| <span class="glyphicon glyphicon-time"> </span> {{ session.app.loggedIn|date("d/m/Y H:i:s") }} 
+				<!-- | <span id="log"></span>  -->
+				| <b>Sessão: </b>{{ session.app.sessao }} - <span id="spanRegSes"><i class="fa fa-circle text-green"></i> Online</span>
+			</small>
+		</div>
+		<div id="msgAlertas" class="col-xs-5 text-right"></div>
+		<div class="col-xs-3 pull-right text-right hidden-xs text-muted"> 
 			{% if sys.config.manager_notes %}
 				<a class="btn btn-sm btn-xs btn-default"> <i class="fa fa-file-o" aria-hidden="true"></i> Notes </a>
 			{% endif %}
@@ -32,14 +42,15 @@
 				<a class="btn btn-sm btn-xs btn-default" onclick="fileManager()"> <i class="fa fa-th-list" aria-hidden="true"></i> File Manager </a>
 			{% endif %}
 			<b>Versão:</b> {{ sys.version }}
+			
+			{% if sys.config.beta %}
+			<!-- Beta -->
+			<a title="A versão beta é a versão de um produto (geralmente software) que ainda se encontra em fase de desenvolvimento e testes e são disponibilizados para que os usuários possam testar e eventualmente, reportar bugs para os desenvolvedores." class="cursor-pointer">
+				<small style="padding-bottom:0px;padding-top:0px;" class="label bg-red">Beta</small>
+			</a>
+			{% endif %}
+
 		</div>
-		<small title="Dados da Sessão"> 
-			 <span class="glyphicon glyphicon-user"> </span> 
-			 <a href="{{ base_url() }}/app/system/suasessao" title="Informações da sessão">{{ session.app.login }}</a> 
-			| <span class="glyphicon glyphicon-time"> </span> {{ session.app.loggedIn|date("d/m/Y H:i:s") }} 
-			<!-- | <span id="log"></span>  -->
-			| <b>Sessão: </b>{{ session.app.sessao }} - <span id="spanRegSes"><i class="fa fa-circle text-green"></i> Online</span>
-		</small>
 	</footer>
 	<!-- Control Sidebar -->
   	<aside class="control-sidebar control-sidebar-dark"></aside>
