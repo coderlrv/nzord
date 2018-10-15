@@ -141,6 +141,7 @@
                     $('#{{ name }}').summernote({ 
                         height: {{ rows*10 }} ,
                         tabsize: 2 {% if options.summerAirMode %},airMode: true {% endif %}
+                        ,dialogsInBody: true
                     });
         
                     {% if options.readonly %}
@@ -198,7 +199,7 @@
               <option selected value="">{{options.placeholder}}</option>
             {% endif %}
            {% for row in option_array %}
-              <option value="{{ row.id }}" {% if row.id in value %}selected{% endif %} >{{ row.nome }} </option>
+              <option value="{{ row.id }}" {% if row.id in value %}selected{% endif %} >{{ row.nome|e }} </option>
            {% endfor %}      
         </select>    
         {{ form.error_block(errors) }}        
