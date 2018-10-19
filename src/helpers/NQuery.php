@@ -207,6 +207,10 @@ class NQuery{
      * @return $this
      */
     public function groupBy($value){
+        if(is_array($value)){
+            $value = inplode(' ',$value);
+        }
+
         $this->groupByvalue = "group by $value";
         return $this;
     }

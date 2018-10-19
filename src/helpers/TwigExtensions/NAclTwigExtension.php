@@ -12,7 +12,10 @@ class NAclTwigExtension extends \Twig_Extension
 
     public function getFunctions()
     {
-        return [ new \Twig_SimpleFunction('can', [$this, 'can']), new \Twig_SimpleFunction('canNot', [$this, 'canNot']) ];
+        return [ 
+            new \Twig_SimpleFunction('can', [$this, 'can']), 
+            new \Twig_SimpleFunction('canNot', [$this, 'canNot']) 
+        ];
     }
 
     /**
@@ -20,9 +23,10 @@ class NAclTwigExtension extends \Twig_Extension
      * @param array $pemissoes -  ['users':[1,2],'deptos':[1,2] ]
      * @return void
      */
-    public function can($pemissoes)
+    public function can($permissions,$action=null)
     {
-        return $this->acl->can($pemissoes);
+
+        return $this->acl->can($permissions,$action=null);
     }
 
     /**

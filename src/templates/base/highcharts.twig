@@ -61,7 +61,7 @@
 {% endmacro %}
 
 
-{% macro columnChart(name, data, cols,title, options = { ajax: false, showInLegend: false,dataLabels:false,titleY:'',titleX:'' } ) %}
+{% macro columnChart(name, data, cols,title, options = { ajax: false, showInLegend: false,dataLabels:false,titleY:'',titleX:'' ,stackLabels:false} ) %}
     <div id="chart-{{name}}" class="{{convertColGrid(cols|default(12))}}">
         <div id="{{name}}" style="min-width: 100%; max-width: 100%; margin: 0 auto; margin-top:0px;"></div>
     </div>
@@ -88,13 +88,16 @@
                     yAxis: {
                         min: 0,
                         title: {
-                            text: '{{options.titleY}}'
-                        }
-                    },
-                    yAxis: {
-                        min: 0,
-                        title: {
                             text: '{{options.titleX}}'
+                        },
+                        stackLabels: {
+                            verticalAlign: 'top',
+                            crop: false,
+                            enabled: true,
+                            style: {
+                                fontWeight: 'bold',
+                                color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                            }
                         }
                     },
                     tooltip: {

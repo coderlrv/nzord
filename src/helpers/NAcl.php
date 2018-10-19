@@ -228,7 +228,7 @@ class NAcl{
     private function checkAccessModAction($mod,$controller,$action,$checkController=true){
         $modAccess = $this->session->get('userModAccess');
         if( !$modAccess ){
-            return false;            
+            return false;
         }
         //Checa se existe definição no constroller
         if($checkController){
@@ -238,7 +238,7 @@ class NAcl{
             //Caso nao exista definição no construtor do controller retornar com acesso
             if(!$permissionMod || !in_array($action,$permissionMod)) return true;
         }
-    
+      
         //Verifica se usuário tem acesso ao controller
         $access = array_filter($modAccess,function($item) use ($mod,$controller,$action){
             if(strtolower(trim($item->modulo)) == strtolower(trim($mod))
@@ -249,7 +249,7 @@ class NAcl{
                 return false;
             }
         });
-     
+        
         return count($access) == 0 ? false : true;
     }
 }

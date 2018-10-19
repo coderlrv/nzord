@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html><head>
 	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="IE=7; IE=9; IE=Edge"/>
+	<meta name="robots" content="noindex, follow">
+	<meta name="googlebot" content="noindex">
+	<meta name="title" content ="{{ sys.config.title}}">
+	<meta name="description" content ="{{ sys.config.descricao }}">
+	<meta name="google-site-verification" content="8pj64hpJYPG2Pnpxipx8uRoCjOFyJucXd-r_eJoP4Y8" />
+	<title>{{ sys.config.title}}</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{{ sys.descricao }}">
-    <meta name="author" content="{{ sys.autor }}">
     <meta http-equiv="cache-control" content="no-cache" />
     <meta http-equiv="cache-control" content="max-age=0" />
     <meta http-equiv="expires" content="0" />
     <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
     <meta http-equiv="pragma" content="no-cache" />
-	<link rel="shortcut icon" type="image/x-icon" href="{{ base_url() }}/favicon.ico">
+	<link rel="shortcut icon" type="image/x-icon" href="{{ base_url() }}{{ sys.config.icon }}">
+	<link rel="canonical" href="{{ base_url() }}" />
 
-	<title>{{ sys.title}}</title>
 	<!-- jQuery -->
 	<script src="{{ base_url() }}/assets/jquery/dist/jquery.min.js"></script>
 	<link href='{{ base_url() }}/css/index.css' rel='stylesheet' type='text/css'>
@@ -74,7 +79,7 @@
 				</div>
 				<form name="login" class="form-signin" method="POST" action="{{ path_for('postLogin') }}" autocomplete="off">
 					<div class="form-login text-left login-box-body">
-						<div>{{ sys.config.title_idx|raw }}</div>
+						<div><h1>{{ sys.config.title_idx|raw }}</h1></div>
 						<input type="text" name="username" placeholder="Login/Usuário" class="form-control username" maxlength="30" autofocus required="required" value="{{ login.usuario }}" /> 
 						<input type="password" name="password" placeholder="Senha" class="form-control password" maxlength="20" required="required" />
 					

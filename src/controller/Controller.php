@@ -143,7 +143,7 @@ class Controller
     {
         $msg = ['statusCode' => $status, 'message' => $message];
         if ($ex) {
-            Logger($ex->getMessage(), null, 500);
+            $this->logger($ex->getMessage(), null, 500);
 
             //Envia erro usuario somente quando debug tiver ativo.
             if ($this->app->get('settings')['debug']) {

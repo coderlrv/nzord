@@ -29,7 +29,7 @@
 {% macro input(name, label, value, placeholder, errors, cols, options={ required:false,readonly:false,mask:false,decimalPrecision:0,valide:null,removeMask:false,action:false,mlenght:false,class:'' } ) %}
 	{% import _self as form %}
     <div id="group-{{name}}" class="form-group {% if errors %} has-error {% endif %}{{convertColGrid(cols|default(12))}}">
-        {{ form.label(label, options.required ) }}    
+        {{ form.label(label, options.required ) }}
         <input class="form-control {{options.class}}" type="text" id="{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}" value="{{ value }}" 
                 {% if options.required %}required{% endif %} {% if options.readonly %} readonly {% endif %} {{ options.action }} 
                 {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %} >
@@ -191,7 +191,7 @@
 
 {% macro select(name, label, value, option_array, errors, cols, options = {id:'', multiple: false, include_blank: true, required: true, onchange:null, select2:null, placeholder:'', chosen:null, readonly: false,class:'',classInput:''} ) %}
 {% import _self as form %}
-	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
+	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}" id="{{ options.id ? options.id : name }}_area">
         {{ form.label(label, options.required ) }}    
         <select id="{{ options.id ? options.id : name }}" name="{{ name }}" {% if options.required %}required{% endif %} class="selectpicker form-control disable-text-shadow {{options.classInput}}" 
         {% if value %} data-value="{{ value }}"{% endif %} {% if options.multiple %}multiple{% endif %} {% if options.onchange %} onChange="{{ options.onchange }}" {% endif %} {% if options.readonly %} readonly {% endif %} >
@@ -199,10 +199,16 @@
               <option selected value="">{{options.placeholder}}</option>
             {% endif %}
            {% for row in option_array %}
-              <option value="{{ row.id }}" {% if row.id in value %}selected{% endif %} >{{ row.nome|e }} </option>
-           {% endfor %}      
-        </select>    
-        {{ form.error_block(errors) }}        
+              <option value="{{ row.id }}"
+                {% if value is iterable %}
+                    {% if row.id in value %}selected{% endif %}
+                {% else %}
+                    {% if row.id|trim is same as(value|trim) %}selected{% endif %}
+                {% endif %}
+                >{{ row.nome }} </option>
+           {% endfor %}
+        </select>
+        {{ form.error_block(errors) }}
     {% if options.select2 != null and options.readonly == false %}
           <script>
             require(['select2'],function(){
@@ -216,7 +222,6 @@
                         }
                     }
                 });
-
                  $('#{{ options.id ? options.id : name}}').change(function(){
                     var value = $(this).val();
                     $(this).data('value',value);
@@ -235,7 +240,7 @@
     </div>
 {% endmacro %}
 
-{% macro selectSearch(name,label,value={'id':'','val':''},url,errors,cols, options = { widthAddon:null,required: false, placeholder:'',placeholderAddon:'',readonly: false,params:null},btnsAddon={} ) %}
+{% macro selectSearch(name,label,value={'id':'','val':''},url,errors,cols, options = { widthAddon:null,required: false, placeholder:'',placeholderAddon:'',readonly: false,params:null,min:null},btnsAddon={} ) %}
     {% import _self as form %}
 
   	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}}">
@@ -243,7 +248,7 @@
         <div class="input-group" style="width:100%">
             <input type="text" class="form-control" style="height: 32px;" name="{{name}}" id="{{name}}" placeholder="{{ options.placeholder }}" {% if options.required %}required{% endif %} aria-describedby="{{name}}_addon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" autocomplete="off" value="{{value.id}}"  {% if options.readonly %} readonly {% endif %}>
             <div class="input-group-addon" style="width:{{options.widthAddon|default(80)}}%; padding: 0px !important;border:none !important;">
-                <input type="text" id="{{name}}_addon" class="form-control" style="height: 32px;" value="{{ value.val }}" placeholder="{{ options.placeholderAddon }}" disabled>
+                <input type="text" id="{{name}}_addon" class="form-control" style="height: 32px;" value="{{ value.val }}" placeholder="{{ options.placeholderAddon }}" disabled {% if options.min %}min="{{options.min}}"{% endif %}>
             </div>
             {% if btnsAddon %}
                 <span class="input-group-btn">
@@ -306,23 +311,24 @@
 {% endmacro %}
 
 
-{% macro file(name, label, value, placeholder, errors, cols, options = { required: false, accept:'file_extension|audio/*|video/*|image/*|media_type'}) %}
+{% macro file(name, label, value, placeholder, errors, cols, options = { required: false, accept:'file_extension|audio/*|video/*|image/*|media_type',multiple:false}) %}
 {% import _self as form %}
   	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}}">
       {{ form.label(label, options.required ) }} 
       <input class="form-control" type="file" id="{{ name }}" name="{{ name }}" 
           {% if options.required %}required{% endif %} 
+          {% if options.multiple %}multiple{% endif %} 
           {% if options.accept %}accept="{{ options.accept }}"{% endif %}>
       {% if placeholder %}<p class="help-block">{{ placeholder }}</p>{% endif %}
     </div>
 {% endmacro %}
 
 {% macro button( cols, pull, disabled, href, options = { clearForm:false, label:false, icon:false } ) %}
-	<div class="{{convertColGrid(cols|default(12))}} margin-top-20 btns-default pull-{{ pull | default('left')}}">
-    	<button class="btn btn-success btn-xs {% if cols == 1 %} btn-block {% endif %}" {% if disabled | default(false) %} disabled {% endif %} tabindex="3"  type="submit">
+	<div class="form-group {{convertColGrid(cols|default(12))}} margin-top-20 btns-default pull-{{ pull | default('left')}}">
+    	<button id="btn_submit" class="btn btn-success btn-xs {% if cols == 1 %} btn-block {% endif %}" {% if disabled | default(false) %} disabled {% endif %} type="submit">
             <i class="fa fa-{{ options.icon| default('save') }}"></i> {{ options.label| default('Salvar') }}</button>
         {% if options.clearForm %}
-            <button class="btn btn-danger btn-clearform btn-xs {% if cols == 1 %} btn-block {% endif %}" tabindex="9" type="button"><i class="fa fa-close"></i> Cancelar</button>
+            <button id="btn_submit" class="btn btn-danger btn-clearform btn-xs {% if cols == 1 %} btn-block {% endif %}" type="button"><i class="fa fa-close"></i> Cancelar</button>
             <script>
                 $('.btn-clearform').click(function(){
                     var form = $(this).closest('form');
@@ -330,7 +336,7 @@
                 })
             </script>
         {% elseif href == null %}
-        	<button class="btn btn-danger btn-xs {% if cols == 1 %} btn-block {% endif %}" type="button" tabindex="9" data-dismiss="modal" aria-label="Close" ><i class="fa fa-close"></i> Cancelar</button>
+        	<button class="btn btn-danger btn-xs {% if cols == 1 %} btn-block {% endif %}" type="button" data-dismiss="modal" aria-label="Close" ><i class="fa fa-close"></i> Cancelar</button>
         {% else %}
          	<button class="btn btn-danger btn-xs {% if cols == 1 %} btn-block {% endif %}" type="button" onclick='window.location="{{ base_url() }}/{{ href }}";return false;' ><i class="fa fa-close"></i> Cancelar</button>
         {% endif %} 

@@ -50,6 +50,7 @@ class DataTables{
             "recordsFiltered"   => intval( $qfield ),
             "columns"			=> @$k,
             "data"           	=> $data
+            /*,"sql"               => $sql*/
         ];
     }
     

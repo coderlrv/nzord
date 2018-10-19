@@ -68,7 +68,7 @@ class NReportTwig
             }
         }
 
-        $dados = $rel->tipo == 1 ? $result : $result[0];
+        $dados = $rel->tipo == 1 ? $result : @$result[0];
         $paper = ($rel->rotacao == 1) ? 'portrait' : 'Landscape';
 
         if ($options->cabecalhoRodape) {
@@ -249,17 +249,21 @@ class NReportTwig
     private function renderHtml($html, $btnPrint = true)
     {
         $body = '';
-
+        $dir = $this->container->get('settings')['app']['base_url'];
         if ($btnPrint) {
-            $body = "<button class='btn btn-sm btn-primary hidden-print' onclick='printDiv(\"prtReport\")'>
-                <span class='fa fa-print'></span> Imprimir
-            </button>";
+            $body .= '<link href="'.$dir.'/assets/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+                    <script src="'.$dir.'/assets/nzord-app/src/js/nzord-aux.js"></script>'; 
+            $body .= "<button class='btn btn-sm btn-primary hidden-print' onclick=\"printDiv('prtReport')\">
+                <i class='fa fa-print'></i> Imprimir </button>";
+            $body .= '<button class="btn btn-sm btn-success hidden-print" onclick="generateexcel(\'prtReport\')">
+                <i class="fa fa-table"></i>  Export Excel </button>';
         }
 
         $body .= "<div id='prtReport' class='small'> $html </div>";
 
         return $body;
     }
+    //--------------------------------------------------------------------------------
 
     private function renderODT($html,$nameFile,$forceDownload=true){
         $response = $this->container->get('response');

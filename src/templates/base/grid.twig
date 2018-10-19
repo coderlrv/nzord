@@ -49,7 +49,7 @@
                     <thead>
                         <tr>{# get table headers from the table row #}
                         {% for row in dados.0|cast_to_array  %}
-                            <th {% if row.0 in options.colunsHidden %}style="display:none;"{% endif %}>{{ row.0 | replace({'_': ' '})|upper }}</th>
+                            <th data-key="{{row.0}}" {% if row.0 in options.colunsHidden %}style="display:none;"{% endif %}>{{ row.0 | replace({'_': ' '})|upper }}</th>
                         {% endfor %}
                         {% if btnActions %}
                             <th>AÇÕES</th>
@@ -96,9 +96,10 @@
         <script>
             $(function(){
                 $("#dtb_{{ nome }} tbody").on( 'click', function ( e) {
+                    e.preventDefault()
                     setTimeout(function(){
                         {{ options.click }}
-                    }, 400);
+                    }, 200);
                 });
             });
         </script>
@@ -106,7 +107,7 @@
     {% if btnActions %}
         <script>
             // Adicionar eventos no botoes actions.
-            $(".btn-action-grid").click(function(){
+            $(".btn-action-grid").click(function(e){
                 var tr = $(this).closest('tr');
                 var row = getJsonRow(tr);
                 var action = $(this).data('action');
