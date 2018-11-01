@@ -10,12 +10,12 @@
   {% endif %}
 {% endmacro %}
 
-{% macro widget( name, label, content, img='home', efect='default', xs=12, options = { remove:false,minimiza:false,class:false,solid:false,closed:false }, footer={} ) %}
+{% macro widget( name, label, content, img='home', efect='default', xs=12, options = { remove:false,minimiza:false,class:false,solid:false,closed:false,bstyle:null }, footer={} ) %}
 {% import _self as form %}
      <div class="col-md-{{ xs }}"  id="area_{{ name }}">
         <!-- .box-body -->
 		<div class="box box-{{ efect }}{% if options.solid %} box-solid {% endif %}{% if options.closed %} collapsed-box{% endif %}" id="{{ name }}">
-		{% if label %}
+			{% if label %}
 			<div class="box-header with-border ui-sortable-handle" >
 				<i class="fa fa-{{ img }}"></i>
                 <h3 class="box-title">{{ label }}</h3>
@@ -29,10 +29,12 @@
 				</div>
         	</div>
         	{% endif %}	
-        	<div class="box-body with-border {{ options.class }}">{{ content|raw }}</div>
-        </div>		
-        <!-- /.box-body -->   
-        {# label, link, img#}     
+        	<div class="box-body with-border {{ options.class }}" {% if options.bstyle %} style="{{ options.bstyle }}" {% endif %}>
+				{{ content|raw }}
+			</div>
+        </div>
+        <!-- /.box-body -->
+        {# label, link, img#}
         {% if footer %}
         <div class="box-footer clearfix no-border">
             {% for row in footer %}
@@ -130,9 +132,9 @@
 				{% set avatar = file_public('/avatar/user.png') %} 
     			<li {% if row.secretario %} class="bg-yellow-gradient" {% elseif row.matricula == session.app.userMatricula %} class="bg-teal-gradient" style="border-radius: 4px;" {% endif %}>
 					{% if file_exists( file_dir(row.avatar) ) %} {% set avatar = file_public(row.avatar) %} {% endif %}
-					<img src="{{ avatar }}" alt="{{ file_public('/avatar/user.png') }}" title="{{ row.matricula }}-{{ row.nome|raw }}" >
+					<img src="{{ avatar }}" alt="{{ file_public('/avatar/user.png') }}" title="{{ row.matricula }}-{{ row.nome|raw }}" width="60" >
                   	<a class="users-list-name">{{ row.login }}</a>
-                  	<span class="users-list-date">{{ row.matricula }}</span>
+                  	{# <span class="users-list-date">{{ row.matricula }}</span> #}
                 </li>        
 		    {% endfor %}
         {% endif %}             

@@ -1,6 +1,9 @@
 <?php
 namespace NZord\Helpers;
 
+use Modulos\System\Models\ModAcesso;
+
+
 class NAcl{
     protected $app;
     protected $session;
@@ -20,6 +23,7 @@ class NAcl{
         $this->app = $c;
         $this->session = $session;
     }
+    //--------------------------------------------------------------------------------
     /**
      * Defini as permissões para rotas dos modulos.
      * Ex:
@@ -56,12 +60,65 @@ class NAcl{
         }
         return $this;
     }
-
+    //--------------------------------------------------------------------------------
     public function authorizeMod($modulo,array $actions){
         $this->permissiosMods = [ strtolower($modulo) => $actions ];
+        $this->generateDBModAcesso();
         return $this;
     }
-    
+    //--------------------------------------------------------------------------------
+    /**
+     * Geração automatica do modelo de permissões para tabela mod_acesso
+     */
+    public function generateDBModAcesso(){
+        $modulos = $this->permissiosMods;
+        foreach ($modulos as $key => $value) {
+            $mod        = explode('::',$key);
+            $modulo     = $mod[0];
+            $controller = $mod[1];
+            $sMod       = ModAcesso::where('modulo',$modulo)->whereNull('controller')->first();
+            if( !$sMod ){
+                $iMod = new ModAcesso();
+                $iMod->superior   = 0;
+                $iMod->modulo     = $modulo;
+                $iMod->descricao  = 'Geração Automatica - Modulo: '.$modulo;
+                $iMod->status     = 1;
+                $iMod->save();
+                $this->generateDBModAcesso();
+            }                    
+            if($sMod){
+                $bMod   = $sMod->id;             
+                $sCont  = ModAcesso::where('superior',$bMod)->where('controller',$controller)->first();
+                if( !$sCont  ){
+                    $iCont = new ModAcesso();
+                    $iCont->superior   = $bMod;
+                    $iCont->modulo     = $modulo;
+                    $iCont->controller = $controller;
+                    $iCont->descricao  = 'Geração Automatica - Controller: '.$controller;
+                    $iCont->status     = 1;
+                    $iCont->save();                    
+                    $this->generateDBModAcesso();
+                }
+                if( $sCont ){
+                    $bCont   = $sCont->id;
+                    foreach ($value as $val) {          
+                        $sAct  = ModAcesso::where('superior',$bCont)->where('action',$val)->first();        
+                        if( !$sAct  ){
+                            $iAct = new ModAcesso();
+                            $iAct->superior   = $bCont;
+                            $iAct->modulo     = $modulo;
+                            $iAct->controller = $controller;
+                            $iAct->action     = $val;
+                            $iAct->descricao  = 'Geração Automatica - Action: '.$val;
+                            $iAct->status     = 1;
+                            $iAct->save();
+                        }
+                    }                    
+                }
+            }
+        }
+    }
+    //--------------------------------------------------------------------------------
     /**
      * Defini as permissões para rotas dos modulos.
      * Ex:
@@ -97,6 +154,7 @@ class NAcl{
 
         return $this;
     }
+    //--------------------------------------------------------------------------------
     /**
      *  Checa permissão ou permissao com alias 
      * 
@@ -134,6 +192,7 @@ class NAcl{
             }
         }
     }
+    //--------------------------------------------------------------------------------
     /**
      *  Checa permissão ou permissao com alias 
      * 
@@ -151,6 +210,7 @@ class NAcl{
             return !true;
         }
     }
+    //--------------------------------------------------------------------------------
     /**
      *  Passa nome action da rota para verificar oque ta definido no construtor do controller; 
      * 
@@ -193,6 +253,7 @@ class NAcl{
       
         return false;
     }
+    //--------------------------------------------------------------------------------
     /**
      * Checa permissoes na sessao do usuário. 
      *  Depto \ Setor \ Perfil \ Usuario
@@ -224,7 +285,7 @@ class NAcl{
 
         return $permit;
     }
-
+    //--------------------------------------------------------------------------------
     private function checkAccessModAction($mod,$controller,$action,$checkController=true){
         $modAccess = $this->session->get('userModAccess');
         if( !$modAccess ){
@@ -252,4 +313,5 @@ class NAcl{
         
         return count($access) == 0 ? false : true;
     }
+    //--------------------------------------------------------------------------------
 }

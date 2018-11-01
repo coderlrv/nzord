@@ -40,10 +40,28 @@
         },
     }
  #}
-{% macro grid(nome, dados, dTables=true,options={'height':null,'colunsHidden':null,'class':'','click':null,'actionNew':null},btnActions={}) %}
+{% macro grid(nome, dados, dTables=null,options={'title':null,'search':null,'height':null,'colunsHidden':null,'class':'','click':null,'actionNew':null},btnActions={}) %}
 {% import _self as grid %}
      <div>
-        <div class="dataTable_wrapper" {% if options.height %} style="overflow: auto;max-height:{{options.height}}px;" {% endif %}>
+        {% if options.title %}
+            <div class="col-sm-10 col-xs-8 pull-left">             
+                <h4>
+                    {{ options.title|raw }}
+                </h4>
+            </div> 
+        {% endif %}
+        {% if options.search %}
+            <div class="col-sm-2 col-xs-4 pull-right">            
+                <div class="form-group">
+                    <label class="sr-only"></label>
+                    <div class="input-group">
+                        <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                        <input type="text" id="psq_{{ nome }}" maxlength="20" class="form-control" placeholder="Buscas rápida...">
+                    </div>
+                </div>
+            </div> 
+        {% endif %}
+        <div class="dataTable_wrapper col-xs-12" {% if options.height %} style="overflow: auto;max-height:{{options.height}}px;" {% endif %}>
             {% if dados %}
                 <table id="dtb_{{ nome }}" style="font-size: 85%;" class="table table-striped table-bordered table-hover table-responsive table-condensed {{options.class}}" cellspacing="0" width="100%">
                     <thead>
@@ -64,33 +82,54 @@
                             {% endfor %}
                             {% if btnActions %}
                                 <td>
+                                    <div class="btn-group" role="group">
                                     {% for btn in btnActions %}
-                                    {% set mostra = true %}
-                                    {% if btn.valida %}
-                                        {% set campo = attribute(row, btn.valida.campo) %}
-                                        {% if campo == btn.valida.valor %}
-                                            {% set mostra = false %}
-                                        {% endif %}	
-                                    {% endif %}
-                                    {% if mostra %} 
-                                        <button type="button" class="btn-action-grid btn btn-xs {{btn.class}}" title="{{btn.title}}" data-action="{{btn.action}}">{{btn.label |raw}}</button>                                                                           	
-                                    {% endif %}
+                                        {% set mostra = true %}
+                                        {% if btn.valida %}
+                                            {% set campo = attribute(row, btn.valida.campo) %}
+                                            {% if campo == btn.valida.valor %}
+                                                {% set mostra = false %}
+                                            {% endif %}	
+                                        {% endif %}
+                                        {% if mostra %} 
+                                            <button type="button" class="btn-action-grid btn btn-xs {{btn.class}}" title="{{btn.title}}" data-action="{{btn.action}}">{{btn.label |raw}}</button>                                                                           	
+                                        {% endif %}
                                     {% endfor %}
+                                    </div>
                                 </td>
                             {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>
-                </table>
+                </table>                
+                <script>
+                    function rePage(){
+                    }
+                </script>
             {% else %}
                 {% if options.actionNew %}
                     <div class="dt-buttons btn-group"><button class="btn btn-default" tabindex="0" onClick="{{ options.actionNew }}">
                         <span><b> <i class="fa fa-files-o"></i> Novo</b></span></button>
                     </div>
                 {% endif %}
-                <div class="alert alert-danger" style="margin-top: 40px;"><b>Sem Dados para Mostrar!</b></div>
+                <div class="alert alert-danger margin-top-5"><b>Sem Dados para Mostrar!</b></div>
+                <script>
+                    /*function rePage(){
+                        location.reload();
+                    }*/
+                </script>
             {% endif %}
         </div>
+        
+        {% if options.search %}
+        <script>
+            require(['nzordAux'],function(){
+                $('#psq_{{ nome }}').keyup(function(){
+                    searchTable('psq_{{ nome }}','dtb_{{ nome }}');
+                });   
+            });
+        </script>
+        {% endif %}
     </div>
     {% if options.click %}
         <script>
@@ -152,6 +191,7 @@
  #}
 
 {% macro gridSripts(nome, button={}, url, dados, options={'timeout':false,'interval':false,'select':false,'btnFilter':false,'refreshExitModal':true,'order':null,'columnsDefs':null}) %}
+   {% if dados %}
     <script>
         require(['datatableJS'],function(){
             $(document).ready(function() {
@@ -270,7 +310,6 @@
                 }, {{ options.interval }});
             {% endif %}
         });
-
         {% if options.refreshExitModal != false %}
             function onExitModal(response){
                 if( $('#dtb_{{ nome }}').length === 1 ){
@@ -278,7 +317,8 @@
                 }
             }
         {% endif %}
-    </script>
+    </script>    
+    {% endif %}
 {% endmacro %}
 
 {% macro ctMenuSripts(nome) %}

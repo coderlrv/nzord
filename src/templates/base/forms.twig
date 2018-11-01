@@ -120,7 +120,7 @@
     </div>
 {% endmacro %}
 
-{% macro textarea(name, label, value, placeholder, rows, errors, cols, options = { required: false, summernote: true ,codeStyle:null,summerAirMode:false,readonly: false,class:'',wysihtml5:false} ) %}
+{% macro textarea(name, label, value, placeholder, rows, errors, cols, options = {required:false,mlenght:false,summernote:true,codeStyle:null,summerAirMode:false,readonly: false,class:'',wysihtml5:false} ) %}
 {% import _self as form %}
 	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
         {{ form.label(label, options.required ) }}  
@@ -131,8 +131,21 @@
                 <a data-wysihtml-action="change_view">switch to html view</a>
         	</div>
         {% endif %}
-        <textarea id="{{ name }}" name="{{ name }}" {% if options.required %} required {% endif %} rows="{{ rows|default(10) }}" 
+        <textarea id="{{ name }}" name="{{ name }}" {% if options.required %} required {% endif %} rows="{{ rows|default(10) }}"  {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %} 
         		class="form-control" placeholder="{{ placeholder|default('Descreva...') }}" {% if options.readonly %} readonly {% endif %} >{{ value|raw }}</textarea>
+        {% if options.mlenght and options.wysihtml5 == null and options.summernote == null %}
+            <div id="cnamb_{{name}}" class="text-muted text-right small">{{ options.mlenght }} : 0</div>
+            <script>
+                $('#cnamb_{{name}}').html("{{ options.mlenght }} : " + $('#{{ name }}').val().length);
+                $(function(){
+                    $('#{{ name }}').keyup(function(){
+                        var charsno = $(this).val().length;
+                        $('#cnamb_{{name}}').html("{{ options.mlenght }} : " + charsno);
+                    });
+                });
+            </script>
+        {% endif %}
+
         {{ form.error_block(errors) }}
         {% if options.summernote or options.codeStyle or options.wysihtml5 %}
         <script>
@@ -158,10 +171,10 @@
                 		    "emphasis": true, //Italics, bold, etc. Default true
                 		    "lists": true, //(Un)ordered lists, e.g. Bullets, Numbers. Default true
                 		    "html": true, //Button which allows you to edit the generated HTML. Default false
-                		    "link": true, //Button to insert a link. Default true
+                		    "link": false, //Button to insert a link. Default true
                 		    "image": false, //Button to insert an image. Default true,
                 		    "color": false, //Button to change color of font  
-                		    "blockquote": false, // Blockquote
+                		    "blockquote": true, // Blockquote
                 		    "fa": true,  // Font Awesome
                 		    "size": 'sm' //default: none, other options are xs, sm, lg
                 		  }
@@ -179,7 +192,6 @@
                             autoRefresh:true,
                             height:'320px'
                         });
-
                         code.refresh();
                     })
                 })
@@ -189,30 +201,33 @@
     </div>
 {% endmacro %}
 
-{% macro select(name, label, value, option_array, errors, cols, options = {id:'', multiple: false, include_blank: true, required: true, onchange:null, select2:null, placeholder:'', chosen:null, readonly: false,class:'',classInput:''} ) %}
+{% macro select(name, label, value, option_array, errors, cols, options = {id:'', multiple: false, include_blank: true, required:true, onchange:null, select2:null, placeholder:'', chosen:null, readonly: false,class:'',classInput:''} ) %}
 {% import _self as form %}
 	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}" id="{{ options.id ? options.id : name }}_area">
-        {{ form.label(label, options.required ) }}    
-        <select id="{{ options.id ? options.id : name }}" name="{{ name }}" {% if options.required %}required{% endif %} class="selectpicker form-control disable-text-shadow {{options.classInput}}" 
-        {% if value %} data-value="{{ value }}"{% endif %} {% if options.multiple %}multiple{% endif %} {% if options.onchange %} onChange="{{ options.onchange }}" {% endif %} {% if options.readonly %} readonly {% endif %} >
+        {{ form.label(label, options.required ) }}
+        <select id="{{ options.id ? options.id : name }}" name="{{ name }}" class="selectpicker form-control disable-text-shadow {{options.classInput}}" 
+                    {% if options.required %} required {% endif %} 
+                    {% if value %} data-value="{% if value is iterable %}{{ value|join(',') }}{% else %}{{ value }}{% endif %}"{% endif %} 
+                    {% if options.multiple %}multiple{% endif %}
+                    {% if options.onchange %} onChange="{{ options.onchange }}" {% endif %} 
+                    {% if options.readonly %} readonly {% endif %} >
             {% if options.include_blank %}
-              <option selected value="">{{options.placeholder}}</option>
+               <option selected value="">{{options.placeholder}}</option>
             {% endif %}
            {% for row in option_array %}
-              <option value="{{ row.id }}"
+                <option value="{{ row.id }}"
                 {% if value is iterable %}
                     {% if row.id in value %}selected{% endif %}
                 {% else %}
                     {% if row.id|trim is same as(value|trim) %}selected{% endif %}
                 {% endif %}
-                >{{ row.nome }} </option>
+                >{{ row.nome }}</option>
            {% endfor %}
         </select>
         {{ form.error_block(errors) }}
     {% if options.select2 != null and options.readonly == false %}
           <script>
-            require(['select2'],function(){
-                
+            require(['select2'],function(){                
                  $('#{{ options.id ? options.id : name}}').select2({
                     "placeholder": "{{options.placeholder}}",
                     "allowClear": {{ options.include_blank ? 'true': 'false'}},
@@ -288,7 +303,7 @@
 {% endmacro %}
 
 
-{% macro dateTime(name, label, value, placeholder, errors, cols, options = { required: false, format: 'DD/MM/YYYY HH:mm' }) %}
+{% macro dateTime(name, label, value, placeholder, errors, cols, options = { required: false, format: 'DD/MM/YYYY HH:mm',minDate: false }) %}
 {% import _self as form %}
   	<div class="form-group{% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}}">
   	    {{ form.label(label, options.required ) }} 
@@ -303,7 +318,9 @@
        <script>
             require(['datetimepicker'],function(){
                 setTimeout(function(){ 
-                    $('.datetimepicker').datetimepicker(); 
+                    $('.datetimepicker').datetimepicker({% if options.minDate %} 
+                    {% if options.minDate == 1 %} { minDate: new Date()} {% else %} { minDate: new Date('{{ options.minDate }}')} {% endif %} 
+                    {% endif %} ); 
                 }, 2000);
             })
         </script>

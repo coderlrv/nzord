@@ -83,7 +83,8 @@
                     Online</a>
             </div>
         </div>
-
+        
+	    {% if session.app.userSetor %}
         <form action="{{ base_url() }}/app/system/search" method="post" class="sidebar-form search-menu">
             <div class="input-group">
                 <input type="text" name="q" class="form-control" placeholder="Buscar...">
@@ -161,6 +162,7 @@
                     </li>
                 </ul>
             </li>
+
             {% if session.app.menuArr %}
                 {% for menu in session.app.menuArr %}
                     <li {% if menu.sub %}class="treeview" {% endif %}>
@@ -206,5 +208,6 @@
                 {% endfor %}
             {% endif %}
         </ul>
+        {% endif %}
     </section>
 </aside>

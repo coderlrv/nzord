@@ -35,7 +35,7 @@
 		<div id="msgAlertas" class="col-xs-5 text-right"></div>
 		<div class="col-xs-3 pull-right text-right hidden-xs text-muted"> 
 			{% if sys.config.manager_notes %}
-				<a class="btn btn-sm btn-xs btn-default"> <i class="fa fa-file-o" aria-hidden="true"></i> Notes </a>
+				<a class="btn btn-sm btn-xs btn-default" onclick="sysNotes()"> <i class="fa fa-file-o" aria-hidden="true"></i> Anotações</a>
 			{% endif %}
 
 			{% if sys.config.manager_files %}
@@ -61,6 +61,7 @@
 	<input type="hidden" id="urlPag" value="{{ base_url() }}/{{ currentUrl }}">
 </div> <!-- ./wrapper -->
 <div id="divModalBox" ></div>
+<div class="loader"></div>
 {% endblock %} 
 
 {% block bScripts %}

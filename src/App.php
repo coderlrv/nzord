@@ -17,5 +17,6 @@ class App extends \Slim\App{
         require 'dependencies.php';
         require 'routes.php';
         require 'middleware.php';
+        
     }
 }
