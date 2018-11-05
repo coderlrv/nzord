@@ -152,11 +152,11 @@
             {% if options.summernote != null %}
                 require(['summernote'],function(){
                     $('#{{ name }}').summernote({ 
+                        lang: 'pt-BR',
                         height: {{ rows*10 }} ,
                         tabsize: 2 {% if options.summerAirMode %},airMode: true {% endif %}
                         ,dialogsInBody: true
-                    });
-        
+                    });        
                     {% if options.readonly %}
                         $('#{{ name }}').summernote('disable');
                     {% endif %}
