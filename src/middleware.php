@@ -68,6 +68,6 @@ $app->add(new \NZord\Middlewares\Session($container->get('settings')['session'])
 $app->add(function ($request, $response, $next) {
     $gUrl    = $request->getServerParams();
     $request = $request->withAttribute('session', $this->session);
-    $request = $request->withAttribute('url', $gUrl['REQUEST_SCHEME'] . '://' . $gUrl['SERVER_NAME'] . $gUrl['REQUEST_URI']);
+    $request = $request->withAttribute('url', 'http://' . $gUrl['SERVER_NAME'] . $gUrl['REQUEST_URI']);
     return $next($request, $response);
 });
