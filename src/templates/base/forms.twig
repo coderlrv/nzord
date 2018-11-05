@@ -120,7 +120,7 @@
     </div>
 {% endmacro %}
 
-{% macro textarea(name, label, value, placeholder, rows, errors, cols, options = {required:false,mlenght:false,summernote:true,codeStyle:null,summerAirMode:false,readonly: false,class:'',wysihtml5:false} ) %}
+{% macro textarea(name, label, value, placeholder, rows, errors, cols, options = { required:false,mlenght:false,summernote:true,codeStyle:null,summerAirMode:false,readonly: false,class:'',wysihtml5:false,notClearText:false,btnsAddon:false} ) %}
 {% import _self as form %}
 	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
         {{ form.label(label, options.required ) }}  
@@ -156,8 +156,30 @@
                             lang: 'pt-BR',
                             height: {{ rows*10 }} ,
                             tabsize: 2 {% if options.summerAirMode %},airMode: true {% endif %}
-                            ,dialogsInBody: true
-                        });        
+                            ,dialogsInBody: true,
+                            toolbar: [
+                                [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough','clear'] ],
+                                [ 'fontsize', [ 'fontsize' ] ],
+                                [ 'color', [ 'color' ] ],
+                                [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
+                                [ 'table', [ 'table' ] ],
+                                {% if options.btnsAddon %}
+                                    [ 'insert', [ 'link'] ],
+                                    ['picture', ['picture']],
+                                    ['video', ['video']],
+                                {% endif %}
+                                [ 'view', [ 'undo', 'redo', 'codeview', 'help' ] ]
+                            ],
+                            {% if not options.notClearText %}
+                                callbacks: {
+                                    onPaste: function(e){
+                                        var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+                                        e.preventDefault();
+                                        document.execCommand('insertText', false, bufferText);
+                                    } 
+                                }
+                            {% endif %}
+                        });
                         {% if options.readonly %}
                             $('#{{ name }}').summernote('disable');
                         {% endif %}
