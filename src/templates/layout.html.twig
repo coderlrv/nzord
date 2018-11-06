@@ -41,15 +41,16 @@
 			{% if sys.config.manager_files %}
 				<a class="btn btn-sm btn-xs btn-default" onclick="fileManager()"> <i class="fa fa-th-list" aria-hidden="true"></i> File Manager </a>
 			{% endif %}
-			<b>Versão:</b> {{ sys.version }}
-			
+			|<span class="cursor-pointer" title="Banco de Dados Conectado!"> {{ bdAtual|raw }} </span> |
+			<b class="cursor-pointer">Versão:</b> {{ sys.version }}
+
 			{% if sys.config.beta %}
 			<!-- Beta -->
 			<a title="A versão beta é a versão de um produto (geralmente software) que ainda se encontra em fase de desenvolvimento e testes e são disponibilizados para que os usuários possam testar e eventualmente, reportar bugs para os desenvolvedores." class="cursor-pointer">
 				<small style="padding-bottom:0px;padding-top:0px;" class="label bg-red">Beta</small>
 			</a>
 			{% endif %}
-
+			
 		</div>
 	</footer>
 	<!-- Control Sidebar -->
