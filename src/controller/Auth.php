@@ -174,7 +174,7 @@ class AuthController extends Controller
         $usuario->status = 'A';
         $usuario->perfil = 3;
         $usuario->setor  = 0;
-        $usuario->avatar = 'images/avatar/seting.png';
+        $usuario->avatar = 'files/avatar/user.png';
         $usuario->save();
 
         return $usuario;

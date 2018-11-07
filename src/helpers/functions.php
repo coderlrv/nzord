@@ -802,6 +802,22 @@ function toDateStr($value,$format = 'Y-m-d'){
 }
 
 /**
+ * Converte string data time para formato do mysql  'Y-m-d H:i:s' 
+ *  ou retorna data se for  data normal
+ *
+ * @param string | date $value 
+ * @return string
+ */
+function toDateTimeStr($value,$format = 'Y-m-d H:i:s'){
+    if(is_string($value)){
+        $value = str_replace('/', '-', $value);
+        return date('Y-m-d H:i:s', strtotime($value));
+    }else{
+        return date_format($value, $format); 
+    }
+}
+
+/**
  *  Converte string formato lista antiga '1=Tipo1,2=Tipo2' 
  *  para array lista 
  *

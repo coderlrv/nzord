@@ -292,7 +292,7 @@ class NReportTwig
             $page = '@page { margin: 120px 50px 15px; }';
         }
 
-        $texto = '<html>
+        $texto = '<html moznomarginboxes mozdisallowselectionprint>
                     <head>
                     <style>
                     ' . $page;
