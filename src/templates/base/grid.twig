@@ -190,7 +190,7 @@
     }
  #}
 
-{% macro gridSripts(nome, button={}, url, dados, options={'timeout':false,'interval':false,'select':false,'btnFilter':false,'refreshExitModal':true,'order':null,'columnsDefs':null}) %}
+{% macro gridSripts(nome, button={}, url, dados, options={'timeout':false,'interval':false,'select':false,'btnFilter':false,'refreshExitModal':true,'order':null,'columnsDefs':null,'renderRow':null}) %}
    {% if dados %}
     <script>
         require(['datatableJS'],function(){
@@ -278,7 +278,12 @@
                                 }
                             {% endfor %}
                         {% endif %}
-                    ]
+                    ],
+                    "fnRowCallback" : function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                        {% if options.renderRow %}
+                            {{ options.renderRow }}.bind(this)(nRow, aData, iDisplayIndex, iDisplayIndexFull);
+                        {% endif %}
+                    }
                 });
 
                 {% if options.order %}
