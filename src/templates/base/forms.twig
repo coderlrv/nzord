@@ -120,7 +120,7 @@
     </div>
 {% endmacro %}
 
-{% macro textarea(name, label, value, placeholder, rows, errors, cols, options = { required:false,mlenght:false,summernote:true,codeStyle:null,summerAirMode:false,readonly: false,class:'',wysihtml5:false,notClearText:false,btnsAddon:false} ) %}
+{% macro textarea(name, label, value, placeholder, rows, errors, cols, options = { required:false,mlenght:false,summernote:true,codeStyle:null,summerAirMode:false,readonly: false,class:'',whtml5SToolbar: false,wysihtml5:false,notClearText:false,btnsAddon:false,ckEditor:false} ) %}
 {% import _self as form %}
 	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
         {{ form.label(label, options.required ) }}  
@@ -131,7 +131,7 @@
                 <a data-wysihtml-action="change_view">switch to html view</a>
         	</div>
         {% endif %}
-        <textarea id="{{ name }}" name="{{ name }}" {% if options.required %} required {% endif %} rows="{{ rows|default(10) }}"  {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %} 
+        <textarea id="{{ name }}" name="{{ name }}" {% if options.required %} required {% endif %} rows="{{ rows|default(5) }}"  {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %} 
         		class="form-control" placeholder="{{ placeholder|default('Descreva...') }}" {% if options.readonly %} readonly {% endif %} >{{ value|raw }}</textarea>
         {% if options.mlenght and options.wysihtml5 == null and options.summernote == null %}
             <div id="cnamb_{{name}}" class="text-muted text-right small">{{ options.mlenght }} : 0</div>
@@ -147,7 +147,7 @@
         {% endif %}
 
         {{ form.error_block(errors) }}
-        {% if options.summernote or options.codeStyle or options.wysihtml5 %}
+        {% if options.summernote or options.codeStyle or options.wysihtml5 or options.ckEditor %}
         <script>
             {% if options.summernote != null %}
                 require(['summernote'],function(){
@@ -186,24 +186,48 @@
                     })
                 });
             {% endif %}
-            {% if options.wysihtml5 != null %}
-                require(['wysihtml5'],function(){
-                	$('#{{ name }}').wysihtml5({
-                		locale: "pt-BR",
-            		  	toolbar: {
-                		    "font-styles": false, //Font styling, e.g. h1, h2, etc. Default true
-                		    "emphasis": true, //Italics, bold, etc. Default true
-                		    "lists": true, //(Un)ordered lists, e.g. Bullets, Numbers. Default true
-                		    "html": true, //Button which allows you to edit the generated HTML. Default false
-                		    "link": false, //Button to insert a link. Default true
-                		    "image": false, //Button to insert an image. Default true,
-                		    "color": false, //Button to change color of font  
-                		    "blockquote": true, // Blockquote
-                		    "fa": true,  // Font Awesome
-                		    "size": 'sm' //default: none, other options are xs, sm, lg
-                		  }
-                		});
+            
+
+           
+            {% if options.ckEditor != null %}
+               
+                require(['ckEditor'],function(){
+                    CKEDITOR.replace('{{ name }}',{
+                        customConfig: '{{base_url()}}/js/ckeditor_oficio.js',
+                        height:'{{ rows*10 }}px'
+                    });
+                
                 });
+            {% endif %}
+
+            {% if options.wysihtml5 != null %}
+                {% if options.whtml5SToolbar == false %}
+                    require(['wysihtml5'],function(){
+                        $('#{{ name }}').wysihtml5({
+                            locale: "pt-BR",
+                            useLineBreaks: true,
+                            toolbar: {
+                                "font-styles": false, //Font styling, e.g. h1, h2, etc. Default true
+                                "emphasis": true, //Italics, bold, etc. Default true
+                                "lists": true, //(Un)ordered lists, e.g. Bullets, Numbers. Default true
+                                "html": true, //Button which allows you to edit the generated HTML. Default false
+                                "link": false, //Button to insert a link. Default true
+                                "image": false, //Button to insert an image. Default true,
+                                "color": false, //Button to change color of font  
+                                "blockquote": true, // Blockquote
+                                "fa": true,  // Font Awesome
+                                "size": 'sm' //default: none, other options are xs, sm, lg
+                            }
+                            });
+                    });
+                {% else %}
+                    require(['wysihtml5'],function(){
+                        $('#{{ name }}').wysihtml5({
+                            useLineBreaks: true,
+                            toolbar: false
+                            });
+                    });
+                {% endif %}
             {% endif %}
 
             {% if options.codeStyle != null %}
