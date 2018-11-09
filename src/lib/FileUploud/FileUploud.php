@@ -22,6 +22,8 @@ class FileUploud{
      * @return array|NZord\Lib\FileUploud\File
      */
     public function getFiles($name){
+        if(!$this->uploadedFiles) return null;
+        
         $dataFiles = $this->uploadedFiles[$name];
         if(is_object($dataFiles)){
      
