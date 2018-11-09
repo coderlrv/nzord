@@ -53,22 +53,34 @@ class File{
         return $this->file->getSize();
     }
     /**
+     * Retorna tamanho do arquivo mb
+     *
+     * @return int
+     */
+    public function getSizeMb(){
+        return round($this->file->getSize() / 1024 / 1024, 1); 
+    }
+    /**
      * Checa se arquivo é uma arquivo valido.
      *
      * @return boolean
      */
     public function isDoc(){
         $types = [
-            'application/pdf',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'application/vnd.ms-excel',
-            'application/msword',
-            'application/vnd.oasis.opendocument.text',
-            'application/vnd.oasis.opendocument.presentation',
-            'application/vnd.oasis.opendocument.spreadsheet'
+            'pdf',
+            'doc',
+            'docx',
+            'ods',
+            'odt',
+            'txt',
+            'xlsx',
+            'xls',
+            'csv',
+            'pps',
+            'ppsx',
+            'ppt'
         ];
-        return in_array($this->file->getClientMediaType(),$types);
+        return in_array($this->getExtesionOrin(),$types);
     }
     /**
      * Checa se arquivo é do tipo imagem.
@@ -77,7 +89,7 @@ class File{
      * @return boolean
      */
     public function isImage(){
-        $types = ['image/pjpeg','image/bmp','image/jpg','image/jpeg','image/gif','image/png'];
+        $types = ['pjpeg','bmp','jpg','jpeg','gif','png'];
         return in_array($this->file->getClientMediaType(),$types);
     }
     /**
@@ -137,6 +149,27 @@ class File{
         }
     }
 
+    function moveImageQuality($caminho,$quality=50){
+        if(!$this->isImage()){
+            return false;
+        }
+
+        list( $dirname ) = array_values( pathinfo($caminho) );
+        $this->createdDir($dirname);
+        try{
+            // create an image manager instance with favored driver
+            $manager = new ImageManager(array('driver' => 'gd'));
+            // read image from temporary file
+            $img = $manager->make($this->getNameTmp());
+
+            // save image
+            $img->save($caminho,$quality);
+
+            return true;
+        }catch(Exception $ex){
+            return false;
+        }
+    }
     private function createdDir($path){
         if(!is_dir($path)){
             mkdir($path,0777,true);

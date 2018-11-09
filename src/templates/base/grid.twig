@@ -249,7 +249,12 @@
                         {% endif %}
                         { extend: 'copy', text: '<u>C</u>opiar',key: { key: 'c', altKey: true} }
                         , 'csv','excel'
-                        , { extend: 'print', text: '<u>I</u>mprimir',key: { key: 'i', altKey: true} }
+                        , { extend: 'pdfHtml5', orientation: 'landscape', pageSize: 'A4',customize : function(doc) {doc.pageMargins = [10, 10, 10,10 ]; }, }
+                        , { extend: 'print', text: '<u>I</u>mprimir', orientation: 'landscape', pageSize: 'A4',key: { key: 'i', altKey: true},
+                                    customize: function ( win ) {
+                                        $(win.document.body).css( 'font-size', '10px' );                    
+                                        $(win.document.body).find( 'table' ).addClass( 'compact' ).css( 'font-size', 'inherit' );
+                                    } }
                         , { extend: 'colvis', text: '<u>V</u>isivel',key: { key: 'v', altKey: true} }
                         , { extend: 'pageLength', text: 'Registros' }
                         {% if options.btnFilter %}
