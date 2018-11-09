@@ -99,21 +99,19 @@ class File{
      * @param string $caminho
      * @return string
      */
-    function move($caminho){
-        list( $dirname,$filename ) = array_values( pathinfo($caminho));
+    function move($caminho,$randoName=false){
+        list( $dirname,$filename ) = array_values(pathinfo($caminho));
+
         $this->createdDir($dirname);
-        if(!$filename){
+        if($randoName){
             $basename = bin2hex(random_bytes(12)); // see http://php.net/manual/en/function.random-bytes.php
             $filename = sprintf('%s.%0.8s', $basename, $this->getExtesionOrin());
 
-            $caminho .= $filename;
+            $caminho .= '/'.$filename;
         }
+        $this->file->moveTo($caminho);
 
-        if($this->file->moveTo($caminho)){
-            return $filename;
-        }else{
-            return null;
-        }
+        return $filename;
     }
     /**
      * Move arquivo e faz resize com tamanho passado.
