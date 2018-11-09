@@ -90,7 +90,7 @@ class File{
      */
     public function isImage(){
         $types = ['pjpeg','bmp','jpg','jpeg','gif','png'];
-        return in_array($this->file->getClientMediaType(),$types);
+        return in_array($this->getExtesionOrin(),$types);
     }
     /**
      * Move arquivo para caminho passado por paramentro. 
