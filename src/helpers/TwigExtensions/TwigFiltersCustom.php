@@ -18,10 +18,10 @@ class TwigFiltersCustom extends \Twig_Extension
 
     public function cpfCnpjFilter($value){
         $valueLimpo = preg_replace("/[' '-.\/]/",'', $value);
-
+    
         if(empty($valueLimpo)) return '';
-
-        if(strlen($valueLimpo) > 15){
+        
+        if(strlen($valueLimpo) > 12){
             return $this->mask($valueLimpo,'##.###.###/####-##');
         }else{
             return $this->mask($valueLimpo,'###.###.###-##');
