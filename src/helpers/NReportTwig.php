@@ -253,7 +253,7 @@ class NReportTwig
         if ($btnPrint) {
             $body .= '<link href="'.$dir.'/assets/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
                     <script src="'.$dir.'/assets/nzord-app/src/js/nzord-aux.js"></script>'; 
-            $body .= "<button class='btn btn-sm btn-primary hidden-print' onclick=\"printDiv('prtReport')\">
+            $body .= "<button class='btn btn-sm btn-primary hidden-print' onclick=\"printData('prtReport')\">
                 <i class='fa fa-print'></i> Imprimir </button>";
             $body .= '<button class="btn btn-sm btn-success hidden-print" onclick="generateexcel(\'prtReport\')">
                 <i class="fa fa-table"></i>  Export Excel </button>';

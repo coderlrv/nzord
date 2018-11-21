@@ -63,7 +63,7 @@
         {% endif %}
         <div class="dataTable_wrapper col-xs-12" {% if options.height %} style="overflow: auto;max-height:{{options.height}}px;" {% endif %}>
             {% if dados %}
-                <table id="dtb_{{ nome }}" style="font-size: 85%;" class="table table-striped table-bordered table-hover table-responsive table-condensed {{options.class}}" cellspacing="0" width="100%">
+                <table id="dtb_{{ nome }}" style="font-size: 85%;" class="table table-striped table-bordered table-hover table-responsive table-condensed {{options.class}}" cellspacing="0" width="100%" border="1">
                     <thead>
                         <tr>{# get table headers from the table row #}
                         {% for row in dados.0|cast_to_array  %}

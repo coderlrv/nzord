@@ -64,9 +64,7 @@ class Report {
         $texto = str_replace($busca, $altera, $modelo);
         
         if( $tipo == 'html'){
-            echo '
-                <script src="http://192.168.12.202/nzord/public/js/app.js"></script>';	
-            echo '<button fieldtype="button" class="btn btn-sm btn-primary hidden-print" onclick="printDiv(\'prtReport\');">
+            echo '<button fieldtype="button" class="btn btn-sm btn-primary hidden-print" onclick="printData(\'prtReport\');">
             		<span class="fa fa-print"></span> Imprimir
             	</button>';
             echo '<div id="prtReport" class="small">';

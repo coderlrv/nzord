@@ -314,7 +314,7 @@
         <div class="input-group" style="width:100%">
             <input type="text" class="form-control" style="height: 32px;" name="{{name}}" id="{{name}}" placeholder="{{ options.placeholder }}" {% if options.required %}required{% endif %} aria-describedby="{{name}}_addon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" autocomplete="off" value="{{value.id}}"  {% if options.readonly %} readonly {% endif %}>
             <div class="input-group-addon" style="width:{{options.widthAddon|default(80)}}%; padding: 0px !important;border:none !important;">
-                <input type="text" id="{{name}}_addon" class="form-control" style="height: 32px;" value="{{ value.val }}" placeholder="{{ options.placeholderAddon }}" disabled {% if options.min %}min="{{options.min}}"{% endif %}>
+                <input type="text" id="{{name}}_addon" class="form-control" style="height: 32px;" value="{{ value.val }}" autocomplete="false" placeholder="{{ options.placeholderAddon }}" disabled {% if options.min %}min="{{options.min}}"{% endif %}>
             </div>
             {% if btnsAddon %}
                 <span class="input-group-btn">
