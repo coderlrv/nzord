@@ -84,7 +84,17 @@
                         type: 'column'
                     },
                     credits: { enabled: false },
-                    title: { text: '{{title | default('')}}' },
+                    title: { 
+                        text: '{{title | default('')}}' ,
+                        style:{
+                            fontSize: '16px'
+                        }  
+                    },
+                    xAxis: {
+                        labels: {
+                            enabled: false
+                        }
+                    },
                     yAxis: {
                         min: 0,
                         title: {
@@ -100,10 +110,17 @@
                             }
                         }
                     },
+                    legend: {
+                        enabled: {{ options.showInLegend ? 'true' : 'false' }},
+                        itemStyle: {
+                            fontSize: '9px',
+                            fontFamily: 'Verdana, sans-serif'
+                        }
+                    },
                     tooltip: {
                         headerFormat: '<table>',
                         pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                        '<td style="padding:0"><b>{point.y} Total</b></td></tr>',
+                        '<td style="padding:0"><b>{point.y}</b></td></tr>',
                         footerFormat: '</table>',
                         shared: false,
                         useHTML: true
@@ -111,6 +128,11 @@
                     plotOptions: {
                         series: {
                             groupPadding: 0,
+                            borderWidth: 0,
+                            dataLabels: {
+                                enabled: {{ options.dataLabels ? 'true' : 'false'}} ,
+                                format: '{point.y}'
+                            }
                         }
                     },
                     series: JSON.parse('{{ data | json_encode | raw }}'),

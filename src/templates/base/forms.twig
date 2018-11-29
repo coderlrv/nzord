@@ -25,14 +25,23 @@
 	<input class="form-control" type="hidden" name="{{ name }}" id="{{ name }}" value="{{ value }}">
 {% endmacro %}
 
+{% macro color(name, label, value, placeholder, errors, cols, options={ required:false,readonly:false}) %}
+    {% import _self as form %}
+    <div id="group-{{name}}" class="form-group {% if errors %} has-error {% endif %}{{convertColGrid(cols|default(12))}}">
+        {{ form.label(label, options.required ) }}
+	    <input class="form-control" type="color" name="{{ name }}" id="{{ name }}" value="{{ value|default('#d9534f') }}" {% if options.readonly %} readonly {% endif %} >
+        {{ form.error_block(errors) }}
+    </div>
+{% endmacro %}
 
-{% macro input(name, label, value, placeholder, errors, cols, options={ required:false,readonly:false,mask:false,decimalPrecision:0,valide:null,removeMask:false,action:false,mlenght:false,class:'' } ) %}
+{% macro input(name, label, value, placeholder, errors, cols, options={ required:false,readonly:false,mask:false,decimalPrecision:0,valide:null,removeMask:false,action:false,mlenght:false,class:'',toUpper:false } ) %}
 	{% import _self as form %}
     <div id="group-{{name}}" class="form-group {% if errors %} has-error {% endif %}{{convertColGrid(cols|default(12))}}">
         {{ form.label(label, options.required ) }}
         <input class="form-control {{options.class}}" type="text" id="{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}" value="{{ value }}" 
                 {% if options.required %}required{% endif %} {% if options.readonly %} readonly {% endif %} {{ options.action }} 
-                {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %} >
+                {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %}
+                {% if options.toUpper %} onkeyup="this.value = this.value.toUpperCase()" {% endif %} >
         {{ form.error_block(errors) }}
     </div>
     {# Validacoes #}
@@ -219,16 +228,29 @@
                                 "color": false, //Button to change color of font  
                                 "blockquote": true, // Blockquote
                                 "fa": true,  // Font Awesome
-                                "size": 'sm' //default: none, other options are xs, sm, lg
+                                "size": 'sm' //default: none, other options are xs, sm, lg                                
                             }
-                            });
+                        });
                     });
                 {% else %}
                     require(['wysihtml5'],function(){
                         $('#{{ name }}').wysihtml5({
                             useLineBreaks: true,
-                            toolbar: false
-                            });
+                            toolbar: false,
+                            parser: function(html) {           
+                                if( html ){
+                                    if( $.type(html) == 'object' ){   
+                                        html = $.text(html);                                     
+                                        return html.toString();
+                                    }
+                                    if( /<p/.test(html) || /<div/.test(html) || /<ul/.test(html) || /<li/.test(html)){
+                                        html = $(html);
+                                        return html.text();
+                                    }
+                                }
+                                return html;
+                            }
+                        });
                     });
                 {% endif %}
             {% endif %}

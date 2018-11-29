@@ -249,7 +249,10 @@ class NReportTwig
     private function renderHtml($html, $btnPrint = true)
     {
         $body = '';
-        $dir = $this->container->get('settings')['app']['base_url'];
+        $base = $this->container->get('request')->getUri();
+        $port = ($base->getPort()) ? ':'.$base->getPort():'';
+        $dir = $base->getScheme().'://'.$base->getHost().$port.$base->getBasePath();
+        
         if ($btnPrint) {
             $body .= '<link href="'.$dir.'/assets/bootstrap/dist/css/bootstrap.css?v='.time().'" rel="stylesheet">
                     <script src="'.$dir.'/assets/nzord-app/src/js/nzord-aux.js?v='.time().'"></script>'; 
