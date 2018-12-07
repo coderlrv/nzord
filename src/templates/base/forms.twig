@@ -274,14 +274,14 @@
     </div>
 {% endmacro %}
 
-{% macro select(name, label, value, option_array, errors, cols, options = {id:'', multiple: false, include_blank: true, required:true, onchange:null, select2:null, placeholder:'', chosen:null, readonly: false,class:'',classInput:''} ) %}
+{% macro select(name, label, value, option_array, errors, cols, options = {id:null, multiple: false, include_blank: true, required:null, onchange:null, select2:null, placeholder:'', chosen:null, readonly: false,class:'',classInput:''} ) %}
 {% import _self as form %}
 	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}" id="{{ options.id ? options.id : name }}_area">
         {{ form.label(label, options.required ) }}
         <select id="{{ options.id ? options.id : name }}" name="{{ name }}" class="selectpicker form-control disable-text-shadow {{options.classInput}}" 
                     {% if options.required %} required {% endif %} 
                     {% if value %} data-value="{% if value is iterable %}{{ value|join(',') }}{% else %}{{ value }}{% endif %}"{% endif %} 
-                    {% if options.multiple %}multiple{% endif %}
+                    {% if options.multiple %} multiple {% endif %}
                     {% if options.onchange %} onChange="{{ options.onchange }}" {% endif %} 
                     {% if options.readonly %} readonly {% endif %} >
             {% if options.include_blank %}
