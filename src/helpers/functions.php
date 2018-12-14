@@ -732,6 +732,20 @@ function zdebug($data){
     $high .= '</pre>';
     echo $high;
 }
+
+
+function zdebugJson($data){
+    $result = print_r($data,true);
+
+    header( 'debug', true, 500 );
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode([
+        'message'   => $result,
+        'statusCode'=> 500
+    ],JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 /**
  * Converter valores em class grid bootstrap
  *
@@ -795,7 +809,7 @@ function toDecimal($value){
 function toDateStr($value,$format = 'Y-m-d'){
     if(is_string($value)){
         $value = str_replace('/', '-', $value);
-        return date('Y-m-d', strtotime($value));
+        return date($format, strtotime($value));
     }else{
         return date_format($value, $format); 
     }

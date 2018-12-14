@@ -238,4 +238,7 @@ class Controller
         }
     }
 
+    public function url(){
+        return $this->app->url;
+    }
 }
