@@ -390,9 +390,9 @@
     {% block mScript %}
        <script>
             require(['datetimepicker'],function(){
-                setTimeout(function(){ 
+                setTimeout(function(){
                     $('.datetimepicker').datetimepicker({% if options.minDate %} 
-                    {% if options.minDate == 1 %} { minDate: new Date()} {% else %} { minDate: new Date('{{ options.minDate }}')} {% endif %} 
+                    {% if options.minDate == 1 %} { minDate: moment().format("Y-M-D") } {% else %} { minDate: new Date('{{ options.minDate }}')} {% endif %} 
                     {% endif %} ); 
                 }, 2000);
             })
