@@ -256,7 +256,7 @@
             {% endif %}
 
             {% if options.codeStyle != null %}
-                require(['codemirror'],function(){
+                /*require(['codemirror'],function(){
                     require(['codemirrorPlugins'],function(){
                         var code = CodeMirror.fromTextArea(document.getElementById("{{ name }}"), {
                             lineNumbers: true,
@@ -267,7 +267,7 @@
                         });
                         code.refresh();
                     })
-                })
+                })*/
             {% endif %}
         </script>
         {% endif %}
