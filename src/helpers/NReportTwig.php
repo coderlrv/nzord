@@ -273,10 +273,11 @@ class NReportTwig
       
         $handle = fopen("php://temp", "wb+");
         $body = new Stream($handle);
-        $body->write($html);
+        $htmlDoc = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">'. $html;
+        $body->write($htmlDoc);
 
         $headers = new Headers();
-        $headers->set("Content-type", "application/vnd.oasis.opendocument.text");
+        $headers->set("Content-type", "application/vnd.oasis.opendocument.text;charset=ISO8859_1");
         $headers->set('Content-Disposition', 'attachment;filename="'.$nameFile.'.odt"');
         $headers->set('Expires', '0');
         $headers->set('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
@@ -296,15 +297,18 @@ class NReportTwig
         }
 
         $texto = '<html moznomarginboxes mozdisallowselectionprint>
-                    <head>
-                    <style>
-                    ' . $page;
+                    <head>';
+        
+        // Aplica utf no arquivo.
+        if($tipo == 'odt'){
+            $texto .=  '<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html;charset=utf-8">';
+        }
 
+        $texto .= '<style>' . $page;
         if ($tipo == 'pdf') {
             $texto .= '#header { position: fixed; left: 0px; top: -150px; right: 0px; height: 50px; }
             #footer { position: fixed; left: 0px; bottom: -10px; right: 0px; height: 20px; font-size: 9px; }';
         }
-
         $texto .= '#footer .page:after { content: counter(page); }
                         hr {margin-bottom: px; border-width: 1px; }
                         body { font-family: Arial, Helvetica, sans-serif; }
