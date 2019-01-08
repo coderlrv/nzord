@@ -129,6 +129,17 @@
     </div>
 {% endmacro %}
 
+{% macro numeric(name, label, value, placeholder, errors, cols, options={ required:false,readonly:false,action:false,mlenght:false,class:'' } ) %}
+	{% import _self as form %}
+    <div id="group-{{name}}" class="form-group {% if errors %} has-error {% endif %}{{convertColGrid(cols|default(12))}}">
+        {{ form.label(label, options.required ) }}
+        <input class="form-control {{options.class}}" type="number" id="{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}" value="{{ value }}" 
+                {% if options.required %}required{% endif %} {% if options.readonly %} readonly {% endif %} {{ options.action }} 
+                {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %} >
+        {{ form.error_block(errors) }}
+    </div>
+{% endmacro %}
+
 {% macro textarea(name, label, value, placeholder, rows, errors, cols, options = { required:false,mlenght:false,summernote:true,codeStyle:null,summerAirMode:false,readonly: false,class:'',whtml5SToolbar: false,wysihtml5:false,notClearText:false,btnsAddon:false,ckEditor:false,btnImgPublic:false} ) %}
 {% import _self as form %}
 	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
