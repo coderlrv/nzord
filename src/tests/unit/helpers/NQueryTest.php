@@ -1,6 +1,6 @@
 <?php
 
-use NZord\Helpers\NQuery;
+use \NZord\Helpers\NQuery;
 use Illuminate\Database\Capsule\Manager as DB;
 use Mockery as m;
 
