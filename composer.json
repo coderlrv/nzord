@@ -34,14 +34,18 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7",
-        "there4/slim-test-helpers": "^2.1"
+        "there4/slim-test-helpers": "^2.1",
+        "mockery/mockery": "dev-master"
     },
     "authors": [
         {
             "name": "TI Lucas do Rio Verde",
             "email": "ti@lucasdorioverde.gov.mt.br"
         }
-    ],
+    ],   
+    "scripts": {
+        "test": "vendor/bin/phpunit --verbose --coverage-text"
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }

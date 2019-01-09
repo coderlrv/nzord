@@ -1,6 +1,7 @@
 <?php
 
-use Base\Helpers\NUrlRoute;
+/* 
+use NZord\Helpers\NUrlRoute;
 
 class NUrlRouteTest extends LocalWebTestCase
 {
@@ -80,3 +81,4 @@ class NUrlRouteTest extends LocalWebTestCase
         $this->assertNotTrue($url->isValidUrl('localhost\modal?p=app/tributacao/AutorizacaoEscri/Edit&teste=232'));
     }
 }
+*/

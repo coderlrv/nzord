@@ -13,8 +13,6 @@ use \Slim\Http\Headers;
 use \Slim\Http\RequestBody;
 use \Slim\Http\Request;
 
-
-
 define('PROJECT_ROOT', realpath(__DIR__ . '/..'));
 
 require_once PROJECT_ROOT . '/../vendor/autoload.php';
@@ -38,9 +36,12 @@ class LocalWebTestCase extends WebTestCase {
     protected $cookies = [];
 
     public function getSlimInstance() {
-        // Include our core application file
-        include PROJECT_ROOT . '/app.php';
+        $setting = require 'settings.php';
+        $app = new \NZord\App($setting);
+        $app->run();
 
+        // Include our core application file
+      
         $this->container = $app->getContainer();
         $this->session   = $this->container->session;
         return $app;
