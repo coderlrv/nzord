@@ -1,4 +1,5 @@
 <?php
+namespace NZord\Tests\Unit\Helpers;
 
 use \NZord\Helpers\NQuery;
 use Illuminate\Database\Capsule\Manager as DB;
