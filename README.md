@@ -1,4 +1,4 @@
-# NZord
+# NZord [![Build Status](https://travis-ci.org/coderlrv/nzord.svg?branch=master)](https://travis-ci.org/coderlrv/nzord)
 
 Projeto desenvolvido em Slim Framework 3 incluindo Eloquent, Twig, Flash messages, Monolog,... 
 
