@@ -4,7 +4,7 @@ use NZord\Helpers\NQuery;
 use Illuminate\Database\Capsule\Manager as DB;
 use Mockery as m;
 
-class NQueryTest extends \NZord\Tests\Unit\TestCaseUnit
+class NQueryTest extends \PHPUnit\Framework\TestCase
 {
     public function testSetSql()
     {
