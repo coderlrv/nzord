@@ -29,6 +29,7 @@ install:
   - travis_retry composer self-update
   - if [ $USE_LOWEST_DEPENDENCIES == 0 ]; then composer install --no-interaction; fi;
   - if [ $USE_LOWEST_DEPENDENCIES == 1 ]; then composer update --prefer-lowest --no-interaction; fi;
+  - composer dumpautoload -o
 
 script:
   - vendor/bin/phpunit --verbose
