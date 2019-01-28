@@ -254,12 +254,21 @@ class NReportTwig
         $dir = $base->getScheme().'://'.$base->getHost().$port.$base->getBasePath();
         
         if ($btnPrint) {
+            $body .= "<script>
+                function printExcelFile(){
+                    var link = document.createElement('a');
+                    link.href = generateExcelHtml('prtReport');
+                    link.download = 'report.xlsx';
+                    link.click();
+                    link.preventDefault();
+                }   
+            </script>";
             $body .= '<link href="'.$dir.'/assets/bootstrap/dist/css/bootstrap.css?v='.time().'" rel="stylesheet">
                     <script src="'.$dir.'/assets/nzord-app/src/js/nzord-aux.js?v='.time().'"></script>'; 
             $body .= "<button class='btn btn-sm btn-primary hidden-print' onclick=\"printData('prtReport')\">
-                <i class='fa fa-print'></i> Imprimir </button>";
-            $body .= '<button class="btn btn-sm btn-success hidden-print" onclick="generateexcel(\'prtReport\')">
-                <i class="fa fa-table"></i>  Export Excel </button>';
+                <i class='fa fa-print' ></i> Imprimir </button>";
+            $body .= '<a class="btn btn-sm btn-success hidden-print" id="btn-print-excel" style="margin-left:5px;" onclick="printExcelFile()">
+                <i class="fa fa-table"></i>  Export Excel </a>';
         }
 
         $body .= "<div id='prtReport' class='small'> $html </div>";
