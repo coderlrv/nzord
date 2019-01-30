@@ -294,7 +294,7 @@
                     {% if value %} data-value="{% if value is iterable %}{{ value|join(',') }}{% else %}{{ value }}{% endif %}"{% endif %} 
                     {% if options.multiple %} multiple {% endif %}
                     {% if options.onchange %} onChange="{{ options.onchange }}" {% endif %} 
-                    {% if options.readonly %} readonly {% endif %} >
+                    {% if options.readonly %} readonly tabindex="-1" {% endif %} >
             {% if options.include_blank %}
                <option selected value="">{{options.placeholder}}</option>
             {% endif %}
