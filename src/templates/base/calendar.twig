@@ -1,4 +1,4 @@
-{% macro calendar(nome,urlEvents,options = { businessHours:[],defaultView:null,btnView:null,minTime:null,maxTime:null,allDaySlot:true,slotMinutes:false,eventRender:null}) %}
+{% macro calendar(nome,urlEvents,options = { businessHours:[],defaultView:null,btnView:null,minTime:null,maxTime:null,allDaySlot:true,slotMinutes:false,eventRender:null,eventOverlap:true}) %}
     <div class='{{convertColGrid(cols|default(12))}}'>
         <div class="alert alert-warning alert-dismissible"  id='script-warning' style="display:none;">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
@@ -37,6 +37,7 @@
                     businessHours:{{ options.businessHours |json_encode | raw}},
                     selectable: true,
                     selectHelper: true,
+                    {% if not options.eventOverlap %} eventOverlap:false, {% endif %}
                     {% if options.slotMinutes %} slotDuration: '00:30:00',{% endif %}
                     {% if options.eventRender %} eventRender: {{options.eventRender}},{% endif %}
                     defaultDate: '{{"now"|date("Y-m-d")}}',
