@@ -56,6 +56,7 @@ class AuthController extends Controller
         }
 
         $auth = new Login($this->app);
+
         if ($bind && $useAD) {
             $user = Usuario::where('login', '=', $data['username'])->first();
 
@@ -97,6 +98,8 @@ class AuthController extends Controller
                             ->where('senha', md5($data['password']))
                             ->where('status', 'A');
 
+
+            // Se possui AD em funcionamento ,verificar se o perfil esta habilitado para acesso externo.
             if($useAD){
                 $perfLog = Parametro::get('perfLogInterno', function ($value) { 
                                             return isset($value)? explode(',', $value) : [];
@@ -106,7 +109,6 @@ class AuthController extends Controller
             }
 
             $user = $user->first();
-
             if ($user) {
                 //Grava sessao.
                 $auth->abreSessao($user->id);

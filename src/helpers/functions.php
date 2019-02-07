@@ -987,3 +987,17 @@ function formmat_oz($oztime) {
 function win2unixFmt($wtime) {
     return date('Y-m-d H:i:s', bcsub(bcdiv($wtime, '10000000'), '11644473600'));
 }
+
+function generateSeriesTime($timeStart,$timeEnd,$intervalMinute = 30,$formatTime = 'H:i'){
+    $dTimeStart = gettype($timeStart) == 'string' ? new \DateTime($timeStart) : clone $timeStart;
+    $dTimeEnd   = gettype($timeEnd) == 'string' ? new \DateTime($timeEnd) : clone $timeEnd;
+
+    $seriesTime = []; 
+    do {
+        array_push($seriesTime,$dTimeStart->format($formatTime));
+        $dTimeStart->add(new \DateInterval('PT' . $intervalMinute . 'M'));
+        
+    } while ($dTimeStart <= $dTimeEnd);
+    
+    return $seriesTime;
+}

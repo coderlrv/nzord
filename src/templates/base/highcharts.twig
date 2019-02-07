@@ -65,7 +65,7 @@
     <div id="chart-{{name}}" class="{{convertColGrid(cols|default(12))}}">
         <div id="{{name}}" style="min-width: 100%; max-width: 100%; margin: 0 auto; margin-top:0px;"></div>
     </div>
-    
+
     {# Validacoes #}
     <script>
         require(['highcharts'],function(){
@@ -85,7 +85,7 @@
                     },
                     credits: { enabled: false },
                     title: { 
-                        text: '{{title | default('')}}' ,
+                        text: '{{ title | default('') }}' ,
                         style:{
                             fontSize: '16px'
                         }  
@@ -118,9 +118,8 @@
                         }
                     },
                     tooltip: {
-                        headerFormat: '<table>',
-                        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                        '<td style="padding:0"><b>{point.y}</b></td></tr>',
+                        headerFormat:'',
+                        pointFormat: '<span>{series.name}</span>: <b>{point.y}</b>',
                         footerFormat: '</table>',
                         shared: false,
                         useHTML: true
@@ -136,6 +135,74 @@
                         }
                     },
                     series: JSON.parse('{{ data | json_encode | raw }}'),
+                });
+            });
+        });
+   </script>
+{% endmacro %}
+
+
+
+{% macro columnChartCateg(name, data, cols,title, options = { ajax: false, showInLegend: false,dataLabels:false,titleY:'',titleX:'' ,stackLabels:false} ) %}
+    <div id="chart-{{name}}" class="{{convertColGrid(cols|default(12))}}">
+        <div id="{{name}}" style="min-width: 100%; max-width: 100%; margin: 0 auto; margin-top:0px;"></div>
+    </div>
+
+    {# Validacoes #}
+    <script>
+        require(['highcharts'],function(){
+            require(['highchartModules'],function(){
+                Highcharts.chart('{{name}}', {
+                    lang: {
+                        noData: "Sem dados"
+                    },
+                    noData: {
+                        style: {
+                            fontWeight: 'bold',
+                            fontSize: '15px',
+                        }
+                    },
+                    chart: {
+                        type: 'column'
+                    },
+                    credits: { enabled: false },
+                    title: { 
+                        text: '{{ title | default('') }}' ,
+                        style:{
+                            fontSize: '16px'
+                        }  
+                    },                    
+                    xAxis: {
+                        type: 'category'
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: '{{options.titleX}}'
+                        }
+                    },
+                    legend: {
+                        enabled: {{ options.showInLegend ? 'true' : 'false' }},
+                        itemStyle: {
+                            fontSize: '9px',
+                            fontFamily: 'Verdana, sans-serif'
+                        }
+                    },
+                    tooltip: {
+                        headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b>'
+                    },
+                    plotOptions: {
+                        series: {
+                            borderWidth: 0,
+                            dataLabels: {
+                                enabled: {{ options.dataLabels ? 'true' : 'false'}} ,
+                                format: '{point.y}'
+                            }
+                        }
+                    },
+                   /* series: JSON.parse('{{ data | json_encode | raw }}')*/
+                   series: [ {{ data | json_encode | raw }} ]
                 });
             });
         });

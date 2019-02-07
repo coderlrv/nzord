@@ -248,10 +248,10 @@
                         $('#{{ name }}').wysihtml5({
                             useLineBreaks: true,
                             toolbar: false,
-                            parser: function(html) {           
+                            parser: function(html) {
                                 if( html ){
                                     if( $.type(html) == 'object' ){   
-                                        html = $.text(html);                                     
+                                        html = $.text(html);
                                         return html.toString();
                                     }
                                     if( /<p/.test(html) || /<div/.test(html) || /<ul/.test(html) || /<li/.test(html)){
@@ -310,7 +310,7 @@
         </select>
         {{ form.error_block(errors) }}
     {% if options.select2 != null and options.readonly == false %}
-          <script>
+        <script>
             require(['select2'],function(){                
                  $('#{{ options.id ? options.id : name}}').select2({
                     "placeholder": "{{options.placeholder}}",
@@ -325,6 +325,11 @@
                     var value = $(this).val();
                     $(this).data('value',value);
                 });
+                {% if options.include_blank != true %}
+                    setTimeout( function (){
+                        $('#{{ options.id ? options.id : name}}').removeAttr('required');
+                    },2000);
+                {% endif %}
             });
         </script>
     {% endif %}
