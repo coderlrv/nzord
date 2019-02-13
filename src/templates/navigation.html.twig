@@ -13,8 +13,8 @@
         <span class="sr-only">Toggle navigation</span>
     </a>
     <div class="navbar-custom-menu">
-        <ul class="nav navbar-nav">
-            <li class="dropdown calendar-menu">
+        <ul class="nav navbar-nav">  
+            <li class="dropdown calendar-menu" onclick="hdeyCalendar();">
                 <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown">-->
                     <div id="data-wrapper">{{ sys.diaSemana}}<br>
                         <b>{{ sys.diaHoje}}</b>
@@ -34,17 +34,47 @@
             </li>
             {% if sys.config.manager_messages %}
                 <li class="dropdown messages-menu" title="Mensagens do Correio Interno" id="navBarMsg">
-                    <a href="{{ base_url() }}/app/system/mensagem" style="padding: 15px 10px 15px !important;">
+                    <a href="{{ base_url() }}/app/system/mensagem" style="padding: 15px 15px 15px !important;">
                         <i class="fa fa-envelope-o"></i>
                     </a>
                 </li>
-            {% endif %}
-            <li class="dropdown user user-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding: 15px 10px 15px !important;">
+            {% endif %}             
+            <li class="dropdown messages-menu" title="Usuários no Setor {{session.app.userSetor}}">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding: 15px 15px 15px !important;">
+                    <i class="fa fa-users"></i>
+                    {% if rSetor.users %}                    
+                    <span class="label label-info">{{ rSetor.users|length }}</span>
+                    {% endif %}
+                </a>
+                <ul class="dropdown-menu card">
+                    <li class="header"><b>{{ rSetor.id }} </b> - {{ rSetor.nome }} </li>
+                    <li style="overflow:auto;max-height:320px;">
+                        <table class="table table-condensed table-hover">
+                        {% for row in rSetor.users %}
+                            {% set usAvatar = file_public('/avatar/user.png') %} 
+                            {% if file_exists( file_dir('/'~row.avatar) ) %}  {% set usAvatar = file_public('/'~row.avatar) %} {% endif %}
+                            <tr><td title="{{ row.matricula }} - {{ row.nome }}">
+                                <div class="pull-left">
+                                    <img src="{{ usAvatar }}" class="img-circle" style="max-width:30px;max-height:24px;"></div>
+                                 <b> {{ row.id }}</b> <small><span class="pull-right">{{ row.login }}</span></small>
+                            </td></tr>
+                        {% endfor %}   
+                        </table>                     
+                    </li>
+                    <li class="footer"><a href="#">Usuários no mesmo setor</a></li>
+                </ul>
+            </li>         
+            <li class="dropdown messages-menu" title="Recados encaminhados para mim.." id="navBarRecado">
+                <a href="#" style="padding: 15px 15px 15px !important;">
+                    <i class="fa fa-comments"></i>
+                </a>
+            </li>
+            <li class="dropdown user user-menu" title="Informações da Sessão">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding: 15px 15px 15px !important;">
                     <img src="{{ avatar }}" class="user-image img-circle" alt="{{ file_public('/avatar/user.png') }}">
                     <span class="hidden-xs">{{session.app.login}}</span>
                 </a>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu card" >
                     <li class="user-header" style="height:initial">
                         <img src="{{ avatar }}" class="img-circle" alt="{{ file_public('/avatar/user.png') }}">
                         <p>{{session.app.login}}

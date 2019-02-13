@@ -71,7 +71,12 @@
                     },
                     eventClick: function(calEvent, jsEvent, view) {
                         $('#{{nome}}').trigger('eventClick',[calEvent]);
-                    }
+                    },
+                    eventMouseover: function (event, jsEvent, view) {
+                        if (view.name !== 'agendaDay') {
+                            $(jsEvent.target).attr('title', event.title);
+                        }
+                    },
                 });
             });
         });

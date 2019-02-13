@@ -84,14 +84,14 @@ function dataConvEN($data){
  * @return string
  */
 function limpaStr($string) {
-    $string = preg_replace("/[Ã�Ã€Ã‚ÃƒÃ„Ã¡Ã Ã¢Ã£Ã¤]/", "a", $string);
-    $string = preg_replace("/[Ã‰ÃˆÃŠÃ©Ã¨Ãª]/", "e", $string);
-    $string = preg_replace("/[Ã�ÃŒÃ­Ã¬]/", "i", $string);
-    $string = preg_replace("/[Ã“Ã’Ã”Ã•Ã–Ã³Ã²Ã´ÃµÃ¶]/", "o", $string);
-    $string = preg_replace("/[ÃšÃ™ÃœÃºÃ¹Ã¼]/", "u", $string);
-    $string = preg_replace("/[Ã‡Ã§]/", "c", $string);
+    $string = preg_replace('/[áàãâä]/ui', 'a', $string);
+    $string = preg_replace('/[éèêë]/ui', 'e', $string);
+    $string = preg_replace('/[íìîï]/ui', 'i', $string);
+    $string = preg_replace('/[óòõôö]/ui', 'o', $string);
+    $string = preg_replace('/[úùûü]/ui', 'u', $string);
+    $string = preg_replace('/[ç]/ui', 'c', $string);
     //echo $string;
-    $string = preg_replace("/[][><}{)(:;,ÂºÂª!?*%~^`&#@]/", "", $string);
+    $string = preg_replace("/[][><}{)(:;,ºª!?*%~^`&#@]/", "", $string);
     $string = preg_replace("/ /", "_", $string);
     $string = strtolower($string);
     return $string;
@@ -914,11 +914,14 @@ function debugBuilder($query){
 }
 
 //--------------------------------------------------------------------------------
-function moveUploadedFile($directory, \Slim\Http\UploadedFile $uploadedFile){
+function moveUploadedFile($directory, \Slim\Http\UploadedFile $uploadedFile, $name=null){
     $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
     $basename = bin2hex(random_bytes(12)); // see http://php.net/manual/en/function.random-bytes.php
     $filename = sprintf('%s.%0.8s', $basename, $extension);
-    
+    if( $name ){
+        $file = substr(limpaStr(pathinfo($uploadedFile->getClientFilename(), PATHINFO_FILENAME)),1,60);
+        $filename = $name.$file.'.'.$extension;
+    }        
     $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
     
     return $filename;

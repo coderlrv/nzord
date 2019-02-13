@@ -1,6 +1,6 @@
 {% macro pieChart(name, data, cols,title, options = { ajax: false, showInLegend: false,dataLabels:false,border:false } ) %}
     <div id="chart-{{name}}" class="{{convertColGrid(cols|default(12))}}">
-        <div id="{{name}}" style="min-width: 100%; max-width: 100%; margin: 0 auto; margin-top:0px;"></div>
+        <div id="{{name}}" style="min-width: 100%; margin: 0 auto; margin-top:0px;"></div>
     </div>
     
     {# Validacoes #}
@@ -14,7 +14,7 @@
                     noData: {
                         style: {
                             fontWeight: 'bold',
-                            fontSize: '15px',
+                            fontSize: '14px',
                         }
                     },
                     chart: {
