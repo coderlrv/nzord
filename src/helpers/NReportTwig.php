@@ -254,9 +254,10 @@ class NReportTwig
         $dir = $base->getScheme().'://'.$base->getHost().$port.$base->getBasePath();
         
         if ($btnPrint) {
-            $body .= '<script src="'.$dir.'/node_modules/jquery/dist/jquery.min.js"></script>
-                    <link href="'.$dir.'/node_modules/bootstrap/dist/css/bootstrap.css?v='.time().'" rel="stylesheet">
-                    <script src="'.$dir.'/node_modules/@coder-lrv/nzord-app/src/js/nzord-aux.js?v='.time().'"></script>'; 
+            //$body .= '<script src="'.$dir.'/node_modules/jquery/dist/jquery.min.js"></script>';
+            $body .= '<script> ifJqueryExecute(); </script>';             
+            $body .= '<link href="'.$dir.'/node_modules/bootstrap/dist/css/bootstrap.css?v='.time().'" rel="stylesheet">'; 
+            $body .= '<script src="'.$dir.'/node_modules/@coder-lrv/nzord-app/src/js/nzord-aux.js?v='.time().'"></script>'; 
             $body .= "<button class='btn btn-sm btn-primary hidden-print btn-print' id='btn-print-direct' onclick=\"printData('prtReport')\">
                 <i class='fa fa-print' ></i> Imprimir </button>";
             $body .= '<button class="btn btn-sm btn-success hidden-print btn-print" id="btn-print-excel" style="margin-left:5px;" onclick="printExcelFile()">

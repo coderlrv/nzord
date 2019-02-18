@@ -119,8 +119,12 @@ $container['view'] = function ($c) {
     $view->getEnvironment()->addGlobal('bdAtual', $c->get('settings')['db']['host'].'/<b>'.$c->get('settings')['db']['database'].'</b>');
     $view->getEnvironment()->addGlobal('flash', $c['flash']);
     //printR($_SESSION);
-    $resSetor = \Modulos\System\Models\Usuario::getInfoSetor(@$_SESSION['app']['user']);
+    $resSetor = null;
+    if( @$_SESSION['app']['userSetor'] != null ){
+        $resSetor = \Modulos\System\Models\Usuario::getInfoSetor(@$_SESSION['app']['user']);
+    }
     $view->getEnvironment()->addGlobal('rSetor', $resSetor);
+    
 
     return $view;
 };
