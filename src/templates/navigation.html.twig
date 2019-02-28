@@ -39,30 +39,13 @@
                     </a>
                 </li>
             {% endif %}             
-            <li class="dropdown messages-menu" title="Usuários no Setor {{session.app.userSetor}}">
+            <li class="dropdown messages-menu" title="Usuários no Setor {{session.app.userSetor}}" id="navBarUSetor">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding: 15px 15px 15px !important;">
                     <i class="fa fa-users"></i>
                     {% if rSetor.users %}                    
                     <span class="label label-info">{{ rSetor.users|length }}</span>
                     {% endif %}
                 </a>
-                <ul class="dropdown-menu card">
-                    <li class="header"><b>{{ rSetor.id }} </b> - {{ rSetor.nome }} </li>
-                    <li style="overflow:auto;max-height:320px;">
-                        <table class="table table-condensed table-hover">
-                        {% for row in rSetor.users %}
-                            {% set usAvatar = file_public('/avatar/user.png') %} 
-                            {% if file_exists( file_dir('/'~row.avatar) ) %}  {% set usAvatar = file_public('/'~row.avatar) %} {% endif %}
-                            <tr><td title="{{ row.matricula }} - {{ row.nome }}">
-                                <div class="pull-left">
-                                    <img src="{{ usAvatar }}" class="img-circle" style="max-width:30px;max-height:24px;"></div>
-                                 <b> {{ row.id }}</b> <small><span class="pull-right">{{ row.login }}</span></small>
-                            </td></tr>
-                        {% endfor %}   
-                        </table>                     
-                    </li>
-                    <li class="footer"><a href="#">Usuários no mesmo setor</a></li>
-                </ul>
             </li>         
             <li class="dropdown messages-menu" title="Recados encaminhados para mim.." id="navBarRecado">
                 <a href="#" style="padding: 15px 15px 15px !important;">
@@ -74,8 +57,21 @@
                     <img src="{{ avatar }}" class="user-image img-circle" alt="{{ file_public('/avatar/user.png') }}">
                     <span class="hidden-xs">{{session.app.login}}</span>
                 </a>
-                <ul class="dropdown-menu card" >
-                    <li class="user-header" style="height:initial">
+                <ul class="dropdown-menu card" style="padding: 5px;">
+                    <li class="current-user user-header" style="height:initial">
+                        <img src="{{ avatar }}" class="img-circle" alt="{{ file_public('/avatar/user.png') }}">
+                        <p class="user-name bold"> {{session.app.userNome}} 
+                        <small>@{{session.app.login}}</small></p>
+                    </li>
+                    <li class="divider"></li>
+                    <li><a class="profile-link" href="#" title="Definir o seu Status" onclick="defStatus();">
+                        {{ session.app.userStatus|default(' <i class="fa fa-frown-o"></i> Definir Status')|raw }}</a>
+                    </li>
+                    <li><a class="profile-link" href="{{ base_url() }}/app/system/suasessao" title="Dados da Sessão Atual"><i class="fa fa-id-card-o"></i> Perfil</a></li>
+                    <li class="divider"></li>
+                    <li><a class="sign-out-link" href="{{ path_for('logout') }}" title="Sair do Sistema" > <i class="fa fa-power-off"></i> Sair</a></li>
+                   
+                   {# <li class="user-header" style="height:initial">
                         <img src="{{ avatar }}" class="img-circle" alt="{{ file_public('/avatar/user.png') }}">
                         <p>{{session.app.login}}
                             <small>{{session.app.userNome}}</small>
@@ -90,7 +86,7 @@
                             <a href="{{ path_for('logout') }}" title="Sair::Sair do Sistema" class="btn btn-default btn-flat">
                                 <i class="fa fa-power-off"></i> Sair</a>
                         </div>
-                    </li>
+                    </li> #}
                 </ul>
             </li>
         </ul>

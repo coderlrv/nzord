@@ -103,6 +103,9 @@ class Login
         $this->session->set('loggedIn', date('Y-m-d H:i:s'));
         $this->session->set('isLoggedIn', true);
         $this->session->set('remoteIp', $this->request->getServerParam('REMOTE_ADDR'));
+        
+        $userStatus = Usuario::getUserStatus($user->id);
+        $this->session->set('userStatus', $userStatus);
 
         $this->session->set('sessao', $sessao);
         $perfil[] = $user->perfil;

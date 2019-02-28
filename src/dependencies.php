@@ -123,8 +123,7 @@ $container['view'] = function ($c) {
     if( @$_SESSION['app']['userSetor'] != null ){
         $resSetor = \Modulos\System\Models\Usuario::getInfoSetor(@$_SESSION['app']['user']);
     }
-    $view->getEnvironment()->addGlobal('rSetor', $resSetor);
-    
+    $view->getEnvironment()->addGlobal('rSetor', $resSetor);    
 
     return $view;
 };
