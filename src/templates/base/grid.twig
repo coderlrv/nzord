@@ -273,12 +273,17 @@
                         {% if options.columnsDefs %}
                             {% for row in options.columnsDefs  %}
                                 {
-                                    {% if row.action %}
-                                        "render":{{row.action}} ,
+                                    {% if row.type == 'date' %}
+                                        "render":function(data){
+                                            console.log(data);
+                                            return moment(data).format('{{row.format}}');
+                                        },
+                                    {% elseif row.type %}
+                                        "render":{{row.action}},
                                     {% endif %}
-                                    "targets":{{row.targets |json_encode|raw}} ,
+                                        "targets":{{row.targets |json_encode|raw}} ,
                                     {% if row.type %}
-                                       "type": {{row.type |json_encode|raw}} ,
+                                        "type": {{row.type |json_encode|raw}},
                                     {% endif %}
                                 }
                             {% endfor %}

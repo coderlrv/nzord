@@ -78,7 +78,7 @@ class NQueryTest extends \PHPUnit\Framework\TestCase
         $query->where('b.coluna',1);
         $query->limit(1);
 
-        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1   limit 1',$query->toSql());
+        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1 limit 1',$query->toSql());
     }
     public function testOffSet()
     {
@@ -86,7 +86,7 @@ class NQueryTest extends \PHPUnit\Framework\TestCase
         $query->where('b.coluna',1);
         $query->offSet(10);
 
-        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1    offset 10',$query->toSql());
+        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1 offset 10',$query->toSql());
     }
     public function testOrderBy()
     {
@@ -94,7 +94,7 @@ class NQueryTest extends \PHPUnit\Framework\TestCase
         $query->where('b.coluna',1);
         $query->orderBy('b.coluna');
 
-        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1   order by b.coluna ASC',$query->toSql());
+        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1 order by b.coluna ASC',$query->toSql());
     }
     public function testOrderByDesc()
     {
@@ -102,7 +102,7 @@ class NQueryTest extends \PHPUnit\Framework\TestCase
         $query->where('b.coluna',1);
         $query->orderBy('b.coluna','DESC');
 
-        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1   order by b.coluna DESC',$query->toSql());
+        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1 order by b.coluna DESC',$query->toSql());
     }
     public function testNotNull()
     {
@@ -138,7 +138,7 @@ class NQueryTest extends \PHPUnit\Framework\TestCase
         $query->whereBetween('b.coluna','2019-02-21','2019-02-30');
         
 
-        $this->assertEquals("select coluna from tab_usuario b where b.coluna = 1 AND b.coluna  between '2019-02-21' and '2019-02-30'",$query->toSql());
+        $this->assertEquals("select coluna from tab_usuario b where b.coluna = 1 AND b.coluna between '2019-02-21' and '2019-02-30'",$query->toSql());
     }
     public function testWhereBetweenOr()
     {
@@ -147,7 +147,7 @@ class NQueryTest extends \PHPUnit\Framework\TestCase
         $query->whereBetween('b.coluna','2019-02-21','2019-02-30',"OR");
         
 
-        $this->assertEquals("select coluna from tab_usuario b where b.coluna = 1 OR b.coluna  between '2019-02-21' and '2019-02-30'",$query->toSql());
+        $this->assertEquals("select coluna from tab_usuario b where b.coluna = 1 OR b.coluna between '2019-02-21' and '2019-02-30'",$query->toSql());
     }
     public function testGroupBy()
     {
@@ -265,10 +265,10 @@ class NQueryTest extends \PHPUnit\Framework\TestCase
             
         $query = new NQuery('select coluna from tab_usuario b');
         $this->assertInstanceOf('Illuminate\Support\Collection',$query->toCollection());
-    } 
+    }
     public function testToUniqueResult(){
         $values = [
-            ['count'=>1]
+            [ 'count'=> 1 ]
         ];
 
         $query = m::mock(new NQuery('select coluna from tab_usuario b'));

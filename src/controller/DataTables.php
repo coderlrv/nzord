@@ -1,6 +1,7 @@
 <?php
 namespace NZord\Controller;
 
+use NZord\Helpers\NQuery;
 use Illuminate\Database\Capsule\Manager as DB;
 
 class DataTables{
@@ -12,147 +13,127 @@ class DataTables{
         }
         $this->setNamespace($this->namespace);
     }
-        
-    public static function simple( $request, $sql ){
-        $where = self::filter($request);
-    
-        if( $request['draw'] == '0'  ){
-            $dados = DB::select('select x.* from ( '.$sql.' LIMIT 1 ) as x ');
-        }else{
-            $order = self::order($request);
-            $limit = self::limit($request);
 
-            $dados = DB::select('select x.* from ( '.$sql.' ) as x '.$where.$order.$limit );
-            
-            /*$recordsTotal = $db->get_results('select count(*) as qtde from ( '.$sql.' ) as x ' );*/
-            $recordsTotal = DB::select('select count(*) as qtde from ( '.$sql.' ) as x ' );
-            $recordsFiltered = DB::select('select count(*) as qtde from ( '.$sql.' ) as x '.$where );
-        }
-        if( $dados ){
-            $k = (array)$dados[0];
-            $k = @array_keys($k);
-            $k = @array_map('strtoupper', $k);
+    public static function getDriver(){
+        return DB::connection()->getDriverName();
+    }
+
+    public static function simple( $request, $sql ){
+        $driver = static::getDriver();
+        $query = static::getSql($request,$sql,$driver);
+
+        //Busca dados
+        $dados = $query->toArray();
+
+        //TotalFiltrado
+        $recordsFiltered = count($dados);
+
+        // retorna  colunas
+        if($dados){
+            $columns = (array)$dados[0];
+            $columns = @array_keys($columns);
+            $columns = @array_map('strtoupper', $columns);
         }
         
-        if( $request['draw'] == '0'  ){
-            $qfield = 0;
-            $tfield = 0;
+        if( $request['draw'] == '0' ){
+            $recordsTotal = 0;
+            $recordsTotal = 0;
         }else {
-            $qfield = $recordsFiltered[0]->qtde;
-            $tfield = $recordsTotal[0]->qtde;
+
+            $recordsTotal = $recordsFiltered;
+            $recordsTotal = static::getTotRegister($sql);
         }
-        $data = json_decode(json_encode($dados),false);
-        //$draw = isset ( $_REQUEST['draw'] ) ? intval( $_REQUEST['draw'] ) : 0;
-        
+
         return [ 
             "draw"              => isset ( $request['draw'] ) ? intval( $request['draw'] ) : 0,
-            "recordsTotal"      => intval( $tfield ),
-            "recordsFiltered"   => intval( $qfield ),
-            "columns"			=> @$k,
-            "data"           	=> $data
-            /*,"sql"               => $sql*/
+            "recordsTotal"      => intval( $recordsTotal ),
+            "recordsFiltered"   => intval( $recordsTotal ),
+            "columns"           => @$columns,
+            "data"              => $dados
         ];
     }
-    
-    
-    public static function simple2( $request, $class ){
-        $where = self::filter($request);
-        
-        if( $request['draw'] == '0'  ){
-            $dados = DB::select('select x.* from ( '.$sql.' LIMIT 1 ) as x ');
-        }else{
-            $order = self::order($request);
-            $limit = self::limit($request);
 
-            $dados = $class::selectGrid( str_replace(' ORDER BY ', '',$order).$limit,str_replace(' WHERE ', '',$where));            
-        }
-        if( $dados ){
-            $k = (array)$dados[0];
-            $k = @array_keys($k);
-            $k = @array_map('strtoupper', $k);
-        }
-        
+    static function getSql($request,$sql,$driver = 'mysql'){
         if( $request['draw'] == '0'  ){
-            $qfield = 0;
-            $tfield = 0;
-        }else {
-            $qfield = @$recordsFiltered[0]->qtde;
-            $tfield = @$recordsTotal[0]->qtde;
+            $query = new NQuery('select x.* from ( '.$sql.' LIMIT 1 ) as x ');
+
+        }else{
+            $query = new NQuery('select x.* from ( '.$sql.' ) as x');
+            
+            //Ordenação
+            $orders = self::order($request);
+            foreach($orders as $order){
+                $query->orderBy($order['column'],$order['order']);
+            }
+
+            // Paginacao no dados. 
+            // lenght = Limite
+            // start = Pagina atual
+            if ( isset($request['start']) && $request['length'] != -1 ) {
+                $query->limit($request['length']);
+                $query->offset($request['start']);
+            }
+
+            //Adiciona where
+            $where = self::filter($request,$driver);
+            $query->joinWhereOr($where);
         }
-        $data = json_decode(json_encode($dados),false);
-        
-        return array(
-            "draw"            => isset ( $request['draw'] ) ? intval( $request['draw'] ) : 0,
-            "recordsTotal"    => intval( $tfield ),
-            "recordsFiltered" => intval( $qfield ),
-            "columns"			=> @$k,
-            "data"           	=> $data
-        );
+
+        return $query;
     }
-    
-    static function limit ( $request ){
-        $limit = '';
-        
-        if ( isset($request['start']) && $request['length'] != -1 ) {
-            $limit = " LIMIT ".intval($request['start']).", ".intval($request['length']);
-        }
-        
-        return $limit;
-    }
-    
-    
-    static function filter ( $request, $other=null ){
-        $sqlStr = null;
-        $globalSearch = array();  
+
+    static function filter($request,$driver='mysql'){
+        $query = new NQuery(); 
         
         if ( isset($request['search']) && $request['search']['value'] != '' ) {
             $str = strtolower($request['search']['value']);
             
-            for ( $i=0, $ien=count($request['columns']) ; $i<$ien ; $i++ ) {
-                $requestColumn = $request['columns'][$i];
-                
-                if ( $requestColumn['searchable'] == 'true' ) {
-                    $value = strip_tags($str);
-                    $value = addslashes($value); 
+            if($driver == 'pgsql'){
+                $query->whereRawOR("x::text like E'%:search%'");
 
-                    $globalSearch[] = " UPPER(`".$requestColumn['name']."`) LIKE CONCAT('%','".$value."','%')";
+                //Paramentros
+                $value = strip_tags($str);
+                $value = addslashes($value);
+                $query->bindParam('search',$value,NQuery::PARAM_RAW);
+
+            }else{
+                for ( $i=0, $ien=count($request['columns']) ; $i<$ien ; $i++ ) {
+                    $requestColumn = $request['columns'][$i];
+                    
+                    if ( $requestColumn['searchable'] == 'true' ) {
+                        $value = strip_tags($str);
+                        $value = addslashes($value);
+
+                        $query->whereRawOR("`".strtoupper($requestColumn['name'])."` like CONCAT('%','".$value."','%')");
+                    }
                 }
             }
         }
- 
-        if ( count( $globalSearch ) ) {
-            $sqlStr = '('.implode(' OR ', $globalSearch).')';
-        }        
-        if ( $other ){
-            if ( $sqlStr ){
-                $sqlStr .= ' AND '.$other;
-            }else{
-                $sqlStr = $other;
-            }
-        }        
-        if ( $sqlStr != null ) {
-            $where = ' WHERE '.$sqlStr;
-        }        
-        return @$where;
+
+        return $query;
     }
     
-    
     static function order ( $request ){
-        $order = '';
+        $orderBy = [];
+
         if ( isset($request['order']) && count($request['order']) ) {
-            $orderBy = array();
-            
+
             for ( $i=0, $ien=count($request['order']) ; $i<$ien ; $i++ ) {
+            
                 $columnIdx = intval($request['order'][$i]['column']);
                 $requestColumn = $request['columns'][$columnIdx];
                 
                 if ( $requestColumn['orderable'] == 'true' ) {
                     $dir = $request['order'][$i]['dir'] === 'asc' ? 'ASC' :	'DESC';
-                    $orderBy[] = ($columnIdx + 1).' '.$dir;
+                    // [ coluna, ordernação ]
+                    $orderBy[] = ['column' => ($columnIdx + 1),'order' => $dir];
                 }
             }
-            $order = ' ORDER BY '.implode(', ', $orderBy);
         }
-        return $order;
+        return $orderBy;
+    }
+
+    static function getTotRegister($sql){
+        return (new NQuery('select count(*) as qtde from ( '.$sql.' ) as x '))->toUniqueResult();
     }
 }

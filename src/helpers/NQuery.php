@@ -17,6 +17,20 @@ class NQuery{
     function __construct($sql = ''){
         $this->query = $sql;
     }
+
+    // /**
+    //  * 
+    //  * Retorna drive 
+    //  * mysql = mysql
+    //  * psql = postgres
+    //  * 
+    //  * @param string $drive
+    //  * @return void
+    //  */
+    // public function getDriverName(){
+    //     return DB::connection()->getDriverName();
+    // }
+
     /**
      *  Seta Sql para se utilizada na class
      *
@@ -79,18 +93,18 @@ class NQuery{
         
         //Verifica se inicio do where
         if(!$this->checkInitialWhere()){
-            $this->wheres .= ' '.$boolean.' ';
+            $this->wheres .= ' '.$boolean.'';
         }
 
         //Checa se é array
         if(is_array($values)){
             $value = $this->convertArrayToIn($values);
-            $this->wheres .= "$column $type ($value)";
+            $this->wheres .= " $column $type ($value)";
         }
 
         //Checa se foi string.
         if(is_string($values)){
-            $this->wheres .= "$column $type ($values)";
+            $this->wheres .= " $column $type ($values)";
         }
         return $this;
     }
@@ -119,13 +133,15 @@ class NQuery{
      * @return $this
      */
     public function whereBetween($column,$from,$to,$boolean="AND",$not=false){
-        $this->wheres .= $this->checkInitialWhere() ? "" : " $boolean ";
+        $this->wheres .= $this->checkInitialWhere() ? "" : " $boolean";
+        
         $from = $this->toTypeSql($from);
         $to = $this->toTypeSql($to);
+        
         //Adiciona negacao na clausula
-        $not = $not ? "not":"";
+        $not = $not ? " not":"";
 
-        $this->wheres .= "$column $not between $from and $to";
+        $this->wheres .= " ".$column.$not." between ".$from." and ".$to;
         return $this;
     }
 
@@ -136,8 +152,8 @@ class NQuery{
      * @return $this
      */
     public function whereNotNull($column){
-        $this->wheres .= $this->checkInitialWhere() ? '' : ' AND ';
-        $this->wheres .= "$column is not null";
+        $this->wheres .= $this->checkInitialWhere() ? '' : ' AND';
+        $this->wheres .= " $column is not null";
 
         return $this;
     }
@@ -149,23 +165,37 @@ class NQuery{
      * @return $this
      */
     public function whereNull($column){
-        $this->wheres .= $this->checkInitialWhere() ? "" : " AND ";
-        $this->wheres .= "$column is null";
+        $this->wheres .= $this->checkInitialWhere() ? "" : " AND";
+        $this->wheres .= " $column is null";
         
         return $this;
     }
+    
     /**
      * Adiciona sql na codições where da consulta e aplica 'AND' caso ja exista codições.
      * 
      * @param string $sql
      * @return $this
      */
-    public function whereRaw($sql){
-        $this->wheres .= $this->checkInitialWhere() ? "" : " AND ";
-        $this->wheres .= "$sql";
+    public function whereRaw($sql,$boolean="AND"){
+        $this->wheres .= $this->checkInitialWhere() ? "" : " $boolean";
+        $this->wheres .= " $sql";
 
         return $this;
     }
+    
+     /**
+     * Adiciona sql na codições where da consulta e aplica 'OR' caso ja exista codições.
+     * 
+     * @param string $sql
+     * @return $this
+     */
+    public function whereRawOR($sql){
+        $this->whereRaw($sql,'OR');
+
+        return $this;
+    }
+
     /**
      * Defini o "orderBy " na query.
      * 
@@ -176,10 +206,12 @@ class NQuery{
     public function orderBy($columns,$order = 'ASC'){
         if(is_array($columns)){
             $value = implode(",", $columns);
-            $this->orderByValue = " order by $value $order";
+
+            $this->orderByValue .= $this->checkInitialOrder() ? "$value $order" : ",$value $order";
         }else{
-            $this->orderByValue = " order by $columns $order";
+            $this->orderByValue .= $this->checkInitialOrder() ? "$columns $order" : ",$columns $order";
         }
+
         return $this;
     }
     /**
@@ -189,7 +221,8 @@ class NQuery{
      * @return $this
      */
     public function limit($value){
-        $this->limitValue = "limit $value";
+        $this->limitValue = " limit $value";
+     
         return $this;
     }
     /**
@@ -198,7 +231,7 @@ class NQuery{
      * @return $this
      */
     public function offSet($value){
-        $this->offsetValue = "offset $value";
+        $this->offsetValue = " offset $value";
         return $this;
     }
     /**
@@ -211,7 +244,7 @@ class NQuery{
             $value = inplode(' ',$value);
         }
 
-        $this->groupByvalue = "group by $value";
+        $this->groupByvalue = " group by $value";
         return $this;
     }
     /**
@@ -219,8 +252,11 @@ class NQuery{
      * @return string
      */
     public function toSql(){
-        $this->query .= (strlen($this->wheres) > 0 ) ? ' where': '';
-        return rtrim("$this->query $this->wheres $this->groupByvalue $this->orderByValue $this->limitValue $this->offsetValue");
+        
+        $this->query .= (strlen(trim($this->wheres)) > 0 ) ? ' where': '';
+        $this->orderByValue = (strlen($this->orderByValue) > 0 ) ? ' order by '.$this->orderByValue : '';
+
+        return rtrim($this->query.$this->wheres.$this->groupByvalue.$this->orderByValue.$this->limitValue.$this->offsetValue);
     }
     /**
      * Retorna codições where gerada.
@@ -228,7 +264,7 @@ class NQuery{
      * @return string
      */
     public function toWhere(){
-        return (string) $this->wheres;
+        return (string) trim($this->wheres);
     }
     /**
      * @param string $params
@@ -283,10 +319,10 @@ class NQuery{
     public function joinWhere(\NZord\Helpers\NQuery $query,$boolean = 'AND'){
         //Checa se where inicial ou join nao é nullo.
         if(!$this->checkInitialWhere() && strlen($query->toWhere()) > 0){
-            $this->wheres .= " $boolean ";
+            $this->wheres .= " $boolean";
         }
         
-        $this->wheres .= $query->toWhere();
+        $this->wheres .= " ".$query->toWhere();
 
         return $this;
     }
@@ -365,9 +401,9 @@ class NQuery{
     //--------------------------------------------------------------------------------
     private function setWhere($colums,$expression,$value,$isOr = false){
         if(!$this->checkInitialWhere()){
-            $this->wheres .= ( $isOr ? " OR " : " AND ");
+            $this->wheres .= ( $isOr ? " OR" : " AND");
         }
-        $this->wheres .= $colums." ".$expression;
+        $this->wheres .= " ".$colums." ".$expression;
         $this->wheres .= " ".$this->toTypeSql($this->sqlEscapeMimic($value));
     }
 
@@ -377,15 +413,19 @@ class NQuery{
         $subCondition = $query->toWhere();
 
         if(!$this->checkInitialWhere()){
-            $this->wheres .= $isOr ? " OR " :" AND ";
+            $this->wheres .= $isOr ? " OR" :" AND";
         }
 
-        $this->wheres .= "($subCondition)";
+        $this->wheres .= " ($subCondition)";
     }
+
     private function checkInitialWhere(){
         return (strlen($this->wheres) == 0);
     }
 
+    private function checkInitialOrder(){
+        return (strlen($this->orderByValue) == 0);
+    }
     private function convertArrayToIn(array $value){
         if(is_int($value[0])){
             $value = implode(",",$value);
@@ -399,15 +439,16 @@ class NQuery{
         return $value;
     }
     
-    private function antiInjection($obj) {	   
+    private function antiInjection($obj) {
         $obj = preg_replace("/(from|alter table|select|insert|delete|update|where|drop table|show tables|#|--|\\)/i", "", $obj);
         $obj = trim($obj);
         $obj = strip_tags($obj);
         if(!get_magic_quotes_gpc()) {
             $obj = addslashes($obj);
-            return $obj;	   
+            return $obj;
         }
-    }   
+    }
+
     function sqlEscapeMimic($inp) { 
         if(is_array($inp)) 
             return array_map(__METHOD__, $inp); 
@@ -426,7 +467,6 @@ class NQuery{
             return $value;
         }
     }
-
 
     function __toString(){
         return (string) $this->toSql();
