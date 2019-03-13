@@ -77,10 +77,10 @@ $container['view'] = function ($c) {
         'autoescape'       => true,
         'debug'            => true,
     ]); 
-
+   
     //Adiciona caminho template base
     $view->getLoader()->addPath($settings['template_path']);
-
+    
     // Extesions / Advance funcitions ------------------------------------------------------------------------------
     $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
     $view->addExtension(new \NZord\Helpers\TwigExtensions\TwigExtensionCustom($c->get('request')->getUri(),$c));
@@ -102,6 +102,7 @@ $container['view'] = function ($c) {
         }
         return $response;
     }));
+
     // Functions ---------------------------------------------------------------------------------------------------
     $view->getEnvironment()->addFunction('zdebug', new Twig_Function_Function('zdebug'));
     $view->getEnvironment()->addFunction('file_exists', new Twig_Function_Function('file_exists'));
@@ -118,17 +119,19 @@ $container['view'] = function ($c) {
     $view->getEnvironment()->addGlobal('sys', $c['config']);
     $view->getEnvironment()->addGlobal('bdAtual', $c->get('settings')['db']['host'].'/<b>'.$c->get('settings')['db']['database'].'</b>');
     $view->getEnvironment()->addGlobal('flash', $c['flash']);
-    //printR($_SESSION);
+    
     $resSetor = null;
-    if( @$_SESSION['app']['userSetor'] != null ){
-        $resSetor = \Modulos\System\Models\Usuario::getInfoSetor(@$_SESSION['app']['user']);
+
+    if($c->session->get('userSetor') != null ){
+        $resSetor = \Modulos\System\Models\Usuario::getInfoSetor($c->session->get('user'));
     }
-    $view->getEnvironment()->addGlobal('rSetor', $resSetor);    
+    $view->getEnvironment()->addGlobal('rSetor', $resSetor);
 
     return $view;
 };
 
 $container['notFoundHandler'] = function ($c) {
+  
     return function ($request, $response) use ($c) {
         $response = $response->withStatus(404);
         return $c->view->render($response, '404.html.twig');
