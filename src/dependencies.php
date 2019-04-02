@@ -90,6 +90,7 @@ $container['view'] = function ($c) {
     $view->addExtension(new Knlv\Slim\Views\TwigMessages($c->get('flash')));
     $view->addExtension(new Awurth\SlimValidation\ValidatorExtension($c->get('validator')));
     $view->addExtension(new Twig_Extension_StringLoader());
+    $view->addExtension(new Twig_Extensions_Extension_Date());
     // Filters -----------------------------------------------------------------------------------------------------
     $view->getEnvironment()->addFilter(new Twig_SimpleFilter('highlight', 'highlight'));
     $view->getEnvironment()->addFilter(new Twig_SimpleFilter('dataExtenso', 'dataExtenso'));
