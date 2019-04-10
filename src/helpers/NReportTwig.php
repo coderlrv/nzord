@@ -330,9 +330,17 @@ class NReportTwig
             $texto .=' <div id="footer">' . $footer . '</div>';
         }
         //Conteudo
-        $texto .= '<div id="content">' . $detalha . '</div>
+
+        if($tipo == 'odt'){
+            $texto .= $detalha. '
                 </body>
             </html>';
+        }else{
+            $texto .= '<div id="content">' . $detalha . '</div>
+                </body>
+            </html>';
+        }
+        
 
         return $texto;
     }
