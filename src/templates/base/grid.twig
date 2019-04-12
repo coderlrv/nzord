@@ -44,14 +44,14 @@
 {% import _self as grid %}
      <div>
         {% if options.title %}
-            <div class="col-sm-10 col-xs-8 pull-left">             
+            <div class="col-sm-10 col-xs-8 pull-left">
                 <h4>
                     {{ options.title|raw }}
                 </h4>
             </div> 
         {% endif %}
         {% if options.search %}
-            <div class="col-sm-2 col-xs-4 pull-right">            
+            <div class="col-sm-2 col-xs-4 pull-right">
                 <div class="form-group">
                     <label class="sr-only"></label>
                     <div class="input-group">
@@ -85,14 +85,17 @@
                                     <div class="btn-group" role="group">
                                     {% for btn in btnActions %}
                                         {% set mostra = true %}
-                                        {% if btn.valida %}
-                                            {% set campo = attribute(row, btn.valida.campo) %}
-                                            {% if campo == btn.valida.valor %}
+
+                                        {% for valida in btn.valida %}
+                                            {% set campo = attribute(row, valida.campo) %}
+
+                                            {% if campo in valida.valor %}
                                                 {% set mostra = false %}
-                                            {% endif %}	
-                                        {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+
                                         {% if mostra %} 
-                                            <button type="button" class="btn-action-grid btn btn-xs {{btn.class}}" title="{{btn.title}}" data-action="{{btn.action}}">{{btn.label |raw}}</button>                                                                           	
+                                            <button type="button" class="btn-action-grid btn btn-xs {{btn.class}}" title="{{btn.title}}" data-action="{{btn.action}}">{{btn.label |raw}}</button>
                                         {% endif %}
                                     {% endfor %}
                                     </div>
@@ -101,7 +104,7 @@
                         </tr>
                     {% endfor %}
                     </tbody>
-                </table>                
+                </table>
                 <script>
                     function rePage(){
                     }
@@ -131,10 +134,25 @@
         </script>
         {% endif %}
     </div>
+    {% if btnActions %}
+        <script>
+            // Adicionar eventos no botoes actions.
+            $(".btn-action-grid").click(function(e){
+                e.preventDefault();
+
+                var tr     = $(this).closest('tr');
+                var row    = getJsonRow(tr);
+                var action = $(this).data('action');
+
+                $("#dtb_{{ nome }}").trigger(action,[row]);
+            });
+        </script>
+    {% endif %}
+
     {% if options.click %}
         <script>
             $(function(){
-                $("#dtb_{{ nome }} tbody").on( 'click', function ( e) {
+                $("#dtb_{{ nome }} tbody").on( 'click', function (e) {
                     e.preventDefault()
                     setTimeout(function(){
                         {{ options.click }}
@@ -143,18 +161,7 @@
             });
         </script>
     {% endif %}
-    {% if btnActions %}
-        <script>
-            // Adicionar eventos no botoes actions.
-            $(".btn-action-grid").click(function(e){
-                var tr = $(this).closest('tr');
-                var row = getJsonRow(tr);
-                var action = $(this).data('action');
-
-                $("#dtb_{{ nome }}").trigger(action,[row]);
-            });
-        </script>   
-    {% endif %}
+   
 {% endmacro %}
 
 
@@ -252,7 +259,7 @@
                         , { extend: 'pdfHtml5', orientation: 'landscape', pageSize: 'A4',customize : function(doc) {doc.pageMargins = [10, 10, 10,10 ]; }, }
                         , { extend: 'print', text: '<u>I</u>mprimir', orientation: 'landscape', pageSize: 'A4',key: { key: 'i', altKey: true},
                                     customize: function ( win ) {
-                                        $(win.document.body).css( 'font-size', '10px' );                    
+                                        $(win.document.body).css( 'font-size', '10px' );
                                         $(win.document.body).find( 'table' ).addClass( 'compact' ).css( 'font-size', 'inherit' );
                                     } }
                         , { extend: 'colvis', text: '<u>V</u>isivel',key: { key: 'v', altKey: true} }
@@ -300,14 +307,14 @@
 
             {% if options.select != false %}
                 $('select').on('change', function () {
-                    $('#dtb_{{ nome }}').DataTable().search( $(this).val(), true, false ).draw();	
+                    $('#dtb_{{ nome }}').DataTable().search( $(this).val(), true, false ).draw();
                 });
             {% endif %}
                     
             {% if options.timeout != false %}
                 setTimeout(function(){ 
                     if( $('#dtb_{{ nome }}').length === 1 ){
-                        $('#dtb_{{ nome }}').DataTable().draw();
+                        $('#dtb_{{ nome }}').DataTable().draw(false);
                     }
                 }, {{ options.timeout }});
             {% endif %}
@@ -315,7 +322,7 @@
             {% if options.interval != false %}
                 setInterval(function(){ 
                     if( $('#dtb_{{ nome }}').length === 1 ){
-                        $('#dtb_{{ nome }}').DataTable().draw();
+                        $('#dtb_{{ nome }}').DataTable().draw(false);
                     }
                 }, {{ options.interval }});
             {% endif %}
@@ -323,7 +330,7 @@
         {% if options.refreshExitModal != false %}
             function onExitModal(response){
                 if( $('#dtb_{{ nome }}').length === 1 ){
-                    $('#dtb_{{ nome }}').DataTable().draw();
+                    $('#dtb_{{ nome }}').DataTable().draw(false);
                 }
             }
         {% endif %}
@@ -343,7 +350,7 @@
                     items: $.contextMenu.fromMenu( $('#{{ nome }}') ),
                     position: function(opt, x, y){
                         opt.$menu.css({top: (y - 1), left: (x - 1)});
-                    }            		
+                    }
                 });
             });
         })

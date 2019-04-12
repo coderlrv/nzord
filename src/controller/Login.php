@@ -20,7 +20,7 @@ class Login
         $this->request = $this->app->request;
     }
     //--------------------------------------------------------------------------------
-    public function abreSessao($idUser, $bind)
+    public function abreSessao($idUser, $bind=null)
     {
         $user       = Usuario::find($idUser);
         if(!$user){
@@ -112,16 +112,16 @@ class Login
         
         if( $config ){
             $pAdic = $config->perfil;
-            $this->session->set('userUrlPadrao', $config->padrao);            
+            $this->session->set('userUrlPadrao', $config->padrao);
             if( $pAdic ){
                 array_push( $perfil, $pAdic );
             }
         }
-        $perfil  = implode(',',$perfil);        
+        $perfil  = implode(',',$perfil);
         $perfilArr = explode(',',$perfil);
         $accessMods = ModAcesso::getPermissaoPerfils($perfilArr);
 
-        $this->session->set('userModAccess',$accessMods);        
+        $this->session->set('userModAccess',$accessMods);
         $this->session->set('userPerfilAdic', $perfil);
 
         //Usuário tercerizado

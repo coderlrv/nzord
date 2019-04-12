@@ -13,6 +13,7 @@ class NQuery{
     protected $orderByValue = '';
     protected $offsetValue = '';
     protected $groupByvalue = '';
+    protected $havingValue = '';
 
     function __construct($sql = ''){
         $this->query = $sql;
@@ -47,6 +48,40 @@ class NQuery{
         return $this;
     }
     /**
+     * Adicione uma cláusula having básica à consulta
+     *
+     * @param  string  $column
+     * @param  mixed   $operator
+     * @param  mixed   $value
+     * @return $this
+     */
+    public function having($column, $operator = null, $value = null){
+        //Checa se nao uma sub where
+        if(is_null($value)){
+            $this->setHaving($column,"=", $operator);
+        }else{
+            $this->setHaving($column,$operator,$value);
+        }
+        return $this;
+    }
+     /**
+     * Adicione uma cláusula having or básica à consulta
+     *
+     * @param  string  $column
+     * @param  mixed   $operator
+     * @param  mixed   $value
+     * @return $this
+     */
+    public function havingOr($column, $operator = null, $value = null){
+        //Checa se nao uma sub where
+        if(is_null($value)){
+            $this->setHaving($column,"=", $operator,true);
+        }else{
+            $this->setHaving($column,$operator,$value,true);
+        }
+        return $this;
+    }
+    /**
      * Adicione uma cláusula "or where" básica à consulta
      *
      * @param  string|\Closure  $column
@@ -65,6 +100,7 @@ class NQuery{
         }
         return $this;
     }
+
     /**
      * Adicione uma cláusula "where in" básica à consulta
      *
@@ -175,8 +211,15 @@ class NQuery{
      */
     public function orderBy($columns,$order = 'ASC'){
         if(is_array($columns)){
-            $value = implode(",", $columns);
-            $this->orderByValue = " order by $value $order";
+            $value = '';
+            foreach($columns as $col){
+                //Adiciona virgular para procimo orderBy
+                if(strlen($value) > 0 ) $value .= ',';
+
+                $value .= $col;
+            }
+
+            $this->orderByValue = " order by $value";
         }else{
             $this->orderByValue = " order by $columns $order";
         }
@@ -220,7 +263,9 @@ class NQuery{
      */
     public function toSql(){
         $this->query .= (strlen($this->wheres) > 0 ) ? ' where': '';
-        return rtrim("$this->query $this->wheres $this->groupByvalue $this->orderByValue $this->limitValue $this->offsetValue");
+        $this->havingValue = (strlen($this->havingValue) > 0 ) ? ' having '.$this->havingValue: '';
+        
+        return rtrim("$this->query $this->wheres $this->groupByvalue $this->havingValue $this->orderByValue $this->limitValue $this->offsetValue");
     }
     /**
      * Retorna codições where gerada.
@@ -370,6 +415,14 @@ class NQuery{
         $this->wheres .= $colums." ".$expression;
         $this->wheres .= " ".$this->toTypeSql($this->sqlEscapeMimic($value));
     }
+    //--------------------------------------------------------------------------------
+    private function setHaving($colums,$expression,$value,$isOr = false){
+        if(!$this->checkInitialHaving()){
+            $this->havingValue .= ( $isOr ? " OR " : " AND ");
+        }
+        $this->havingValue .= $colums." ".$expression;
+        $this->havingValue .= " ".$this->toTypeSql($this->sqlEscapeMimic($value));
+    }
 
     private function setSubWhere($callback,$isOr = false){
         $query = new NQuery();
@@ -386,6 +439,9 @@ class NQuery{
         return (strlen($this->wheres) == 0);
     }
 
+    private function checkInitialHaving(){
+        return (strlen($this->havingValue) == 0);
+    }
     private function convertArrayToIn(array $value){
         if(is_int($value[0])){
             $value = implode(",",$value);
