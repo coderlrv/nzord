@@ -113,4 +113,20 @@ class ActiveDirectory {
         return false;
     }
     //--------------------------------------------------------------------------------
+    public function getOU( $grupo=null ) {
+        $dnAD = Parametro::get('ouADPadrao');
+        if($this->connect() === true) {            
+            $dnAD = ( $grupo ) ? $grupo: $dnAD;
+            $filter ="(ou=*)";
+            $justthese = array('ou');
+            $result = ldap_list($this->ldapBind, $dnAD, $filter, $justthese) or die("No search data found."); 
+            $info = ldap_get_entries($this->ldapBind, $result);
+            for ($i=0; $i < $info["count"]; $i++) {
+                $grup[] = $info[$i]["ou"][0];
+            }
+            return $grup;
+        }
+        return false;
+    }
+    //--------------------------------------------------------------------------------
 }

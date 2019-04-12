@@ -319,7 +319,7 @@ function date_difference($data1, $data2){
  * @return int
  */
 function date_diff2($data1, $data2){
-    $s = strtotime($data2)-strtotime($data1);
+    $s = @strtotime($data2)-@strtotime($data1);
     $d = intval($s/86400);
     $s -= $d*86400;
     $h = intval($s/3600);
@@ -341,7 +341,7 @@ function dateDiffDias($data1, $data2){
     if (empty($data1) || empty($data2)){
         $v = "";
     } else {
-        $s = strtotime($data2)-strtotime($data1);
+        $s = @strtotime($data2)-@strtotime($data1);
         $d = intval($s/86400);
         $s -= $d*86400;
         $h = intval($s/3600);
@@ -351,7 +351,7 @@ function dateDiffDias($data1, $data2){
         
         $v = $d;
     }
-    return $v;
+    return (int)$v;
 }
 
 /**

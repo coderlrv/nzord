@@ -298,30 +298,49 @@ class NReportTwig
             $page = '@page { margin: 120px 50px 15px; }';
         }
 
-        $texto = '<html moznomarginboxes mozdisallowselectionprint>
-                    <head>';
-        
+      
         // Aplica utf no arquivo.
         if($tipo == 'odt'){
+            $texto = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+                        <html>
+                        </head>';
             $texto .=  '<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html;charset=utf-8">';
+        }else{
+            $texto = '<html moznomarginboxes mozdisallowselectionprint>
+            <head>';
         }
 
-        $texto .= '<style>' . $page;
+        $texto .= '<style type="text/css">' . $page;
         if ($tipo == 'pdf') {
             $texto .= '#header { position: fixed; left: 0px; top: -150px; right: 0px; height: 50px; }
             #footer { position: fixed; left: 0px; bottom: -10px; right: 0px; height: 20px; font-size: 9px; }';
         }
         $texto .= '#footer .page:after { content: counter(page); }
-                        hr {margin-bottom: px; border-width: 1px; }
+                        hr { border-width: 1px; }
                         body { font-family: Arial, Helvetica, sans-serif; }
                     </style>
                     </head>
-                    <body>
-                        <div id="header">' . $header . '</div>
-                        <div id="footer">' . $footer . '</div>
-                        <div id="content">' . $detalha . '</div>
-                    </body>
-                </html>';
+                    <body>';
+        //ca 
+        if(strlen($header) > 0){
+            $texto .= ' <div id="header">' . $header . '</div>';
+        } 
+        //Rodapé 
+        if(strlen($footer) > 0 ){
+            $texto .=' <div id="footer">' . $footer . '</div>';
+        }
+        //Conteudo
+
+        if($tipo == 'odt'){
+            $texto .= $detalha. '
+                </body>
+            </html>';
+        }else{
+            $texto .= '<div id="content">' . $detalha . '</div>
+                </body>
+            </html>';
+        }
+        
 
         return $texto;
     }
