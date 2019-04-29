@@ -19,16 +19,23 @@ class FileUploud{
      * Retorna lista de arquivos
      *
      * @param string $name - Nome campo file do form
+     * @param bool $multiples - Diz se retorna sempre array. mesmo tenso somente 1 arquivo.
      * @return array|NZord\Lib\FileUploud\File
      */
-    public function getFiles($name){
+    public function getFiles($name,$multiples=false){
         if(!$this->uploadedFiles) return null;
         
         $dataFiles = $this->uploadedFiles[$name];
         if(is_object($dataFiles)){
      
             if($dataFiles->getError() === UPLOAD_ERR_OK){
-                return new File($dataFiles);
+                if($multiples){
+                    return [ new File($dataFiles) ];
+                }else{
+                    return new File($dataFiles);
+                }
+               
+
             }else{
                 $fileName = $dataFiles->getClientFilename();
                 throw new FileUploudException("NameFile: $fileName, Erro:". $this->codeToMessage($dataFiles->getError()));

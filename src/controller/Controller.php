@@ -132,7 +132,7 @@ class Controller
     }
 
     /**
-     * Retorna json
+     * Retorna mensagem json
      *
      * @param string $message
      * @param integer $status
@@ -155,6 +155,21 @@ class Controller
             ->withHeader('Content-Type', 'application/json')
             ->withJson($msg, $status);
     }
+
+    /**
+     * Retorna json http
+     *
+     * @param [type] $data
+     * @param integer $httpCode
+     * @return void
+     */
+    public function withJson($data,int $httpCode = 200)
+    {
+        return $this->app->response
+            ->withHeader('Content-Type', 'application/json')
+            ->withJson($data,$httpCode);
+    }
+
     /**
      *  Retorna arquivo do arquivo passado.
      *
@@ -182,6 +197,30 @@ class Controller
         
         return  $response;
     }
+
+
+    /**
+     * Retornar arquivo do caminho especificado. 
+     *
+     * @param  string $file
+     * @return void
+     */
+    public function responseFileRead($file){
+        if(file_exists($file)){
+            $fh = fopen($file, 'rb');
+            $stream = new \Slim\Http\Stream($fh);
+            $response = $this->app->response
+                ->withHeader('Content-Type', mime_content_type($file))
+                ->withHeader('Content-Length',filesize($file))
+                ->withBody($stream);
+
+            return $response;
+        }else{
+            return $this->app->response->withStatus(404);
+        }
+    }
+
+
     /**
      * Grava SysLogger no banco de dados
      *

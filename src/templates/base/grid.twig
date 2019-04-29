@@ -40,7 +40,7 @@
         },
     }
  #}
-{% macro grid(nome, dados, dTables=null,options={'title':null,'search':null,'height':null,'colunsHidden':null,'class':'','click':null,'actionNew':null},btnActions={}) %}
+{% macro grid(nome, dados, dTables=null,options={'title':null,'search':null,'height':null,'colunsHidden':null,'class':'','click':null,'actionNew':null,'tfoot':null},btnActions={}) %}
 {% import _self as grid %}
      <div>
         {% if options.title %}
@@ -104,6 +104,11 @@
                         </tr>
                     {% endfor %}
                     </tbody>
+                    {% if options.tfoot %}
+                        <tfoot>
+                            {{options.tfoot | raw}}
+                        </tfoot>
+                    {% endif %}
                 </table>
                 <script>
                     function rePage(){

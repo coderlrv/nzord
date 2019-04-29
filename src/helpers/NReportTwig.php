@@ -3,11 +3,9 @@ namespace NZord\Helpers;
 
 use Dompdf\Dompdf;
 use Illuminate\Database\Capsule\Manager as DB;
-use Slim\Http\Body;
-use Slim\Http\Stream;
-use Slim\Http\Response;
 use Slim\Http\Headers;
-use NZord\Responses\ModalResponse;
+use Slim\Http\Response;
+use Slim\Http\Stream;
 
 class NReportTwig
 {
@@ -37,34 +35,64 @@ class NReportTwig
         $header  = '';
         $footer  = '';
         $nameDoc = 'report_' . date('YmdHis');
+      
         //Aplica options default
         $options = $this->getOptions($options, [
             'namePrint'       => 'report_' . date('YmdHis'),
             'btnPrint'        => true,
             'cabecalhoRodape' => true,
+            'debug'           => false,
         ]);
 
         //Busca relatorio
-        $rel = DB::table('tab_relModelo')->where('chave', $chave)->first();
-        $params =  isset($rel->parametros) ? json_decode($rel->parametros) : [];
-        
-        if(!$rel){
-            throw new \Exception('Relatório não encontrado.Chave='.$chave);
+        $rel    = DB::table('tab_relModelo')->where('chave', $chave)->first();
+        $params = isset($rel->parametros) ? (array) json_decode($rel->parametros) : [];
+
+        if (!$rel) {
+            throw new \Exception('Relatório não encontrado.Chave=' . $chave);
         }
 
         if ($rel->tabela != 7) {
-            
+
             $relTipo = DB::table('tab_relTipo')->where('id', $rel->tabela)->first();
 
             $codSql = 'select * from ' . $relTipo->nome . ' as x ' . $this->makeClause($params, $argsSQL);
-            $result = (array) DB::select($codSql, $argsSQL);
+
+            $query = new NQuery($codSql);
+          
+            $query->bindParams($argsSQL);
+            $result = $query->toArray();
+
+            // Adiciona debug
+            if ($options->debug) {
+                printR([
+                    'sql'      => $codSql,
+                    'argsSQL'  => $argsSQL,
+                    'argsTmpl' => $argsTmpl,
+                    'sqlRaw'   => $query->toSql()
+                ]);
+            }
 
         } else {
             if (empty($rel->cod_sql)) {
                 $result = [];
             } else {
                 $codSql = $rel->cod_sql . ' ' . $this->makeClause($params, $argsSQL);
-                $result = (array) DB::select('select * from (' . $codSql . ') as x ', $argsSQL);
+             
+                //Criar sql
+                $query = new NQuery('select * from (' . $codSql . ') as x ');
+                $query->bindParams($argsSQL);
+                $result = $query->toArray();
+
+                // Adiciona debug
+                if ($options->debug) {
+                    printR([
+                        'sql'      => $codSql,
+                        'argsSQL'  => $argsSQL,
+                        'argsTmpl' => $argsTmpl,
+                        'sqlRaw'   => $query->toSql()
+                    ]);
+                }
             }
         }
 
@@ -95,10 +123,20 @@ class NReportTwig
             }
         }
 
-        $loader = new \Twig_Loader_Array(['report.html' => $this->renderModelo($rel->detalhe, $header, $footer, $tipo)]);
-        $twig   = new \Twig_Environment($loader);
+        // Loader
+        $settings = $this->container->get('settings')['render'];
 
-        //Add Extenções;
+        $loader1 = new \Twig_Loader_Filesystem(__DIR__.'/../templates');
+        $loader2 = new \Twig_Loader_Array(['report.html' => $this->renderModelo($rel->detalhe, $header, $footer, $tipo)]);
+
+        $loader = new \Twig_Loader_Chain();
+        $loader1->addPath($settings['template_path']);
+
+        $loader->addLoader($loader1);
+        $loader->addLoader($loader2);
+        $twig   = new \Twig_Environment( $loader );
+
+        // Add Extenções;
         $twig->addExtension(new \NZord\Helpers\TwigExtensions\TwigRelExtensionCustom());
         $twig->addExtension(new \NZord\Helpers\TwigExtensions\TwigFiltersCustom());
         $twig->addExtension(new \Slim\Views\TwigExtension($this->container->get('router'), $this->container->get('request')->getUri()));
@@ -108,15 +146,18 @@ class NReportTwig
         $twig->addFunction('valorPorExtenso', new \Twig_Function_Function('valorPorExtenso'));
         $twig->addFunction('iniciaisNome', new \Twig_Function_Function('iniciaisNome'));
         $twig->addFunction('ucwords', new \Twig_Function_Function('ucwords'));
+        $twig->addFunction('convertColGrid', new \Twig_Function_Function('convertColGrid'));
+        $twig->addFunction('arr_sum', new \Twig_Function_Function('arr_sum'));
+
 
         //Renderiza template
         array_push($argsTmpl, ['tipo' => $tipo]);
-        $html = $twig->render('report.html', ['dados' => $dados, 'args' => $argsTmpl]);
+        $html = $twig->render('report.html', ['dados' => $dados, 'args' => $argsTmpl, 'params' => $argsSQL]);
 
         //Tipo de documento
         if ($tipo == 'html') {
             return $this->renderHtml($html, $options->btnPrint);
-        }elseif($tipo == 'odt'){
+        } elseif ($tipo == 'odt') {
             return $this->renderODT($html, $options->namePrint);
         } elseif ($tipo == 'download') {
             return $this->renderPdf($html, $options->namePrint, $paper, true);
@@ -149,10 +190,10 @@ class NReportTwig
      */
     private function makeClause($params, $args)
     {
-        $where = '';
-        $having   = '';
-        $orderBy  = '';
-        $groupBy  = '';
+        $where   = '';
+        $having  = '';
+        $orderBy = '';
+        $groupBy = '';
 
         // Where
         $paramsWhere = array_filter($params, function ($param) {return strtoupper($param->clause) == 'WHERE' ? true : false;});
@@ -161,7 +202,7 @@ class NReportTwig
 
                 //Caso for primeira expressao , nao passa codição.
                 if (!empty($where)) {
-                    $where .= ' ' . $param->condition.' ';
+                    $where .= ' ' . $param->condition . ' ';
                 }
 
                 $where .= $param->expression;
@@ -170,7 +211,7 @@ class NReportTwig
                 //Checa se existe argumento na expressao
                 if ($this->checkParam($param->expression, $args)) {
                     if (!empty($where)) {
-                        $where .= ' ' . $param->condition.' ';
+                        $where .= ' ' . $param->condition . ' ';
                     }
 
                     $where .= $param->expression;
@@ -240,9 +281,9 @@ class NReportTwig
         $pdf->render();
 
         if ($forceDownload) {
-            $pdf->stream($nameFile.'.pdf');
+            $pdf->stream($nameFile . '.pdf');
         } else {
-            $pdf->stream($nameFile.'.pdf', ['Attachment' => 0]);
+            $pdf->stream($nameFile . '.pdf', ['Attachment' => 0]);
         }
     }
     //--------------------------------------------------------------------------------
@@ -250,44 +291,68 @@ class NReportTwig
     {
         $body = '';
         $base = $this->container->get('request')->getUri();
-        $port = ($base->getPort()) ? ':'.$base->getPort():'';
-        $dir = $base->getScheme().'://'.$base->getHost().$port.$base->getBasePath();
-        
+        $port = ($base->getPort()) ? ':' . $base->getPort() : '';
+        $dir  = $base->getScheme() . '://' . $base->getHost() . $port . $base->getBasePath();
+
         if ($btnPrint) {
             //$body .= '<script src="'.$dir.'/node_modules/jquery/dist/jquery.min.js"></script>';
-            $body .= '<script> ifJqueryExecute(); </script>';             
-            $body .= '<link href="'.$dir.'/node_modules/bootstrap/dist/css/bootstrap.css?v='.time().'" rel="stylesheet">'; 
-            $body .= '<script src="'.$dir.'/node_modules/@coder-lrv/nzord-app/src/js/nzord-aux.js?v='.time().'"></script>'; 
+            $body .= '<script> 
+                if (typeof ifJqueryExecute === "function") {
+                    ifJqueryExecute();
+                }
+            </script>';
+            $body .= '<!-- LoadJS -->
+                <script>
+                    var baseUrl = "'. $dir.'";
+                    var baseAppUrl = "'. $dir.'/app";
+                </script>
+                <script src="'. $dir .'/node_modules/loadjs/dist/loadjs.min.js"></script>
+                <script src="'. $dir .'/node_modules/@coder-lrv/nzord-app/src/js/nzord.require.js"></script>
+                <!-- Fim Loadjs-->';
+            $body .= '<style>
+            @media print {
+                .highcharts-button-symbol{
+                    display:none!important;
+                }
+            }
+            </style>';
+
+            $body .= '<link href="' . $dir . '/node_modules/bootstrap/dist/css/bootstrap.css?v=' . time() . '" rel="stylesheet">';
+            $body .= '<script src="' . $dir . '/node_modules/@coder-lrv/nzord-app/src/js/nzord.require.js"></script>';
+            $body .= '<script src="' . $dir . '/node_modules/@coder-lrv/nzord-app/src/js/nzord-aux.js?v=' . time() . '"></script>';
+            $body .= '<script src="' . $dir . '/js/app.modules.js"></script>';
+
+    
             $body .= "<button class='btn btn-sm btn-primary hidden-print btn-print' id='btn-print-direct' onclick=\"printData('prtReport')\">
-                <i class='fa fa-print' ></i> Imprimir </button>";
+                <i class='fa fa-print'></i> Imprimir </button>";
             $body .= '<button class="btn btn-sm btn-success hidden-print btn-print" id="btn-print-excel" style="margin-left:5px;" onclick="printExcelFile()">
                 <i class="fa fa-table"></i>  Export Excel </button>';
         }
 
-        $body .= "<div id='prtReport' class='small'> $html </div>";
+        $body .= "<div id='prtReport' class='small' style='margin-top:10px'> $html </div>";
 
         return $body;
     }
     //--------------------------------------------------------------------------------
 
-    private function renderODT($html,$nameFile,$forceDownload=true){
+    private function renderODT($html, $nameFile, $forceDownload = true)
+    {
         $response = $this->container->get('response');
-      
-        $handle = fopen("php://temp", "wb+");
-        $body = new Stream($handle);
-        $htmlDoc = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">'. $html;
+
+        $handle  = fopen("php://temp", "wb+");
+        $body    = new Stream($handle);
+        $htmlDoc = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">' . $html;
         $body->write($htmlDoc);
 
         $headers = new Headers();
         $headers->set("Content-type", "application/vnd.oasis.opendocument.text;charset=ISO8859_1");
-        $headers->set('Content-Disposition', 'attachment;filename="'.$nameFile.'.odt"');
+        $headers->set('Content-Disposition', 'attachment;filename="' . $nameFile . '.odt"');
         $headers->set('Expires', '0');
         $headers->set('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
         $headers->set('Pragma', 'public');
 
-        return new Response(200,$headers,$body);
+        return new Response(200, $headers, $body);
     }
-
 
     //--------------------------------------------------------------------------------
     private function renderModelo($detalha, $header = '', $footer = '', $tipo = 'pdf')
@@ -298,14 +363,13 @@ class NReportTwig
             $page = '@page { margin: 120px 50px 15px; }';
         }
 
-      
         // Aplica utf no arquivo.
-        if($tipo == 'odt'){
+        if ($tipo == 'odt') {
             $texto = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
                         <html>
                         </head>';
-            $texto .=  '<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html;charset=utf-8">';
-        }else{
+            $texto .= '<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html;charset=utf-8">';
+        } else {
             $texto = '<html moznomarginboxes mozdisallowselectionprint>
             <head>';
         }
@@ -321,26 +385,25 @@ class NReportTwig
                     </style>
                     </head>
                     <body>';
-        //ca 
-        if(strlen($header) > 0){
+        //ca
+        if (strlen($header) > 0) {
             $texto .= ' <div id="header">' . $header . '</div>';
-        } 
-        //Rodapé 
-        if(strlen($footer) > 0 ){
-            $texto .=' <div id="footer">' . $footer . '</div>';
+        }
+        //Rodapé
+        if (strlen($footer) > 0) {
+            $texto .= ' <div id="footer">' . $footer . '</div>';
         }
         //Conteudo
 
-        if($tipo == 'odt'){
-            $texto .= $detalha. '
+        if ($tipo == 'odt') {
+            $texto .= $detalha . '
                 </body>
             </html>';
-        }else{
+        } else {
             $texto .= '<div id="content">' . $detalha . '</div>
                 </body>
             </html>';
         }
-        
 
         return $texto;
     }

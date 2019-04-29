@@ -120,7 +120,7 @@ class NQuery{
 
         //Checa se é array
         if(is_array($values)){
-            $value = $this->convertArrayToIn($values);
+            $value = count($values) == 0 ?"''" : $this->convertArrayToIn($values);
             $this->wheres .= "$column $type ($value)";
         }
 
@@ -318,6 +318,21 @@ class NQuery{
 
         return $this;
     }
+    
+    /**
+     * Aplica paramentro na sql
+     *
+     * @param array $params
+     * @return void
+     */
+    public function bindParams($params){
+        foreach($params as $key => $value){
+            $this->bindParam($key,$value);
+        }
+
+        return $this;
+    }
+    
     /**
      * Junta where com 'AND' NQuery com a passada por paramentro.
      *

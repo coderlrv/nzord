@@ -1,6 +1,6 @@
-{% macro pieChart(name, data, cols,title, options = { ajax: false, showInLegend: false,dataLabels:false,border:false } ) %}
+{% macro pieChart(name, data, cols,title, options = { ajax: false, showInLegend: false,dataLabels:false,border:false,maxWidth:null,height:null } ) %}
     <div id="chart-{{name}}" class="{{convertColGrid(cols|default(12))}}">
-        <div id="{{name}}" style="min-width: 100%; margin: 0 auto; margin-top:0px;"></div>
+        <div id="{{name}}" style="min-width: 100%; margin: 0 auto; margin-top:0px; {{ options.maxWidth ? 'max-width:'~options.maxWidth~';': '' }} {{ options.height ? 'height:'~options.height~';': '' }}"></div>
     </div>
     
     {# Validacoes #}
@@ -142,6 +142,185 @@
 {% endmacro %}
 
 
+{% macro barsChart(name, data, cols,title, options = { ajax: false, showInLegend: false,dataLabels:false,titleY:'',titleX:'' ,stackLabels:false,inverted:false} ) %}
+    <div id="chart-{{name}}" class="{{convertColGrid(cols|default(12))}}">
+        <div id="{{name}}" style="min-width: 100%; max-width: 100%; margin: 0 auto; margin-top:0px;"></div>
+    </div>
+    <style>
+        .highcharts-minor-grid-line {
+            stroke: transparent !important ;
+        }
+    </style>
+    <script>
+        require(['highcharts'],function(){
+            require(['highchartModules'],function(){
+                Highcharts.chart('{{name}}', {
+                    lang: {
+                        noData: "Sem dados"
+                    },
+                    noData: {
+                        style: {
+                            fontWeight: 'bold',
+                            fontSize: '15px',
+                        }
+                    },
+                    chart: {
+                        type: 'column',
+                        inverted: true
+                    },
+                    credits: { enabled: false },
+                    title: { 
+                        text: '{{ title | default('') }}' ,
+                        style:{
+                            fontSize: '16px'
+                        }  
+                    },
+                    xAxis: {
+                        type: 'category',
+                        labels: {
+                            //rotation: -10,
+                            style: {
+                                fontSize: '10px',
+                                fontFamily: 'Verdana, sans-serif'
+                            }
+                        },
+                        stackLabels: {
+                            verticalAlign: 'top',
+                            crop: false,
+                            enabled: true,
+                            style: {
+                                fontWeight: 'bold',
+                                color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                            }
+                        },
+                      
+                    },
+                    yAxis: {
+                           
+                        min: 0,
+                        title: {
+                            text: '{{options.titleX}}'
+                        },
+                        allowDecimals:false,
+                   minorGridLineWidth:0
+                    },
+                    legend: {
+                        enabled: {{ options.showInLegend ? 'true' : 'false' }},
+                        itemStyle: {
+                            fontSize: '9px',
+                            fontFamily: 'Verdana, sans-serif'
+                        }
+                    },
+                    tooltip: {
+                        headerFormat:'',
+                        pointFormat: '<span>{point.name}</span>: <b>{point.y}</b>',
+                        shared: false,
+                        useHTML: true
+                    },
+                    series: [{
+                        colorByPoint: true,
+                        data: JSON.parse('{{ data | json_encode | raw }}'),
+                       
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.y} ',
+                            style: {
+                                fontSize: '10px',
+                                fontFamily: 'Verdana, sans-serif'
+                            }
+                        }
+                    }],
+                });
+            });
+        });
+   </script>
+{% endmacro %}
+
+{% macro barsChartCateg(name, data, cols,title, options = { ajax: false, showInLegend: false,dataLabels:false,titleY:'',titleX:'' ,stackLabels:false,categories:false} ) %}
+    <div id="chart-{{name}}" class="{{convertColGrid(cols|default(12))}}" >
+        <div id="{{name}}" style="min-width: 100%; max-width: 100%; margin: 0 auto; margin-top:0px;height:1200px"></div>
+        {{ options.categories | json_encode}}
+    </div>
+    <style>
+        .highcharts-minor-grid-line {
+            stroke: transparent !important ;
+        }
+    </style>
+    <script>
+        require(['highcharts'],function(){
+            require(['highchartModules'],function(){
+                Highcharts.chart('{{name}}', {
+                    lang: {
+                        noData: "Sem dados"
+                    },
+                    noData: {
+                        style: {
+                            fontWeight: 'bold',
+                            fontSize: '15px',
+                        }
+                    },
+                    chart: {
+                        type: 'bar'
+                    },
+                    credits: { enabled: false },
+                    title: { 
+                        text: '{{ title | default('') }}' ,
+                        style:{
+                            fontSize: '16px'
+                        }  
+                    },
+                    xAxis: {
+                        categories:  JSON.parse('{{ options.categories | json_encode | raw }}'),
+                        title: {
+                            text: null
+                        },
+                        crosshair: true
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: '{{options.titleX}}'
+                        },
+                        labels: {
+                            overflow: 'left'
+                        },
+                        gridLineWidth: 0,
+                    },
+                    legend: {
+                        enabled: {{ options.showInLegend ? 'true' : 'false' }},
+                        itemStyle: {
+                            fontSize: '9px',
+                            fontFamily: 'Verdana, sans-serif'
+                        }
+                    },
+                    tooltip: {
+                        headerFormat:'',
+                        pointFormat: '<span>{point.name}</span>: <b>{point.y}</b>',
+                        shared: false,
+                        useHTML: true
+                    },
+                    plotOptions: {
+                        bar: {
+                            dataLabels: {
+                                enabled: false,
+                                fontSize: '7px',
+                                format: '{point.series.name}-{point.y}',
+                                borderWidth: 0
+                            },
+                            pointWidh:null
+                        },
+                        series: {
+                            groupPadding: 0,
+                            pointPadding:0,
+                            borderWidth: 0
+                        }
+                    },
+                    series: JSON.parse('{{ data | json_encode | raw }}')
+                });
+            });
+        });
+   </script>
+{% endmacro %}
 
 {% macro columnChartCateg(name, data, cols,title, options = { ajax: false, showInLegend: false,dataLabels:false,titleY:'',titleX:'' ,stackLabels:false} ) %}
     <div id="chart-{{name}}" class="{{convertColGrid(cols|default(12))}}">

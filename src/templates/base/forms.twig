@@ -34,11 +34,11 @@
     </div>
 {% endmacro %}
 
-{% macro input(name, label, value, placeholder, errors, cols, options={ required:false,readonly:false,mask:false,decimalPrecision:0,valide:null,removeMask:false,action:false,mlenght:false,class:'',toUpper:false } ) %}
+{% macro input(name, label, value, placeholder, errors, cols, options={ required:false,readonly:false,mask:false,decimalPrecision:0,valide:null,removeMask:false,action:false,mlenght:false,class:'',toUpper:false,id:null} ) %}
 	{% import _self as form %}
-    <div id="group-{{name}}" class="form-group {% if errors %} has-error {% endif %}{{convertColGrid(cols|default(12))}}">
+    <div id="group-{{ options.id ? options.id : name }}" class="form-group {% if errors %} has-error {% endif %}{{convertColGrid(cols|default(12))}}">
         {{ form.label(label, options.required ) }}
-        <input class="form-control {{options.class}}" type="text" id="{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}" value="{{ value }}" 
+        <input class="form-control {{options.class}}" type="text" id="{{ options.id ? options.id : name }}" name="{{ name }}" placeholder="{{ placeholder }}" value="{{ value }}" 
                 {% if options.required %}required{% endif %} {% if options.readonly %} readonly {% endif %} {{ options.action }} 
                 {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %}
                 {% if options.toUpper %} onkeyup="this.value = this.value.toUpperCase()" {% endif %} >
@@ -49,12 +49,12 @@
         {% if options.valide %}
             require(['nzord'],function(){
                 {% if options.valide == 'cnpjOrCpf' %}
-                    $('#{{ name }}').validCpfCnpj({
+                    $('#{{ options.id ? options.id : name }}').validCpfCnpj({
                         removeMask: {{options.removeMask ? 'true' : 'false'}}
                     });
                 {% endif %}
                 {% if options.valide == 'pis' %}
-                    $('#{{ name }}').validPis();
+                    $('#{{ options.id ? options.id : name }}').validPis();
                 {% endif %}
             });
         {% endif %}
@@ -82,7 +82,7 @@
         
             //Chama modulo mask
             require(['mask'],function(){
-                $('#{{ name }}').inputmask({
+                $('#{{ options.id ? options.id : name }}').inputmask({
                     mask:{{ maskValue |json_encode|raw }},
                     placeholder: ' ',
                     definitions: {
@@ -96,7 +96,7 @@
             });
         {% elseif options.mask == 'money' %}
             require(['maskMoney'],function(){
-                $('#{{ name }}').maskMoney({
+                $('#{{ options.id ? options.id : name }}').maskMoney({
                     prefix:'R$ ', 
                     allowNegative: true,
                     thousands:'.', 
@@ -106,7 +106,7 @@
             });
         {% elseif options.decimalPrecision > 0 %}
             require(['maskMoney'],function(){
-                $('#{{ name }}').maskMoney({ 
+                $('#{{ options.id ? options.id : name }}').maskMoney({ 
                         allowNegative: true, 
                         thousands:'.', 
                         decimal:',', 
@@ -129,20 +129,21 @@
     </div>
 {% endmacro %}
 
-{% macro numeric(name, label, value, placeholder, errors, cols, options={ required:false,readonly:false,action:false,mlenght:false,class:'' } ) %}
+{% macro numeric(name, label, value, placeholder, errors, cols, options={ required:false,readonly:false,action:false,mlenght:false,class:'',id:null } ) %}
 	{% import _self as form %}
-    <div id="group-{{name}}" class="form-group {% if errors %} has-error {% endif %}{{convertColGrid(cols|default(12))}}">
+    <div id="group-{{ options.id ? options.id : name }}" class="form-group {% if errors %} has-error {% endif %}{{convertColGrid(cols|default(12))}}">
         {{ form.label(label, options.required ) }}
-        <input class="form-control {{options.class}}" type="number" id="{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}" value="{{ value }}" 
+        <input class="form-control {{options.class}}" type="number" id="{{ options.id ? options.id : name }}" name="{{ name }}" placeholder="{{ placeholder }}" value="{{ value }}" 
                 {% if options.required %}required{% endif %} {% if options.readonly %} readonly {% endif %} {{ options.action }} 
                 {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %} >
         {{ form.error_block(errors) }}
     </div>
 {% endmacro %}
 
-{% macro textarea(name, label, value, placeholder, rows, errors, cols, options = { required:false,mlenght:false,summernote:true,codeStyle:null,summerAirMode:false,readonly: false,class:'',whtml5SToolbar: false,wysihtml5:false,notClearText:false,btnsAddon:false,ckEditor:false,btnImgPublic:false} ) %}
-{% import _self as form %}
-	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
+{% macro textarea(name, label, value, placeholder, rows, errors, cols, options = { required:false,mlenght:false,summernote:true,codeStyle:null,summerAirMode:false,readonly: false,class:'',whtml5SToolbar: false,wysihtml5:false,notClearText:false,btnsAddon:false,ckEditor:false,btnImgPublic:false,id:null} ) %}
+    {% import _self as form %}
+
+    <div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
         {{ form.label(label, options.required ) }}  
         {% if options.wysihtml5 != null %}  
             <div id="toolbar" style="display: none;">
@@ -151,16 +152,16 @@
                 <a data-wysihtml-action="change_view">switch to html view</a>
         	</div>
         {% endif %}
-        <textarea id="{{ name }}" name="{{ name }}" {% if options.required %} required {% endif %} rows="{{ rows|default(5) }}"  {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %} 
+        <textarea id="{{ options.id ? options.id : name }}" name="{{ name }}" {% if options.required %} required {% endif %} rows="{{ rows|default(5) }}"  {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %} 
         		class="form-control" placeholder="{{ placeholder|default('Descreva...') }}" {% if options.readonly %} readonly {% endif %} >{{ value|raw }}</textarea>
         {% if options.mlenght and options.wysihtml5 == null and options.summernote == null %}
-            <div id="cnamb_{{name}}" class="text-muted text-right small">{{ options.mlenght }} : 0</div>
+            <div id="cnamb_{{ options.id ? options.id : name }}" class="text-muted text-right small">{{ options.mlenght }} : 0</div>
             <script>
-                $('#cnamb_{{name}}').html("{{ options.mlenght }} : " + $('#{{ name }}').val().length);
+                $('#cnamb_{{ options.id ? options.id : name }}').html("{{ options.mlenght }} : " + $('#{{ options.id ? options.id : name }}').val().length);
                 $(function(){
-                    $('#{{ name }}').keyup(function(){
+                    $('#{{ options.id ? options.id : name }}').keyup(function(){
                         var charsno = $(this).val().length;
-                        $('#cnamb_{{name}}').html("{{ options.mlenght }} : " + charsno);
+                        $('#cnamb_{{ options.id ? options.id : name }}').html("{{ options.mlenght }} : " + charsno);
                     });
                 });
             </script>
@@ -172,7 +173,7 @@
             {% if options.summernote != null %}
                 require(['summernote'],function(){
                     require(['summernotePtBr','summernoteNZord'],function(){
-                        $('#{{ name }}').summernote({ 
+                        $('#{{ options.id ? options.id : name }}').summernote({ 
                             lang: 'pt-BR',
                             height: {{ rows*10 }} ,
                             tabsize: 2 {% if options.summerAirMode %},airMode: true {% endif %}
@@ -204,7 +205,7 @@
                             {% endif %}
                         });
                         {% if options.readonly %}
-                            $('#{{ name }}').summernote('disable');
+                            $('#{{ options.id ? options.id : name }}').summernote('disable');
                         {% endif %}
                     })
                 });
@@ -215,7 +216,7 @@
             {% if options.ckEditor != null %}
                
                 require(['ckEditor'],function(){
-                    CKEDITOR.replace('{{ name }}',{
+                    CKEDITOR.replace('{{ options.id ? options.id : name }}',{
                         customConfig: '{{base_url()}}/js/ckeditor_oficio.js',
                         height:'{{ rows*10 }}px'
                     });
@@ -226,7 +227,7 @@
             {% if options.wysihtml5 != null %}
                 {% if options.whtml5SToolbar == false %}
                     require(['wysihtml5'],function(){
-                        $('#{{ name }}').wysihtml5({
+                        $('#{{ options.id ? options.id : name }}').wysihtml5({
                             locale: "pt-BR",
                             useLineBreaks: true,
                             toolbar: {
@@ -245,7 +246,7 @@
                     });
                 {% else %}
                     require(['wysihtml5'],function(){
-                        $('#{{ name }}').wysihtml5({
+                        $('#{{ options.id ? options.id : name }}').wysihtml5({
                             useLineBreaks: true,
                             toolbar: false,
                             parser: function(html) {
@@ -269,7 +270,7 @@
             {% if options.codeStyle != null %}
                 /*require(['codemirror'],function(){
                     require(['codemirrorPlugins'],function(){
-                        var code = CodeMirror.fromTextArea(document.getElementById("{{ name }}"), {
+                        var code = CodeMirror.fromTextArea(document.getElementById("{{ options.id ? options.id : name }}"), {
                             lineNumbers: true,
                             theme: "monokai",
                             mode: "text/x-sql",
@@ -311,7 +312,7 @@
         {{ form.error_block(errors) }}
     {% if options.select2 != null and options.readonly == false %}
         <script>
-            require(['select2'],function(){                
+            require(['select2'],function(){
                  $('#{{ options.id ? options.id : name}}').select2({
                     "placeholder": "{{options.placeholder}}",
                     "allowClear": {{ options.include_blank ? 'true': 'false'}},
@@ -377,12 +378,12 @@
 {% endmacro %}
 
 
-{% macro radio(name, label, value, option_array, errors, cols, options = { required: true  } ) %}
+{% macro radio(name, label, value, option_array, errors, cols, options = { required: true,inline:false } ) %}
 {% import _self as form %}
 	<div class="form-group funkyradio {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}}">
-        {{ form.label(label, options.required ) }}    
+        {{ form.label(label, options.required ) }}
        	{% for row in option_array %}
-           	<label class="checkbox"><input type="radio" name="{{ name }}" value="{{ row.id }}" {% if options.required %}required{% endif %}
+           	<label class="checkbox {%if options.inline %}radio-inline{%endif%}"><input type="radio" name="{{ name }}" value="{{ row.id }}" {% if options.required %}required{% endif %}
     			{% if row.id in value %}selected="selected" {% endif %}> 
     			{{ row.nome }} 
     		</label>
@@ -471,7 +472,7 @@
 
 {% macro checkbox(name, label, value,checked, errors, cols, options = {id:'',include_blank: true, required: true, onchange:null, placeholder:'',readonly: false,class:''} ) %}
 {% import _self as form %}
-    <div class="form-check  {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}} {{options.class}}">
+    <div class="form-check  {% if errors %} has-error {% endif %}{{convertColGrid(cols|default(12))}} {{options.class}}" id="{{ options.id ? options.id : name }}_area">
         <input type="checkbox" class="form-check-input" id="{{ options.id ? options.id : name }}" name="{{name}}" value="{{value}}" {% if checked %} checked {% endif %}>
         <label class="form-check-label" for="{{ options.id ? options.id : name }}">{{ form.label(label, options.required ) }}</label>
         {{ form.error_block(errors) }}

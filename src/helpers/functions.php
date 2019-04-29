@@ -1026,3 +1026,59 @@ function generatePassword($length = 20,$caracteEspecial = false){
   
 	return $str;
 }
+
+function arr_sum(array $arr,string $column) {
+    return array_sum(array_column($arr,$column));
+}
+/**
+ * Retorna somente campos passado no paramentros
+ *
+ * @param array $array
+ * @param array $columnKeys
+ * @return array
+ */
+function arr_pluck(array $array,$columnKeys){
+	return array_intersect_key((array) $array,array_flip($columnKeys));
+}
+
+function array_is_assoc( $array )
+{
+        return is_array( $array ) && array_diff_key( $array, array_keys(array_keys($array)) );
+}
+
+
+function obj_extract($obj,$attributes){
+    
+    foreach ( $attributes as $attribute )
+    {
+        $data[ $attribute ] = $obj[ $attribute ];
+    }
+
+    return $data;
+}
+
+function array_extract( $array, $attributes )
+{
+
+    if ( array_is_assoc( $array ) )
+    {
+        foreach ( $attributes as $attribute )
+        {
+            $data[ $attribute ] = $array[ $attribute ];
+        }
+    }
+    else
+    {
+        foreach ( $array as $key => $values )
+        {
+            $data[ $key ] = [];
+
+            foreach ( $attributes as $attribute )
+            {
+                $data[ $key ][ $attribute ] = $values[ $attribute ];
+            }
+        }   
+    }
+
+    return $data;
+}
