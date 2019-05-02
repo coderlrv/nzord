@@ -38,11 +38,11 @@
                         <i class="fa fa-envelope-o"></i>
                     </a>
                 </li>
-            {% endif %}             
+            {% endif %}
             <li class="dropdown messages-menu" title="Usuários no Setor {{session.app.userSetor}}" id="navBarUSetor">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding: 15px 15px 15px !important;">
                     <i class="fa fa-users"></i>
-                    {% if rSetor.users %}                    
+                    {% if rSetor.users %}
                     <span class="label label-info">{{ rSetor.users|length }}</span>
                     {% endif %}
                 </a>
@@ -64,9 +64,11 @@
                         <small>@{{session.app.login}}</small></p>
                     </li>
                     <li class="divider"></li>
-                    <li><a class="profile-link" href="#" title="Definir o seu Status" onclick="defStatus();">
-                        {{ session.app.userStatus|default(' <i class="fa fa-frown-o"></i> Definir Status')|raw }}</a>
-                    </li>
+                    {% if sys.config.manager_status_user %}
+                        <li><a class="profile-link" href="#" title="Definir o seu Status" onclick="defStatus();">
+                            {{ session.app.userStatus|default(' <i class="fa fa-frown-o"></i> Definir Status')|raw }}</a>
+                        </li>
+                    {% endif %}
                     <li><a class="profile-link" href="{{ base_url() }}/app/system/suasessao" title="Dados da Sessão Atual"><i class="fa fa-id-card-o"></i> Perfil</a></li>
                     <li class="divider"></li>
                     <li><a class="sign-out-link" href="{{ path_for('logout') }}" title="Sair do Sistema" > <i class="fa fa-power-off"></i> Sair</a></li>
