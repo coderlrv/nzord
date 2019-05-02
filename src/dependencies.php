@@ -139,13 +139,13 @@ $container['notFoundHandler'] = function ($c) {
 $container['errorHandler'] = function ($container) {
     $settings = $container->get('settings');
 
-    return function ($request, $response, $exception) use ($container) {
+    return function ($request, $response, $exception) use ($container,$settings) {
         if ($exception instanceof Base\Exceptions\ModalErrorException) {
-            $handler = new \NZord\Handlers\ModalExceptionHandler();
-
+            $handler = new \NZord\Handlers\ModalExceptionHandler($settings['displayErrorDetails']);
+         
             return $handler->__invoke($request, $response, $exception);
         } else {
-            $handler = new Slim\Handlers\Error(true);
+            $handler = new Slim\Handlers\Error($settings['displayErrorDetails']);
             return $handler->__invoke($request, $response, $exception);
         }
     };
