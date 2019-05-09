@@ -232,7 +232,7 @@ class NQuery{
      * @return $this
      */
     public function limit($value){
-        $this->limitValue = "limit $value";
+        $this->limitValue = " limit $value";
         return $this;
     }
     /**
@@ -241,7 +241,7 @@ class NQuery{
      * @return $this
      */
     public function offSet($value){
-        $this->offsetValue = "offset $value";
+        $this->offsetValue = " offset $value";
         return $this;
     }
     /**
@@ -254,7 +254,7 @@ class NQuery{
             $value = inplode(' ',$value);
         }
 
-        $this->groupByvalue = "group by $value";
+        $this->groupByvalue = " group by $value";
         return $this;
     }
     /**
@@ -262,10 +262,39 @@ class NQuery{
      * @return string
      */
     public function toSql(){
-        $this->query .= (strlen($this->wheres) > 0 ) ? ' where': '';
+        $sql = '';
         $this->havingValue = (strlen($this->havingValue) > 0 ) ? ' having '.$this->havingValue: '';
         
-        return rtrim("$this->query $this->wheres $this->groupByvalue $this->havingValue $this->orderByValue $this->limitValue $this->offsetValue");
+        if(!empty($this->query)){
+            $sql .= $this->query;
+        }
+
+        if(!empty($this->wheres)){
+            $sql .= (strlen($this->wheres) > 0 ) ? ' where ': '';
+            $sql .= $this->wheres;
+        }
+
+        if(!empty($this->groupByvalue)){
+            $sql .= $this->groupByvalue;
+        }
+
+        if(!empty($this->havingValue)){
+            $sql .= $this->havingValue;
+        }
+
+        if(!empty($this->orderByValue)){
+            $sql .= $this->orderByValue;
+        }
+
+        if(!empty($this->limitValue)){
+            $sql .= $this->limitValue;
+        }
+        
+        if(!empty($this->offsetValue)){
+            $sql .= $this->offsetValue;
+        }
+
+        return rtrim($sql);
     }
     /**
      * Retorna codições where gerada.
@@ -470,7 +499,7 @@ class NQuery{
         return $value;
     }
     
-    private function antiInjection($obj) {	   
+    private function antiInjection($obj) {
         $obj = preg_replace("/(from|alter table|select|insert|delete|update|where|drop table|show tables|#|--|\\)/i", "", $obj);
         $obj = trim($obj);
         $obj = strip_tags($obj);
@@ -479,7 +508,7 @@ class NQuery{
             return $obj;	   
         }
     }   
-    function sqlEscapeMimic($inp) { 
+    function sqlEscapeMimic($inp) {
         if(is_array($inp)) 
             return array_map(__METHOD__, $inp); 
     

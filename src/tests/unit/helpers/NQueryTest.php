@@ -29,6 +29,24 @@ class NQueryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1',$query->toSql());
     }
 
+    public function testHaving()
+    {
+        $query = new NQuery('select coluna from tab_usuario b');
+        $query->having('b.coluna',1);
+
+        $this->assertEquals('select coluna from tab_usuario b having b.coluna = 1',$query->toSql());
+    }
+
+    public function testHavingOr()
+    {
+        $query = new NQuery('select coluna from tab_usuario b');
+        $query->having('b.coluna',1);
+        $query->havingOr('b.coluna',2);
+        $query->havingOr('b.coluna','<>',3);
+
+        $this->assertEquals('select coluna from tab_usuario b having b.coluna = 1 OR b.coluna = 2 OR b.coluna <> 3',$query->toSql());
+    }
+
     public function testWhereAnd()
     {
         $query = new NQuery('select coluna from tab_usuario b');
@@ -78,7 +96,7 @@ class NQueryTest extends \PHPUnit\Framework\TestCase
         $query->where('b.coluna',1);
         $query->limit(1);
 
-        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1   limit 1',$query->toSql());
+        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1 limit 1',$query->toSql());
     }
     public function testOffSet()
     {
@@ -86,7 +104,7 @@ class NQueryTest extends \PHPUnit\Framework\TestCase
         $query->where('b.coluna',1);
         $query->offSet(10);
 
-        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1    offset 10',$query->toSql());
+        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1 offset 10',$query->toSql());
     }
     public function testOrderBy()
     {
@@ -94,7 +112,7 @@ class NQueryTest extends \PHPUnit\Framework\TestCase
         $query->where('b.coluna',1);
         $query->orderBy('b.coluna');
 
-        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1   order by b.coluna ASC',$query->toSql());
+        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1 order by b.coluna ASC',$query->toSql());
     }
     public function testOrderByDesc()
     {
@@ -102,7 +120,7 @@ class NQueryTest extends \PHPUnit\Framework\TestCase
         $query->where('b.coluna',1);
         $query->orderBy('b.coluna','DESC');
 
-        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1   order by b.coluna DESC',$query->toSql());
+        $this->assertEquals('select coluna from tab_usuario b where b.coluna = 1 order by b.coluna DESC',$query->toSql());
     }
     public function testNotNull()
     {
@@ -217,6 +235,17 @@ class NQueryTest extends \PHPUnit\Framework\TestCase
         $query->bindParam('coluna',2);
         $query->bindParam('test','Joao');
         $query->bindParam('list',[1,2,3]);
+
+        $this->assertEquals("select coluna from tab_usuario b where b.coluna = 2 and b.test = 'Joao' or b.list in (1,2,3)",$query->toSql());
+    }
+
+    public function testBindParams(){
+        $query = new NQuery('select coluna from tab_usuario b where b.coluna = :coluna and b.test = :test or b.list in (:list)');
+        $query->bindParam('coluna',2);
+        $query->bindParams([
+            'test'=> 'Joao',
+            'list'=> [1,2,3]
+        ]);
 
         $this->assertEquals("select coluna from tab_usuario b where b.coluna = 2 and b.test = 'Joao' or b.list in (1,2,3)",$query->toSql());
     }
