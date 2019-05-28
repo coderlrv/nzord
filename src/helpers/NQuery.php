@@ -213,7 +213,7 @@ class NQuery{
         if(is_array($columns)){
             $value = '';
             foreach($columns as $col){
-                //Adiciona virgular para procimo orderBy
+                //Adiciona virgular para proximo orderBy
                 if(strlen($value) > 0 ) $value .= ',';
 
                 $value .= $col;

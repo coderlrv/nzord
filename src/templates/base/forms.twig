@@ -67,11 +67,11 @@
                 cpf: '999.999.999-99',
                 cnpj: '99.999.999/9999-99',  
                 data: '99/99/9999',
-                phone:'(99) 9999[9]-9999',
+                phone: [ '(99) 9999-9999','(99) 9999[9]-9999'],
                 cep:'99999-999',
                 placa:'AAA-9999',
                 number:'9{0,}',
-                time:'9{2}:9{2}'
+                time:'9{2}:9{2}',
             } %}
             
             {% if options.mask in maskDefault|keys %}
@@ -418,11 +418,11 @@
 {% endmacro %}
 
 
-{% macro file(name, label, value, placeholder, errors, cols, options = { required: false, accept:'file_extension|audio/*|video/*|image/*|media_type',multiple:false}) %}
+{% macro file(name, label, value, placeholder, errors, cols, options = { required: false, accept:'file_extension|audio/*|video/*|image/*|media_type',multiple:false,id:null}) %}
 {% import _self as form %}
   	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}}">
       {{ form.label(label, options.required ) }} 
-      <input class="form-control" type="file" id="{{ name }}" name="{{ name }}" 
+      <input class="form-control" type="file" id="{{ options.id ? options.id : name }}" name="{{ name }}"
           {% if options.required %}required{% endif %} 
           {% if options.multiple %}multiple{% endif %} 
           {% if options.accept %}accept="{{ options.accept }}"{% endif %}>
