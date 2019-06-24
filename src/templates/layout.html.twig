@@ -25,11 +25,11 @@
 	<footer class="main-footer text-muted hidden-xs">
 		<div class="col-md-4 pull-left text-muted">
 			<small title="Dados da Sessão"> 
-				<span class="glyphicon glyphicon-user"> </span> 
+				<i class="fa fa-user"> </i> 
 				<a href="{{ base_url() }}/app/system/suasessao" title="Informações da sessão">{{ session.app.login }}</a> 
-				| <span class="glyphicon glyphicon-time"> </span> {{ session.app.loggedIn|date("d/m/Y H:i:s") }} 
+				| <i class="fa fa-clock-o"> </i> {{ session.app.loggedIn|date("d/m/Y H:i:s") }} 
 				<!-- | <span id="log"></span>  -->
-				| <b>Sessão: </b>{{ session.app.sessao }} - <span id="spanRegSes"><i class="fa fa-circle text-green"></i> Online</span>
+				| <b>Sessão: </b>{{ session.app.sessao }} - <span id="spanRegSes"><i class="fa fa-cloud text-green"></i> Online</span>
 			</small>
 		</div>
 		<div id="msgAlertas" class="col-xs-5 text-right"></div>
@@ -41,7 +41,7 @@
 			{% if sys.config.manager_files %}
 				<a class="btn btn-sm btn-xs btn-default" onclick="fileManager()"> <i class="fa fa-th-list" aria-hidden="true"></i> File Manager </a>
 			{% endif %}
-			|<span class="cursor-pointer" title="Banco de Dados Conectado!"> {{ bdAtual|raw }} </span> |
+			|<span class="cursor-pointer" title="Banco de Dados Conectado!"> {{ bdAtual|slice(10,-1)|raw }} </span> |
 			<b class="cursor-pointer">Versão:</b> {{ sys.version }}
 
 			{% if sys.config.beta %}

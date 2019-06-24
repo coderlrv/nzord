@@ -20,7 +20,7 @@ class Login
         $this->request = $this->app->request;
     }
     //--------------------------------------------------------------------------------
-    public function abreSessao($idUser, $bind)
+    public function abreSessao($idUser, $bind=null)
     {
         $user       = Usuario::find($idUser);
         if(!$user){

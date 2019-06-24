@@ -846,7 +846,7 @@ function strToListSelect($str){
         $value = explode('=',$opt);
         return [
             'id'=> $value[0],
-            'nome'=> $value[1]
+            'nome'=> @$value[1]
         ];
     },$opts);
 
