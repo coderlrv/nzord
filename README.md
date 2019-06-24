@@ -7,7 +7,7 @@ Projeto desenvolvido em Slim Framework 3 incluindo Eloquent, Twig, Flash message
 Faça o clone do projeto
 
 ```bash
-$ git clone http://192.168.173.49/slim/nzord.git
+$ git clone https://github.com/coderlrv/nzord.git projeto
 ```
 
 É recomendado que você use o [Composer](https://getcomposer.org/) para a instalação das dependencias.

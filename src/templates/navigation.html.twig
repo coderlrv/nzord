@@ -14,11 +14,13 @@
     </a>
     <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">  
-            <li class="dropdown calendar-menu" onclick="hdeyCalendar();">
+            <li class="dropdown calendar-menu hidden-xs" onclick="hdeyCalendar();">
                 <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown">-->
-                    <div id="data-wrapper">{{ sys.diaSemana}}<br>
-                        <b>{{ sys.diaHoje}}</b>
-                    </div>
+                    <a>
+                        <div id="data-wrapper">{{ sys.diaSemana}}<br>
+                            <b>{{ sys.diaHoje}}</b>
+                        </div>
+                    </a>
                 <!--</a>
                 <ul class="dropdown-menu">
                     <div class="calendar">-->
@@ -26,11 +28,13 @@
                 <!--    </div>
                 </ul>-->
             </li>
-            <li title="Hora atual do servidor">
-                <div id="clock-wrapper">{{ sys.horaAtual}}</div>
-                <div id="tools-wrapper">
-                    <i class="fa fa-clock-o"></i>
-                </div>
+            <li title="Hora atual do servidor" class="hidden-xs">
+                <a>
+                    <i class="fa fa-clock-o pull-right"></i>
+                    <div id="clock-wrapper">
+                        {{ sys.horaAtual}}
+                    </div>
+                </a>
             </li>
             {% if sys.config.manager_messages %}
                 <li class="dropdown messages-menu" title="Mensagens do Correio Interno" id="navBarMsg">

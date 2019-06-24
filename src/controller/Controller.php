@@ -163,12 +163,12 @@ class Controller
      * @param integer $httpCode
      * @return void
      */
-    public function withJson($data,int $httpCode = 200)
+    /*public function withJson($data,int $httpCode = 200)
     {
         return $this->app->response
             ->withHeader('Content-Type', 'application/json')
             ->withJson($data,$httpCode);
-    }
+    }*/
 
     /**
      *  Retorna arquivo do arquivo passado.

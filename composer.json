@@ -45,7 +45,13 @@
         }
     ],   
     "scripts": {
-        "test": "vendor/bin/phpunit --verbose --coverage-text"
+        "test": "vendor/bin/phpunit --verbose --coverage-text",
+        "post-install-cmd": [
+            "composer dump-autoload -o"
+        ],
+        "post-update-cmd": [
+            "composer dump-autoload -o"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true
