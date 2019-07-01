@@ -34,7 +34,7 @@
 {% endmacro %}
 
 {% macro btnAppBox(link,name,icon='links',options= {'class':'','badge':null,'onClick':null,'size':null}) %}
-	<div class="col-md-{{ size|default(4) }} col-xs-6">
+	<div class="col-md-{{ options.size|default(4) }} col-xs-6">
       <div class="small-box {{ options.class|default('bg-aqua') }}">
         <div class="inner text-left">
           <h3>{{ options.badge }}</h3>

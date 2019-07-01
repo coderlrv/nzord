@@ -12,7 +12,7 @@
 
 {% macro widget( name, label, content, img='home', efect='default', xs=12, options = { remove:false,minimiza:false,class:false,solid:false,closed:false,bstyle:null }, footer={} ) %}
 {% import _self as form %}
-     <div class="col-md-{{ xs }}"  id="area_{{ name }}">
+     <div class="col-md-{{ xs }} col-xs-12"  id="area_{{ name }}">
         <!-- .box-body -->
 		<div class="box box-{{ efect }}{% if options.solid %} box-solid {% endif %}{% if options.closed %} collapsed-box{% endif %}" id="{{ name }}">
 			{% if label %}

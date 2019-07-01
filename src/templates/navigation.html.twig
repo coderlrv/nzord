@@ -43,6 +43,7 @@
                     </a>
                 </li>
             {% endif %}
+            {% if sys.config.manager_status_user %}	
             <li class="dropdown messages-menu" title="Usuários no Setor {{session.app.userSetor}}" id="navBarUSetor">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding: 15px 15px 15px !important;">
                     <i class="fa fa-users"></i>
@@ -50,7 +51,8 @@
                     <span class="label label-info">{{ rSetor.users|length }}</span>
                     {% endif %}
                 </a>
-            </li>         
+            </li> 
+            {% endif %}        
             <li class="dropdown messages-menu" title="Recados encaminhados para mim.." id="navBarRecado">
                 <a href="#" style="padding: 15px 15px 15px !important;">
                     <i class="fa fa-comments"></i>
@@ -74,7 +76,6 @@
                         </li>
                     {% endif %}
                     <li><a class="profile-link" href="{{ base_url() }}/app/system/suasessao" title="Dados da Sessão Atual"><i class="fa fa-id-card-o"></i> Perfil</a></li>
-                    <li class="divider"></li>
                     <li><a class="sign-out-link" href="{{ path_for('logout') }}" title="Sair do Sistema" > <i class="fa fa-power-off"></i> Sair</a></li>
                    
                    {# <li class="user-header" style="height:initial">
