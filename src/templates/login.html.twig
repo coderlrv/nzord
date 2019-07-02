@@ -105,6 +105,11 @@
 			{% endif %}
 		</div>
 	</div>
+	{% if sys.config.image_idx_desc is not empty %}
+		<div class="text-muted text-right hidden-xs" style="bottom: 0; position: fixed; width: 100%; text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;">
+			<b>{{ sys.config.image_idx_desc|raw }}</b>
+		</div>	
+	{% endif %}
 	<script>
 		window.setTimeout(function() {
 			$(".alert").fadeTo(2000, 0).slideUp(900, function(){
