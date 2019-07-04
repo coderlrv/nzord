@@ -317,15 +317,16 @@ class NReportTwig
             }
             </style>';
 
-            $body .= '<link href="' . $dir . '/node_modules/bootstrap/dist/css/bootstrap.css?v=' . time() . '" rel="stylesheet">';
-            $body .= '<script src="' . $dir . '/node_modules/@coder-lrv/nzord-app/src/js/nzord.require.js"></script>';
-            $body .= '<script src="' . $dir . '/node_modules/@coder-lrv/nzord-app/src/js/nzord-aux.js?v=' . time() . '"></script>';
-            $body .= '<script src="' . $dir . '/js/app.modules.js"></script>';
+            $body .= '<link href="' . $dir . '/node_modules/bootstrap/dist/css/bootstrap.css?v=' . time() . '" rel="stylesheet">
+                <link href="' . $dir . '/node_modules/font-awesome/css/font-awesome.min.css?v=' . time() . '" rel="stylesheet">
+                <script src="' . $dir . '/node_modules/@coder-lrv/nzord-app/src/js/nzord.require.js"></script>
+                <script src="' . $dir . '/node_modules/@coder-lrv/nzord-app/src/js/nzord-aux.js?v=' . time() . '"></script>
+                <script src="' . $dir . '/js/app.modules.js"></script>';
 
     
             $body .= "<button class='btn btn-sm btn-primary hidden-print btn-print' id='btn-print-direct' onclick=\"printData('prtReport')\">
                 <i class='fa fa-print'></i> Imprimir </button>";
-            $body .= '<button class="btn btn-sm btn-success hidden-print btn-print" id="btn-print-excel" style="margin-left:5px;" onclick="printExcelFile()">
+            $body .= '<button class="btn btn-sm btn-success hidden-print btn-print" id="btn-print-excel" style="margin-left:5px;" onclick="generateexcel(\'prtReport\')">
                 <i class="fa fa-table"></i>  Export Excel </button>';
         }
 
