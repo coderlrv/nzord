@@ -21,7 +21,10 @@ class AuthController extends Controller
      * @return mixed
      */
     public function login(Request $request, Response $response, $args)
-    {   
+    {  
+        if( @$_COOKIE['PHPSESSID'] == null ){
+            session_start();
+        } 
         if (!$this->session->has('isLoggedIn')) {
             $this->app->flash->addMessageNow('warning', 'Necessário Logar!');
             $response = $this->view->render($response, 'login.html.twig');

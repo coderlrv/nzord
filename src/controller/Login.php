@@ -6,6 +6,7 @@ use Modulos\System\Models\Usuario;
 use Modulos\System\Models\ModAcesso;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use NZord\Middlewares\Auth;
 
 class Login
 {
@@ -29,7 +30,8 @@ class Login
         $uConfig   = \Modulos\System\Models\UserConfig::find($idUser);
 
         $req       = $this->request->getHeaders();
-        $phpsessid = $this->request->getCookieParam('PHPSESSID');
+        //$phpsessid = $this->request->getCookieParam('PHPSESSID');        
+        $phpsessid = $_COOKIE['PHPSESSID'];
 
         //Busca sessao atual
         $sessaook = Sessao::where('session_id', $phpsessid)->where('status', 'A')->orderBy('id', 'desc')->first();
@@ -64,7 +66,13 @@ class Login
             $sessao->perfil     = $user->perfil;
             $sessao->remo_ip    = $this->request->getServerParam('REMOTE_ADDR');
             $sessao->status     = 'A';
-            $sessao->save();
+            try {
+                $sessao->save();
+            } catch (\Exception $ex) {                
+                $this->app->flash->addMessageNow('error', 'Problemas na criação de Sessão!');
+                header("Refresh:0; url=./public");
+                exit;
+            }
 
             //Seta na sessao infomações.
             $this->setSessao($user, $sessao->id, $bind, $uConfig);
