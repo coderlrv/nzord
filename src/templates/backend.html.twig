@@ -110,12 +110,12 @@
         <div class="control-sidebar-bg"></div>
         <div id="divNotification">
         {% if flash['message'] %}
-          <div class="alert alert-info">
-            <p>{{flash['message']}}</p>
-          </div>
+            <div class="alert alert-info">
+                <p>{{flash['message']}}</p>
+            </div>
         {% endif %}
             {% include 'notificacao.twig' only %}
         </div>
-        <span id="ajax-loading" class="mini-loading" style="display:none"></span>
+        <span id="ajax-loading" class="mini-loading" style="display:none"><img src="{{ base_url() }}/images/loading.gif" /></span>
     </body>
 </html>

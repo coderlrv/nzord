@@ -41,7 +41,7 @@
 			{% if sys.config.manager_files %}
 				<a class="btn btn-sm btn-xs btn-default" onclick="fileManager()" title="Arquivos para Acesso Público"> <i class="fa fa-file" aria-hidden="true"></i> Arquivos </a>
 			{% endif %}
-			|<span class="cursor-pointer" title="Banco de Dados Conectado!"> {{ bdAtual|slice(5,-1)|raw }} </span> |
+			|<span class="cursor-pointer" title="Banco de Dados Conectado!"> {{ bdAtual|raw }} </span> |
 			<b class="cursor-pointer">Versão:</b> {{ sys.version }}
 			{% if sys.config.beta %}
 			<!-- Beta -->
@@ -61,7 +61,7 @@
 	<input type="hidden" id="urlPag" value="{{ base_url() }}/{{ currentUrl }}">
 </div> <!-- ./wrapper -->
 <div id="divModalBox" ></div>
-<div class="loader"></div>
+<div class="loader" style="display:none;"><img src="{{ base_url() }}/images/35.gif" /></div>
 {% endblock %} 
 
 {% block bScripts %}
@@ -72,3 +72,4 @@
 	
 	{% block scripts %}{% endblock %}
 {% endblock %} 
+

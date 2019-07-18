@@ -6,9 +6,6 @@
             <code>eventos</code> deve estar executando.
         </div>
         <div class="col-xs-12 text-center" style="display:none;" id="{{nome}}_loading">
-            <!-- <br>
-            <br>
-            <img src="{{base_url()}}/images/Preloader_3.gif" width="64" height="64"> -->
             <h4>Carregando...</h4>
         </div>
 
@@ -19,14 +16,17 @@
         require(['fullCalendar'],function(){
             require(['fullCalendarLocale'],function(){
                 var maxDate = moment();
-
                  $('#{{nome}}').fullCalendar({
                     defaultView:'{{options.defaultView|default("agendaWeek")}}',
                     locale:'pt-br',
                     displayEventTime: false,
                     allDaySlot:{{options.allDaySlot ? 'true':'false'}},
-                    {% if options.minTime %}minTime: "{{options.minTime}}",{% endif %}
-                    {% if options.maxTime %}maxTime: "{{options.maxTime}}",{% endif %}
+{% if options.minTime %}
+                    minTime: "{{options.minTime}}",
+{% endif %}
+{% if options.maxTime %}
+                    maxTime: "{{options.maxTime}}",
+{% endif %}
                     header    : {
                         left  : 'prev,next today',
                         center: 'title',
@@ -37,9 +37,13 @@
                     businessHours:{{ options.businessHours |json_encode | raw}},
                     selectable: true,
                     selectHelper: true,
-                    {% if not options.eventOverlap %} eventOverlap:false, {% endif %}
-                    {% if options.slotMinutes %} slotDuration: '00:30:00',{% endif %}
-                    {% if options.eventRender %} eventRender: {{options.eventRender}},{% endif %}
+{% if not options.eventOverlap %} 
+                    eventOverlap:false,{% endif %}
+{% if options.slotMinutes %} 
+                    slotDuration: '00:30:00',{% endif %}
+{% if options.eventRender %} 
+                    eventRender: {{options.eventRender}},
+{% endif %}
                     defaultDate: '{{"now"|date("Y-m-d")}}',
                     select: function(start, end) {
                         start = $.fullCalendar.moment(start).format("YYYY-MM-DD[T]HH:mm:ss");
@@ -47,25 +51,35 @@
 
                         $('#{{nome}}').trigger('selectEvent',[$(this),start,end]);
                     }, 
-                    {% if urlEvents %}
+{% if urlEvents %}
                         events: {
                             url: '{{urlEvents}}',
                             error: function(e) {
                                 $('#script-warning').show();
                             },
-                            complete: function( response ) {
-                                evento = response.responseJSON;
+                            success: function( data ) {
+                                $('#{{nome}}_loading').toggle(true);
+                                $('#{{nome}}').fullCalendar('removeEvents');
+                                $('#{{nome}}').fullCalendar('option', {
+                                    businessHours:data.businessHours
+                                });
+                                if(!data.events) return;
+                                for(i=0;i<data.events.length;i++){
+                                    $('#{{nome}}').fullCalendar('renderEvent',data.events[i],true);
+                                }
+                                $('#{{nome}}_loading').toggle(false);
+                               {# /* evento = response.responseJSON;
                                 for(var i in evento ){
                                     var dataI = evento[i].start; dataF = evento[i].end;
                                         dataI = dataI.split('+'); dataF = dataF.split('+');
                                         
                                     $('#listaEventos').append('[ID: ' + evento[i].id + '] <b>Titulo:</b> '+ evento[i].title + ' <br /> <b>Data Inicial:</b> ' + dataI[0] + ' <br />  <b>Data Final:</b> ' + dataF[0] + '<br /><br />');
-                                }
+                                }*/ #}
                             }
                         },
-                    {% else %}
+{% else %}
                         events:[],
-                    {% endif %}
+{% endif %}
                     loading: function(bool){
                         $('#{{nome}}_loading').toggle(bool);
                     },
