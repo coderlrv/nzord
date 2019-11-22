@@ -44,22 +44,44 @@
 		<!-- Google Font -->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic"> 
 	<style>
-		body {
-			margin: 0px;
-			padding: 0px;
-			background: url('.{{ sys.config.image_idx }}') #3c8dbc;
-			background-repeat: no-repeat;
-			background-size: 100%;
-			-webkit-background-size: cover;
-			-moz-background-size: cover;
-			-o-background-size: cover;
-			background-size: cover;
-		}
+	body {
+		margin: 0px;
+		padding: 0px;
+		background: url('.{{ sys.config.image_idx }}') #3c8dbc;
+		background-repeat: no-repeat;
+		background-size: 100%;
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+	}
+	.body {
+		content: '';
+		position: fixed;
+		width: 100%;
+		height: 100vh;
+        margin: 0px;
+        padding: 0px;
+        background: url('.{{ sys.config.image_idx }}') #3c8dbc;    
+        background-repeat: no-repeat;
+        background-size: 100%;
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+		-webkit-filter: blur(15px);
+		-moz-filter: blur(15px);
+		-o-filter: blur(15px);
+		-ms-filter: blur(15px);
+		filter: blur(15px);
+		display: none;
+    }   
 	</style>
 </head>
 <body class="hold-transition login-page">
+<div class="body"></div>
 	<div class="login-box">
-		<div class="card card-container auth-component-form" style="margin-top: 5%;">
+		<div class="card card-container auth-component-form animated zoomIn" style="margin-top: 5%;">
 			{% for msg in flash('error')  %}
 				<div class="alert alert-danger text-center">
 					<h4><i class="glyphicon glyphicon-remove"></i> {{msg|raw}}</h4>
@@ -85,12 +107,12 @@
 				<form name="login" class="form-signin" method="POST" action="{{ path_for('postLogin') }}" autocomplete="off">
 					<div class="form-login text-left login-box-body">
 						<div><h1>{{ sys.config.title_idx|raw }}</h1></div>
-						<input type="text" name="username" placeholder="Login/Usuário" class="form-control username" maxlength="30" autofocus required="required" value="{{ login.usuario }}" /> 
+						<input type="text" name="username" placeholder="Usuário" class="form-control username" maxlength="30" required="required" value="{{ login.usuario }}" /> 
 						<input type="password" name="password" placeholder="Senha" class="form-control password" maxlength="20" required="required" />
 					
 						<span class="group-btn">
 							<button type="submit" class="btn btn-primary btn-block">
-								<i class="fa fa-sign-in"></i> Entrar
+								Entrar <i class="fa fa-sign-in"></i>
 							</button>
 						</span>
 					</div>
@@ -119,6 +141,14 @@
 				$(this).remove(); 
 			});
 		}, 5000);
+		$('.form-signin input').focus(function(){
+			$('.body').fadeIn(800).css("display", "block"); 
+		});	
+		$('.form-signin input').focusout(function(){
+			$('.body').fadeOut(800, function() {
+				$('.body').css("display", "none");
+  			}); 
+		});
 	</script>	
 </body>
 </html>

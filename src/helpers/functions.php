@@ -56,6 +56,7 @@ function limpaCPF_CNPJ($value){
  * @return string
  */
 function dataConvBR($data){
+    $data = str_replace('T',' ',$data);
     $datah = explode(" ",$data);
     $data = implode("/",array_reverse(explode("-",$datah[0])));
     if( count($datah) == 2 ) {

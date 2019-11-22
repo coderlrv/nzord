@@ -29,6 +29,10 @@ class Modal extends Controller
         $pathTemplates = getPathClass($class) . '/../templates';
         $this->app->view->getLoader()->addPath($pathTemplates, 'twigModal');
         $this->app->view->getLoader()->addPath($pathTemplates, 'twMod');
+        
+        $cBAase = @new \Base\Controller\BaseController();
+        $cBAaseTemplates = getPathClass($cBAase) . '/../templates';
+        $this->app->view->getLoader()->addPath($cBAaseTemplates, 'twigBase');
 
         //Checa permissão de acesso.
         if (!$this->app->acl->checkPermissionAction($modulo,$pagina,$action)) {

@@ -49,6 +49,10 @@ class AppController extends Controller
             //Seta caminha template do modulos.
             $pathTemplates = getPathClass($class).'/../templates';
             $this->view->getLoader()->addPath($pathTemplates, 'twMod');
+            
+            $cBAase = @new \Base\Controller\BaseController();
+            $cBAaseTemplates = getPathClass($cBAase) . '/../templates';
+            $this->view->getLoader()->addPath($cBAaseTemplates, 'twigBase');
 
             //Checa permissao ACL definido no controller.
             if (!$this->app->acl->checkPermissionAction($modulo,$pagina,$act)) {
@@ -127,6 +131,10 @@ class AppController extends Controller
             //Seta caminha template do modulos.
             $pathTemplates = getPathClass($class).'/../templates';
             $this->view->getLoader()->addPath($pathTemplates, 'twMod');
+            
+            $cBAase = @new \Base\Controller\BaseController();
+            $cBAaseTemplates = getPathClass($cBAase) . '/../templates';
+            $this->view->getLoader()->addPath($cBAaseTemplates, 'twigBase');
 
             //Checa permissao ACL definido no controller.
             if (!$this->app->acl->checkPermissionAction($modulo,$pagina,$act)) {
