@@ -69,11 +69,11 @@
 				-moz-background-size: cover;
 				-o-background-size: cover;
 				background-size: cover;
-				-webkit-filter: blur(8px);
-				-moz-filter: blur(8px);
-				-o-filter: blur(8px);
-				-ms-filter: blur(8px);
-				filter: blur(8px);
+				-webkit-filter: blur(8px) drop-shadow(1px 1px 1px #3c8dbc);
+				-moz-filter: blur(8px) drop-shadow(1px 1px 1px #3c8dbc);
+				-o-filter: blur(8px) drop-shadow(1px 1px 1px #3c8dbc);
+				-ms-filter: blur(8px) drop-shadow(1px 1px 1px #3c8dbc);
+				filter: blur(8px) drop-shadow(1px 1px 1px #3c8dbc);
 				display: none;
 			}
 		</style>
@@ -148,12 +148,16 @@ window.setTimeout(function () {
 	});
 }, 5000);
 $('.form-signin input').focus(function () {
-	$('.bgbody').fadeIn(800).css("display", "block");
+	$('.bgbody').fadeIn(800).show();
 });
-$('.form-signin input').focusout(function () {
-	$('.bgbody').fadeOut(800, function () {
-		$('.bgbody').css("display", "none");
-	});
+$('.form-signin input').focusout(function(){
+	setTimeout(function() {
+		if( $('.form-signin input').is(":focus") === false ) {
+			$('.bgbody').fadeOut(800, function() {
+				$('.bgbody').hide();
+			}); 
+		}
+	}, 800);
 });
 				</script>
 			</body>
