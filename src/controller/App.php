@@ -50,7 +50,7 @@ class AppController extends Controller
             $pathTemplates = getPathClass($class).'/../templates';
             $this->view->getLoader()->addPath($pathTemplates, 'twMod');
             
-            $cBAase = @new \Base\Controller\BaseController();
+            $cBAase = new \Base\Controller\BaseController($this->app);
             $cBAaseTemplates = getPathClass($cBAase) . '/../templates';
             $this->view->getLoader()->addPath($cBAaseTemplates, 'twigBase');
 
@@ -132,7 +132,7 @@ class AppController extends Controller
             $pathTemplates = getPathClass($class).'/../templates';
             $this->view->getLoader()->addPath($pathTemplates, 'twMod');
             
-            $cBAase = @new \Base\Controller\BaseController();
+            $cBAase = new \Base\Controller\BaseController($this->app);
             $cBAaseTemplates = getPathClass($cBAase) . '/../templates';
             $this->view->getLoader()->addPath($cBAaseTemplates, 'twigBase');
 
