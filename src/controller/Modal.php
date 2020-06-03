@@ -30,7 +30,7 @@ class Modal extends Controller
         $this->app->view->getLoader()->addPath($pathTemplates, 'twigModal');
         $this->app->view->getLoader()->addPath($pathTemplates, 'twMod');
         
-        $cBAase = @new \Base\Controller\BaseController();
+        $cBAase = new \Base\Controller\BaseController($this->app);
         $cBAaseTemplates = getPathClass($cBAase) . '/../templates';
         $this->app->view->getLoader()->addPath($cBAaseTemplates, 'twigBase');
 
