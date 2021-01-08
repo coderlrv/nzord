@@ -220,7 +220,6 @@
                         customConfig: '{{base_url()}}/js/ckeditor_oficio.js',
                         height:'{{ rows*10 }}px'
                     });
-                
                 });
             {% endif %}
 
@@ -345,13 +344,17 @@
     </div>
 {% endmacro %}
 
-{% macro selectSearch(name,label,value={'id':'','val':''},url,errors,cols, options = { widthAddon:null,required: false, placeholder:'',placeholderAddon:'',readonly: false,params:null,min:null},btnsAddon={} ) %}
+{% macro selectSearch(name,label,value={'id':'','val':''},url,errors,cols, options = { widthAddon:null,required: false,mlenght:false, placeholder:'',placeholderAddon:'',readonly: false,params:null,min:null},btnsAddon={} ) %}
     {% import _self as form %}
 
-  	<div class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}}">
+  	<div id="group-{{ options.id ? options.id : name }}" class="form-group {% if errors %} has-error {% endif %} {{convertColGrid(cols|default(12))}}">
         {{ form.label(label, options.required ) }}
         <div class="input-group" style="width:100%">
-            <input type="text" class="form-control" style="height: 32px;" name="{{name}}" id="{{name}}" placeholder="{{ options.placeholder }}" {% if options.required %}required{% endif %} aria-describedby="{{name}}_addon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" autocomplete="off" value="{{value.id}}"  {% if options.readonly %} readonly {% endif %}>
+            <input type="text" class="form-control" style="height: 32px;" name="{{name}}" id="{{name}}" placeholder="{{ options.placeholder }}" 
+                {% if options.required %}required{% endif %} 
+                {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %}
+                {% if options.readonly %} readonly {% endif %}
+                aria-describedby="{{name}}_addon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" autocomplete="off" value="{{value.id}}" >
             <div class="input-group-addon" style="width:{{options.widthAddon|default(80)}}%; padding: 0px !important;border:none !important;">
                 <input type="text" id="{{name}}_addon" class="form-control" style="height: 32px;" value="{{ value.val }}" autocomplete="false" placeholder="{{ options.placeholderAddon }}" disabled {% if options.min %}min="{{options.min}}"{% endif %}>
             </div>
