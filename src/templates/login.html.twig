@@ -95,55 +95,46 @@
 	<body class="hold-transition login-page">
 		<div class="bgbody"></div>
 		<div class="login-box col-md-12">
-			<div
-				class="card card-container  auth-component-form animated zoomIn margin-top-10">
+			<div class="card card-container auth-component-form animated zoomIn margin-top-20">
 				{#<div class="login-box-body  auth-component-form animated zoomIn">#}
 				{% for msg in flash('error')  %}
-					<div class="alert alert-danger text-center">
-						<h4>
-							<i class="fa fa-remove"></i>
+					<div class="alert bg-danger text-center">
+						<h4><i class="fa fa-remove"></i>
 							{{msg|raw}}</h4>
 					</div>
 				{% endfor %}
 				{% for msg in flash('warning') %}
-					<div class="alert alert-warning text-center">
-						<h4>
-							<i class="fa fa-warning"></i>
+					<div class="alert bg-warning text-center">
+						<h4><i class="fa fa-warning"></i>
 							{{msg|raw}}</h4>
 					</div>
 				{% endfor %}
 				{% for msg in flash('success') %}
-					<div class="alert alert-success text-center">
-						<h4>
-							<i class="fa fa-ok"></i>
+					<div class="alert bg-success text-center">
+						<h4><i class="fa fa-ok"></i>
 							{{msg|raw}}</h4>
 					</div>
 				{% endfor %}
-				<div class="col-md-12 text-center margin-top-10">
+				<div class="col-md-12 text-center">
 					<div class="login-logo">
-						<img src="{{ base_url() }}/{{ sys.config.image_logo|raw }}" style="max-width: 70%;" alt="Logomarca"/>
+						<img src="{{ base_url() }}/{{ sys.config.image_logo|raw }}" alt="Logomarca"/>
 					</div>
 					<form name="login" class="form-signin" method="POST" action="{{ path_for('postLogin') }}" autocomplete="off">
 						<div class="form-login text-left">
-							<div>
-								<h1>{{ sys.config.title_idx|raw }}</h1>
-							</div>
+							<h2>{{ sys.config.title_idx|raw }}</h2>
 							<input type="text" name="username" placeholder="Usuário" class="form-control username" maxlength="30" required="required" value="{{ login.usuario }}"/>
 							<input type="password" name="password" placeholder="Senha" class="form-control password" maxlength="20" required="required" />
 							<div id="divCapsLock" class="bg-danger" style="display:none;"><i class="fa fa-exclamation-triangle"></i> Atenção: <b>Caps Lock</b> ativo!</div> 
 							<span class="group-btn">
-								<button type="submit" class="btn btn-primary btn-block">
-									Entrar
-									<i class="fa fa-sign-in"></i>
-								</button>
+								<button type="submit" class="btn btn-primary btn-block"> Entrar	<i class="fa fa-sign-in"></i></button>
 							</span>
 						</div>
 					</form>
 				</div>
 
 				{% if sys.config.login_msg is not empty %}
-					<div class="col-md-12 text-justify bg-warning margin-top-10">
-						<small>{{ sys.config.login_msg|raw }}</small>
+					<div class="col-md-12">
+						{{ sys.config.login_msg|raw }}
 					</div>
 				{% endif %}
 			</div>

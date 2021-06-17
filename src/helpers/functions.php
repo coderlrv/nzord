@@ -450,7 +450,7 @@ function iniciaisNome($value){
  * @param string|boolean $data - false pega data atual. 
  * @return void
  */
-function dataExtenso($data=false){
+function dataExtenso($data=null){
     if ($data)	{
         $mes = date('m', strtotime($data));
     }else{
@@ -1082,4 +1082,41 @@ function array_extract( $array, $attributes )
     }
 
     return $data;
+}
+
+
+function montaTable($name,$data,$height=null,$overflow=null,$strip=null){
+    if( $data != null ){	
+        if( $height != null){
+            $height = ' height: '.$height.'px;';
+        }
+        if( $overflow != null){
+            $overflow = ' overflow: auto;';
+        }
+        $dados = $data;
+        if (count($dados) > 0){	
+            $htm = '<div class="small" style="width:100%; '.$height.$overflow.'" id="'.$name.'_area">
+            <table class="table table-condensed table-hover table-bordered table-responsive table-striped" width="100%" id="'.$name.'" >
+            <thead>
+                <tr>';
+                $htm .= '<th width="30px">'.strtoupper(implode('</th><th>', array_keys(current($dados)))).'</th>
+                </tr>
+            </thead>
+            <tbody>';
+                $i = 0;
+            foreach ($dados as $row){
+                $class = $strip[$i]; 
+                $htm .= '<tr '.$class.'>';
+                    $htm .= '<td>'.implode('</td> <td>', $row).'</td>
+                    </tr>';
+                $i++;
+            }
+            $htm .= '</tbody>
+            </table>
+        </div>';
+        }	
+        return $htm;
+    }else{
+        return '<div class="bg-danger"><b>Sem Dados para Mostrar!</b></div>';
+    }	  
 }
