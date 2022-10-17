@@ -69,7 +69,7 @@
                 data: '99/99/9999',
                 phone: [ '(99) 9999-9999','(99) 9999[9]-9999'],
                 cep:'99999-999',
-                placa:'AAA-9999',
+                placa:'AAA-9N99',
                 number:'9{0,}',
                 time:'9{2}:9{2}',
             } %}
@@ -88,6 +88,11 @@
                     definitions: {
                         'A': {
                             validator: "[A-Za-z]",
+                            cardinality: 1,
+                            casing: "upper" //auto uppercasing
+                        },
+                        'N': {
+                            validator: "[A-Za-z0-9]",
                             cardinality: 1,
                             casing: "upper" //auto uppercasing
                         }
