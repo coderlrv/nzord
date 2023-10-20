@@ -18,6 +18,7 @@ class Auth{
     public function __invoke(Request $request, Response $response, $next){
         $loggedIn = $this->session->get('isLoggedIn');
         if ( $loggedIn != true ) {
+            
             return $response->withRedirect($this->router->pathFor('login'));
         }
         

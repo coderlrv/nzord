@@ -38,6 +38,8 @@ class Session {
     }
     
     protected function start(Request $request){
+
+       
         $settings = $this->settings;
         ini_set('session.use_strict_mode', 1);
         ini_set('session.use_cookies', 1);

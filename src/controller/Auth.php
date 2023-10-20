@@ -22,6 +22,7 @@ class AuthController extends Controller
      */
     public function login(Request $request, Response $response, $args)
     {  
+      
         if( @$_COOKIE['PHPSESSID'] == null ){
             session_start();
         } 
@@ -146,6 +147,7 @@ class AuthController extends Controller
         $this->session->destroy();
 
         $this->app->flash->addMessageNow('success', 'Logout com sucesso!');
+
         return $response->withRedirect($this->router->pathFor('login'));
     }
     /**

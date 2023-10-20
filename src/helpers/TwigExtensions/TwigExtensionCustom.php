@@ -94,7 +94,7 @@ class TwigExtensionCustom extends \Twig_Extension
      * @return string
      */
     public function baseUrl()
-    {
+    {   
         if (is_string($this->uri)) {
             return $this->uri;
         }

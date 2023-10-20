@@ -1,5 +1,4 @@
 <?php
-
 /**
  *
  *  Controle de acesso ao menus.
@@ -8,7 +7,6 @@
 $app->add(function ($request,$response,$next) {
     $uri  = $request->getUri();
     $path = $uri->getPath();
-
     $sessao   = $this->session->get('sessao');
     $sesAtivo = null;
     if ($sessao) {
@@ -20,8 +18,10 @@ $app->add(function ($request,$response,$next) {
             $this->session->clear();
             return $response->withRedirect($this->router->pathFor('login'));
         }
+      
         return $next($request->withUri($uri), $response);
     }
+    
     /**
      * Carrega ao Menu de acordo com as permissões na session
      *
@@ -68,6 +68,19 @@ $app->add(new \NZord\Middlewares\Session($container->get('settings')['session'])
 $app->add(function ($request, $response, $next) {
     $gUrl    = $request->getServerParams();
     $request = $request->withAttribute('session', $this->session);
-    $request = $request->withAttribute('url', 'http://' . $gUrl['SERVER_NAME'] . $gUrl['REQUEST_URI']);
+
+    $uri  = $request->getUri();
+    $request = $request->withAttribute('url', $uri->getScheme() . '://' . $gUrl['SERVER_NAME'] . $gUrl['REQUEST_URI']);
     return $next($request, $response);
 });
+
+// //
+// // Fix: schema https
+// //
+
+// $app->add(function ($request,$response,$next) {
+//     $uri = $request->getUri()->withScheme('https');
+//     $request = $request->withUri($uri);
+    
+//     return $next($request, $response);
+// });

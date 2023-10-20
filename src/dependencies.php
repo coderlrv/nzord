@@ -82,8 +82,13 @@ $container['view'] = function ($c) {
     $view->getLoader()->addPath($settings['template_path']);
 
     // Extesions / Advance funcitions ------------------------------------------------------------------------------
-    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
-    $view->addExtension(new \NZord\Helpers\TwigExtensions\TwigExtensionCustom($c->get('request')->getUri(),$c));
+    $uri = $c->get('request')->getUri();
+    if(isset($_SERVER['HTTP_X_FORWARDED_PROTO'])){
+        $uri = $uri->withScheme($_SERVER['HTTP_X_FORWARDED_PROTO']);
+    }
+    
+    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $uri));
+    $view->addExtension(new \NZord\Helpers\TwigExtensions\TwigExtensionCustom($uri,$c));
     $view->addExtension(new \NZord\Helpers\TwigExtensions\TwigFiltersCustom());
     $view->addExtension(new \NZord\Helpers\TwigExtensions\NAclTwigExtension($c['acl']));
     $view->addExtension(new Twig_Extension_Debug());
@@ -115,7 +120,7 @@ $container['view'] = function ($c) {
     // Variables global --------------------------------------------------------------------------------------------
     $view->getEnvironment()->addGlobal('session', $_SESSION);
     $view->getEnvironment()->addGlobal('currentUrl', $c["request"]->getUri()->getPath());
-    $view->getEnvironment()->addGlobal('path', $c->get('request')->getUri());
+    $view->getEnvironment()->addGlobal('path', $uri);
     $view->getEnvironment()->addGlobal('sys', $c['config']);
     $view->getEnvironment()->addGlobal('bdAtual', $c->get('settings')['db']['database']);
     $view->getEnvironment()->addGlobal('flash', $c['flash']);

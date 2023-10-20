@@ -11,11 +11,11 @@ class App extends \Slim\App{
 
         // New Slim app
         $app = $this;
-
         //Chama rotas e dependencias
         
         require 'dependencies.php';
         require 'routes.php';
+
         require 'middleware.php';
         
     }
