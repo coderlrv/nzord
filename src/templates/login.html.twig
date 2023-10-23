@@ -122,8 +122,8 @@
 					<form name="login" class="form-signin" method="POST" action="{{ path_for('postLogin') }}" autocomplete="off">
 						<div class="form-login text-left">
 							<h2>{{ sys.config.title_idx|raw }}</h2>
-							<input type="text" name="username" placeholder="Usuário" class="form-control username" maxlength="30" required="required" value="{{ login.usuario }}"/>
-							<input type="password" name="password" placeholder="Senha" class="form-control password" maxlength="20" required="required" />
+							<input type="text" name="username" placeholder="Usuário" class="form-control username" maxlength="40" required="required" value="{{ login.usuario }}"/>
+							<input type="password" name="password" placeholder="Senha" class="form-control password" maxlength="40" required="required" />
 							<div id="divCapsLock" class="bg-danger" style="display:none;"><i class="fa fa-exclamation-triangle"></i> Atenção: <b>Caps Lock</b> ativo!</div> 
 							<span class="group-btn">
 								<button type="submit" class="btn btn-primary btn-block"> Entrar	<i class="fa fa-sign-in"></i></button>

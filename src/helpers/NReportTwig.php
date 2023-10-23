@@ -139,7 +139,13 @@ class NReportTwig
         // Add Extenções;
         $twig->addExtension(new \NZord\Helpers\TwigExtensions\TwigRelExtensionCustom());
         $twig->addExtension(new \NZord\Helpers\TwigExtensions\TwigFiltersCustom());
-        $twig->addExtension(new \Slim\Views\TwigExtension($this->container->get('router'), $this->container->get('request')->getUri()));
+
+        $uri = $this->container->get('request')->getUri();
+        if(isset($_SERVER['HTTP_X_FORWARDED_PROTO'])){
+            $uri = $uri->withScheme($_SERVER['HTTP_X_FORWARDED_PROTO']);
+        }
+
+        $twig->addExtension(new \Slim\Views\TwigExtension($this->container->get('router'), $uri));
 
         $twig->getExtension('Twig_Extension_Core')->setNumberFormat(2, ',', '.');
         $twig->addFunction('dataExtenso', new \Twig_Function_Function('dataExtenso'));
@@ -290,9 +296,14 @@ class NReportTwig
     private function renderHtml($html, $btnPrint = true)
     {
         $body = '';
-        $base = $this->container->get('request')->getUri();
-        $port = ($base->getPort()) ? ':' . $base->getPort() : '';
-        $dir  = $base->getScheme() . '://' . $base->getHost() . $port . $base->getBasePath();
+
+        $uri = $this->container->get('request')->getUri();
+        if(isset($_SERVER['HTTP_X_FORWARDED_PROTO'])){
+            $uri = $uri->withScheme($_SERVER['HTTP_X_FORWARDED_PROTO']);
+        }
+
+        $port = ($uri->getPort()) ? ':' . $uri->getPort() : '';
+        $dir  = $uri->getScheme() . '://' . $uri->getHost() . $port . $uri->getBasePath();
 
         if ($btnPrint) {
             //$body .= '<script src="'.$dir.'/node_modules/jquery/dist/jquery.min.js"></script>';
