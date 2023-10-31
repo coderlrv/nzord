@@ -1120,3 +1120,13 @@ function montaTable($name,$data,$height=null,$overflow=null,$strip=null){
         return '<div class="bg-danger"><b>Sem Dados para Mostrar!</b></div>';
     }	  
 }
+
+
+/**
+ * Convert base64 do navegador para UTF-8.
+ */
+function base64ToUTF8Text($base64Text){
+    $result = base64_decode($base64Text);
+    $result = iconv(mb_detect_encoding($result, mb_detect_order(), true), "UTF-8", $result);
+    return $result;
+}
