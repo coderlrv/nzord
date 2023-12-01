@@ -6,6 +6,7 @@ use Modulos\System\Models\Usuario;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Modulos\System\Models\LogLogin;
+use NZord\Helpers\Validations\Validator as V;
 
 /**
  * Controller de Login / Logout do sistema.
@@ -45,10 +46,16 @@ class AuthController extends Controller
      * @return mixed
      */
     public function postLogin(Request $request, Response $response, $args)
-    {   
+    {
         $data = $request->getParsedBody();
-        $bind = null;
 
+        if(empty($data['username']) || empty($data['password'])){
+            $this->app->flash->addMessageNow('error', 'Campo usuário e senha são obrigatório!');
+
+            return $this->redirectLogin();
+        }
+
+        $bind = null;
         $this->session->set('pg', 'PostLogin');
     
         // Configuracao para realizar authenticação via AD.
@@ -60,10 +67,9 @@ class AuthController extends Controller
         }
 
         $auth = new Login($this->app);
-
         if ($bind && $useAD) {
             $user = Usuario::where('login', '=', $data['username'])->first();
-
+            
             //Criar usuário no sistema - primeiro acesso
             if (!$user) {
                 $userAd = $ad->getInfoUser($data['username']);
