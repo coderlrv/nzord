@@ -1,5 +1,7 @@
 <?php
 
+use Slim\Http\Request;
+
 /**
  * Função debug  váriaveis
  *
@@ -1129,4 +1131,11 @@ function base64ToUTF8Text($base64Text){
     $result = base64_decode($base64Text);
     $result = iconv(mb_detect_encoding($result, mb_detect_order(), true), "UTF-8", $result);
     return $result;
+}
+
+
+function getRequestIp(Request $request){
+    return $request->getServerParam('HTTP_X_FORWARDED_FOR') 
+        ?  $request->getServerParam('HTTP_X_FORWARDED_FOR') 
+        : $request->getServerParam('REMOTE_ADDR');
 }
