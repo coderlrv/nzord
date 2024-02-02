@@ -94,7 +94,7 @@ function limpaStr($string) {
     $string = preg_replace('/[úùûü]/ui', 'u', $string);
     $string = preg_replace('/[ç]/ui', 'c', $string);
     //echo $string;
-    $string = preg_replace("/[][><}{)(:;,ºª!?*%~^`&#@]/", "", $string);
+    $string = preg_replace("/[][><}{)(:;,º°ª!?*%~^`&#@]/", "", $string);
     $string = preg_replace("/ /", "_", $string);
     $string = strtolower($string);
     return $string;
