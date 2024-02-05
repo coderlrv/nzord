@@ -34,14 +34,15 @@
     </div>
 {% endmacro %}
 
-{% macro input(name, label, value, placeholder, errors, cols, options={ required:false,readonly:false,mask:false,decimalPrecision:0,valide:null,removeMask:false,action:false,mlenght:false,class:'',toUpper:false,id:null} ) %}
+{% macro input(name, label, value, placeholder, errors, cols, options={ required:false,readonly:false,mask:false,decimalPrecision:0,valide:null,removeMask:false,action:false,mlenght:false,class:'',toUpper:false,id:null,onblur:null } ) %}
 	{% import _self as form %}
     <div id="group-{{ options.id ? options.id : name }}" class="form-group {% if errors %} has-error {% endif %}{{convertColGrid(cols|default(12))}}">
         {{ form.label(label, options.required ) }}
         <input class="form-control {{options.class}}" type="text" id="{{ options.id ? options.id : name }}" name="{{ name }}" placeholder="{{ placeholder }}" value="{{ value }}" 
                 {% if options.required %}required{% endif %} {% if options.readonly %} readonly {% endif %} {{ options.action }} 
                 {% if options.mlenght %} maxlength="{{ options.mlenght }}" {% endif %}
-                {% if options.toUpper %} onkeyup="this.value = this.value.toUpperCase()" {% endif %} >
+                {% if options.toUpper %} onkeyup="this.value = this.value.toUpperCase()" {% endif %}
+                {% if options.onblur %} onBlur="{{ options.onblur }}" {% endif %}  >
         {{ form.error_block(errors) }}
     </div>
     {# Validacoes #}
