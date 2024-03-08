@@ -1,10 +1,17 @@
 {% extends "layout.html.twig" %}
-{% block title %}403 Forbidden {% endblock %}
+
+{% block title %}403 Forbidden{% endblock %}
+
 {% block content %}
-    <div class="col-sm-offset-3 col-sm-6 text-center alert alert-warning">
+	<div class="col-sm-offset-3 col-sm-6 text-center alert alert-warning">
 		<h1 style="width: 100%; font-size: 80px; text-align: center;">
-		<b> <i class="fa fa-exclamation-triangle"></i> 403 </b></h1>
-				<h3>[<b>{{ path }}</b>] Modúlo/Você não tem permissão de acesso!</h1> 
+			<b>
+				<i class="fa fa-exclamation-triangle"></i>
+				403
+			</b>
+		</h1>
+		<h3><b>Modúlo/Você não tem permissão de acesso!</b></h1>
+		<i>[{{ path }}]</i>
 	</div>
 	<div class="col-sm-offset-3 col-sm-6 text-center">
 		<a href="{{ base_url() }}">Paginal Inicial</a>

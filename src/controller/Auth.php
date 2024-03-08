@@ -1,12 +1,12 @@
 <?php
 namespace NZord\Controller;
 
+use Exception;
 use Modulos\System\Models\Parametro;
 use Modulos\System\Models\Usuario;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Modulos\System\Models\LogLogin;
-use NZord\Helpers\Validations\Validator as V;
 
 /**
  * Controller de Login / Logout do sistema.
@@ -22,10 +22,12 @@ class AuthController extends Controller
      * @return mixed
      */
     public function login(Request $request, Response $response, $args)
-    {  
-      
+    {
         if( @$_COOKIE['PHPSESSID'] == null ){
-            session_start();
+            if(!isset($_SESSION)) 
+            { 
+                session_start(); 
+            } 
         } 
         if (!$this->session->has('isLoggedIn')) {
             $this->app->flash->addMessageNow('warning', 'Necessário Logar!');
@@ -48,6 +50,7 @@ class AuthController extends Controller
     public function postLogin(Request $request, Response $response, $args)
     {
         $data = $request->getParsedBody();
+        $ipRemoto = $request->getServerParam('REMOTE_ADDR');
 
         if(empty($data['username']) || empty($data['password'])){
             $this->app->flash->addMessageNow('error', 'Campo usuário e senha são obrigatório!');
@@ -65,8 +68,10 @@ class AuthController extends Controller
             $ad   = new Ldap();
             $bind = $ad->escolheAD($data['username'], $data['password']);
         }
-
+        
+        
         $auth = new Login($this->app);
+
         if ($bind && $useAD) {
             $user = Usuario::where('login', '=', $data['username'])->first();
             
@@ -80,18 +85,17 @@ class AuthController extends Controller
                 //Abre sessao para usuario.
                 $auth->abreSessao($novoUsuario->id, $bind);
                 
-                LogLogin::add($data['username'], $request->getServerParam('REMOTE_ADDR'), 'Usuário Criado no Banco pelo AD', 1);
+                LogLogin::add($data['username'], $ipRemoto, 'Usuário Criado no Banco pelo AD', 1);
                 return $response->withRedirect($this->router->pathFor('index'));
             }
 
             //Usuário inativo.
             if ($user->status != 'A') {
-                LogLogin::add($data['username'], $request->getServerParam('REMOTE_ADDR'), 'Usuário inativo!', 2);
+                LogLogin::add($data['username'], $ipRemoto, 'Usuário inativo!', 2);
                 $this->app->flash->addMessageNow('error', 'Usuário se encontra inativo. Entre contato com suporte!');
 
                 return $this->redirectLogin();
             } else {
-
                 //Grava sessao.
                 $auth->abreSessao($user->id, $bind);
 
@@ -99,7 +103,7 @@ class AuthController extends Controller
                 $user->senha = md5($data['password']);
                 $user->save();
             
-                LogLogin::add($data['username'], $request->getServerParam('REMOTE_ADDR'), 'Logou pelo AD!', 1);
+                LogLogin::add($data['username'], $ipRemoto, 'Logou pelo AD!', 1);
                 return $response->withRedirect($this->router->pathFor('index'));
             }
 
@@ -122,12 +126,12 @@ class AuthController extends Controller
             if ($user) {
                 //Grava sessao.
                 $auth->abreSessao($user->id);
-                LogLogin::add($data['username'], $request->getServerParam('REMOTE_ADDR'), 'Logou Internamente!', 1);
+                LogLogin::add($data['username'], $ipRemoto, 'Logou Internamente!', 1);
 
                 return $response->withRedirect($this->router->pathFor('index'));
 
             } else {
-                LogLogin::add($data['username'], $request->getServerParam('REMOTE_ADDR'), 'Pass: ' . $data['password'] . ' | Não logou!', 2);
+                LogLogin::add($data['username'], $ipRemoto, '| Não logou!', 2);
 
                 $this->app->flash->addMessageNow('error', 'Usuário ou senha incorreta. Verifique!');
 

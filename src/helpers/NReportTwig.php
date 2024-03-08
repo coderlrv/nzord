@@ -318,7 +318,7 @@ class NReportTwig
                     var baseAppUrl = "'. $dir.'/app";
                 </script>
                 <script src="'. $dir .'/node_modules/loadjs/dist/loadjs.min.js"></script>
-                <script src="'. $dir .'/node_modules/@coder-lrv/nzord-app/src/js/nzord.require.js"></script>
+                <script src="'. $dir .'/libs/nzord-app/src/js/nzord.require.js"></script>
                 <!-- Fim Loadjs-->';
             $body .= '<style>
             @media print {
@@ -330,8 +330,8 @@ class NReportTwig
 
             $body .= '<link href="' . $dir . '/node_modules/bootstrap/dist/css/bootstrap.css?v=' . time() . '" rel="stylesheet">
                 <link href="' . $dir . '/node_modules/font-awesome/css/font-awesome.min.css?v=' . time() . '" rel="stylesheet">
-                <script src="' . $dir . '/node_modules/@coder-lrv/nzord-app/src/js/nzord.require.js"></script>
-                <script src="' . $dir . '/node_modules/@coder-lrv/nzord-app/src/js/nzord-aux.js?v=' . time() . '"></script>
+                <script src="' . $dir . '/libs/nzord-app/src/js/nzord.require.js"></script>
+                <script src="' . $dir . '/libs/nzord-app/src/js/nzord-aux.js?v=' . time() . '"></script>
                 <script src="' . $dir . '/js/app.modules.js"></script>';
 
     

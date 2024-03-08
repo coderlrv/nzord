@@ -28,9 +28,7 @@ class Login
             return false;
         }
         $uConfig   = \Modulos\System\Models\UserConfig::find($idUser);
-
-        $req       = $this->request->getHeaders();
-        //$phpsessid = $this->request->getCookieParam('PHPSESSID');        
+        //$phpsessid = $this->request->getCookieParam('PHPSESSID');
         $phpsessid = $_COOKIE['PHPSESSID'];
 
         //Busca sessao atual
@@ -48,25 +46,28 @@ class Login
             unset($sessaoOp);
         }
 
+   
         if ($sessaook) {
             //Seta na sessao infomações.
             $this->setSessao($user, $sessaook->id, $bind, $uConfig);
+
             return $sessaook->id;
         } else {
-            $sessao     = new Sessao();
-            $dataAcesso = date('Y-m-d H:i:s');
-            $sessao->session_id = $phpsessid;
-            $sessao->url        = (string) $this->request->getUri();
-            $sessao->browser    = $this->request->getHeader('HTTP_USER_AGENT')[0];
-            $sessao->data       = $dataAcesso;
-            $sessao->tipo       = $bind;
-            $sessao->dpto       = $user->dpto;
-            $sessao->setor      = $user->setor;
-            $sessao->user_id    = $user->id;
-            $sessao->perfil     = $user->perfil;
-            $sessao->remo_ip    = $this->request->getServerParam('REMOTE_ADDR');
-            $sessao->status     = 'A';
             try {
+                $sessao     = new Sessao();
+                $dataAcesso = date('Y-m-d H:i:s');
+                $sessao->session_id = $phpsessid;
+                $sessao->url        = (string) $this->request->getUri();
+                $sessao->browser    = $this->request->getHeader('HTTP_USER_AGENT')[0];
+                $sessao->data       = $dataAcesso;
+                $sessao->tipo       = $bind;
+                $sessao->dpto       = $user->dpto;
+                $sessao->setor      = $user->setor;
+                $sessao->user_id    = $user->id;
+                $sessao->perfil     = $user->perfil;
+                $sessao->remo_ip    = $this->request->getServerParam('REMOTE_ADDR');
+                $sessao->status     = 'A';
+
                 $sessao->save();
             } catch (\Exception $ex) {                
                 $this->app->flash->addMessageNow('error', 'Problemas na criação de Sessão!');
@@ -97,6 +98,8 @@ class Login
     //--------------------------------------------------------------------------------
     private function setSessao($user, $sessao, $bind, $config=null)
     {
+
+
         $this->session->set('user', $user->id);
         $this->session->set('login', $user->login);
         $this->session->set('userNome', $user->nome);
@@ -111,10 +114,12 @@ class Login
         $this->session->set('loggedIn', date('Y-m-d H:i:s'));
         $this->session->set('isLoggedIn', true);
         $this->session->set('remoteIp', $this->request->getServerParam('REMOTE_ADDR'));
-        
-        $userStatus = Usuario::getUserStatus($user->id);
-        $this->session->set('userStatus', $userStatus);
 
+        $userStatus = Usuario::getUserStatus($user->id);
+        if($userStatus){
+            $this->session->set('userStatus', $userStatus);
+        }
+        
         $this->session->set('sessao', $sessao);
         $perfil[] = $user->perfil;
         
