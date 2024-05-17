@@ -7,6 +7,7 @@ use Modulos\System\Models\Usuario;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Modulos\System\Models\LogLogin;
+use NZord\Exceptions\LdapException;
 
 /**
  * Controller de Login / Logout do sistema.
@@ -49,94 +50,104 @@ class AuthController extends Controller
      */
     public function postLogin(Request $request, Response $response, $args)
     {
-        $data = $request->getParsedBody();
-        $ipRemoto = $request->getServerParam('REMOTE_ADDR');
+        try{
+            $data = $request->getParsedBody();
+            $ipRemoto = $request->getServerParam('REMOTE_ADDR');
 
-        if(empty($data['username']) || empty($data['password'])){
-            $this->app->flash->addMessageNow('error', 'Campo usuário e senha são obrigatório!');
-
-            return $this->redirectLogin();
-        }
-
-        $bind = null;
-        $this->session->set('pg', 'PostLogin');
-    
-        // Configuracao para realizar authenticação via AD.
-        $useAD = $this->app->settings['auth']['useAD'];
-        
-        if($useAD){
-            $ad   = new Ldap();
-            $bind = $ad->escolheAD($data['username'], $data['password']);
-        }
-        
-        
-        $auth = new Login($this->app);
-
-        if ($bind && $useAD) {
-            $user = Usuario::where('login', '=', $data['username'])->first();
-            
-            //Criar usuário no sistema - primeiro acesso
-            if (!$user) {
-                $userAd = $ad->getInfoUser($data['username']);
-                
-                //Criar novo usuario.
-                $novoUsuario = $this->createUser($data['username'],$userAd['displayname'],$data['password']);
-                
-                //Abre sessao para usuario.
-                $auth->abreSessao($novoUsuario->id, $bind);
-                
-                LogLogin::add($data['username'], $ipRemoto, 'Usuário Criado no Banco pelo AD', 1);
-                return $response->withRedirect($this->router->pathFor('index'));
-            }
-
-            //Usuário inativo.
-            if ($user->status != 'A') {
-                LogLogin::add($data['username'], $ipRemoto, 'Usuário inativo!', 2);
-                $this->app->flash->addMessageNow('error', 'Usuário se encontra inativo. Entre contato com suporte!');
+            if(empty($data['username']) || empty($data['password'])){
+                $this->app->flash->addMessageNow('error', 'Campo usuário e senha são obrigatório!');
 
                 return $this->redirectLogin();
-            } else {
-                //Grava sessao.
-                $auth->abreSessao($user->id, $bind);
+            }
 
-                //Atualiza senha usuario
-                $user->senha = md5($data['password']);
-                $user->save();
+            $bind = null;
+            $this->session->set('pg', 'PostLogin');
+        
+            // Configuracao para realizar authenticação via AD.
+            $useAD = $this->app->settings['auth']['useAD'];
             
-                LogLogin::add($data['username'], $ipRemoto, 'Logou pelo AD!', 1);
-                return $response->withRedirect($this->router->pathFor('index'));
-            }
-
-        } else {
-            $user = Usuario::where('login', $data['username'])
-                            ->where('senha', md5($data['password']))
-                            ->where('status', 'A');
-
-
-            // Se possui AD em funcionamento ,verificar se o perfil esta habilitado para acesso externo.
             if($useAD){
-                $perfLog = Parametro::get('perfLogInterno', function ($value) { 
-                                            return isset($value)? explode(',', $value) : [];
-                                        });
-
-                $user->whereIn('perfil', $perfLog);
+                $ad   = new Ldap();
+                $bind = $ad->escolheAD($data['username'], $data['password']);
             }
+        
+            $auth = new Login($this->app);
 
-            $user = $user->first();
-            if ($user) {
-                //Grava sessao.
-                $auth->abreSessao($user->id);
-                LogLogin::add($data['username'], $ipRemoto, 'Logou Internamente!', 1);
+            if ($bind && $useAD) {
+                $user = Usuario::where('login', '=', $data['username'])->first();
+                
+                //Criar usuário no sistema - primeiro acesso
+                if (!$user) {
+                    $userAd = $ad->getInfoUser($data['username']);
+                    
+                    //Criar novo usuario.
+                    $novoUsuario = $this->createUser($data['username'],$userAd['displayname'],$data['password']);
+                    
+                    //Abre sessao para usuario.
+                    $auth->abreSessao($novoUsuario->id, $bind);
+                    
+                    LogLogin::add($data['username'], $ipRemoto, 'Usuário Criado no Banco pelo AD', 1);
+                    return $response->withRedirect($this->router->pathFor('index'));
+                }
 
-                return $response->withRedirect($this->router->pathFor('index'));
+                //Usuário inativo.
+                if ($user->status != 'A') {
+                    LogLogin::add($data['username'], $ipRemoto, 'Usuário inativo!', 2);
+                    $this->app->flash->addMessageNow('error', 'Usuário se encontra inativo. Entre contato com suporte!');
+
+                    return $this->redirectLogin();
+                } else {
+                    //Grava sessao.
+                    $auth->abreSessao($user->id, $bind);
+
+                    //Atualiza senha usuario
+                    $user->senha = md5($data['password']);
+                    $user->save();
+                
+                    LogLogin::add($data['username'], $ipRemoto, 'Logou pelo AD!', 1);
+                    return $response->withRedirect($this->router->pathFor('index'));
+                }
 
             } else {
-                LogLogin::add($data['username'], $ipRemoto, '| Não logou!', 2);
+                $user = Usuario::where('login', $data['username'])
+                                ->where('senha', md5($data['password']))
+                                ->where('status', 'A');
 
-                $this->app->flash->addMessageNow('error', 'Usuário ou senha incorreta. Verifique!');
 
-                return $this->redirectLogin(['usuario' => $data['username']]);
+                // Se possui AD em funcionamento ,verificar se o perfil esta habilitado para acesso externo.
+                if($useAD){
+                    $perfLog = Parametro::get('perfLogInterno', function ($value) { 
+                                                return isset($value)? explode(',', $value) : [];
+                                            });
+
+                    $user->whereIn('perfil', $perfLog);
+                }
+
+                $user = $user->first();
+                if ($user) {
+                    //Grava sessao.
+                    $auth->abreSessao($user->id);
+                    LogLogin::add($data['username'], $ipRemoto, 'Logou Internamente!', 1);
+
+                    return $response->withRedirect($this->router->pathFor('index'));
+
+                } else {
+                    LogLogin::add($data['username'], $ipRemoto, '| Não logou!', 2);
+
+                    $this->app->flash->addMessageNow('error', 'Usuário ou senha incorreta. Verifique!');
+
+                    return $this->redirectLogin(['usuario' => $data['username']]);
+                }
             }
+
+        }catch(LdapException $LdapErr){
+            $this->app->flash->addMessageNow('error', $LdapErr->getMessage());
+
+            return $this->redirectLogin();
+        }catch(\Exception $error){
+            $this->app->flash->addMessageNow('error', 'Ops! Ocorreu um erro. Tente novamente!');
+
+            return $this->redirectLogin();
         }
     }
 
