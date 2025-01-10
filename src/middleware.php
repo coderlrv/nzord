@@ -14,7 +14,8 @@ $app->add(function ($request,$response,$next) {
     }
     
     if (!$this->session->has('isLoggedIn') or !$sesAtivo) {
-        if ($path != 'login') {
+
+        if ($path != '/login' && $path != 'login' ) {
             $this->session->clear();
             return $response->withRedirect($this->router->pathFor('login'));
         }
@@ -58,7 +59,7 @@ $app->add(new \NZord\Middlewares\Cors());
  * Sessão
  *
  */
-$app->add(new \NZord\Middlewares\Session($container->get('settings')['session']));
+//$app->add(new \NZord\Middlewares\Session($container->get('settings')['session']));
 
 /**
  *
@@ -70,8 +71,9 @@ $app->add(function ($request, $response, $next) {
     $request = $request->withAttribute('session', $this->session);
 
     $uri  = $request->getUri();
-    $request = $request->withAttribute('url', $uri->getScheme() . '://' . $gUrl['SERVER_NAME'] . $gUrl['REQUEST_URI']);
-    return $next($request, $response);
+    $request = $request->withAttribute('url', (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? $_SERVER['HTTP_X_FORWARDED_PROTO'] : $uri->getScheme() ). '://' . $gUrl['SERVER_NAME'] . $gUrl['REQUEST_URI']);
+    
+    return $next($request, $response);  
 });
 
 // //
