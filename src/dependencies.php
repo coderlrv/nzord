@@ -52,10 +52,6 @@ $container['config'] = function ($container) {
 
     $sys['config'] = $config;
 
-    //$beta = Parametro::get('VERSAO_BETA');
-    //$sys['versaoBeta'] = $beta;
-
-
     return $sys;
 };
 

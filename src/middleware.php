@@ -31,6 +31,12 @@ $app->add(function ($request,$response,$next) {
     $menu    = new \Modulos\System\SysMenuController($this);
     $menuArr = $menu->getMenuArr($request, $response);
     $menu    = $menu->getMenuAccess($request, $response);
+/**
+ *
+ * Sessão
+ *
+ */
+//$app->add(new \NZord\Middlewares\Session($container->get('settings')['session']));
 
     $this->session->set('menu', $menu);
     $this->session->set('menuArr', $menuArr);
@@ -54,12 +60,6 @@ $app->add(new \NZord\Middlewares\Logger(
  */
 $app->add(new \NZord\Middlewares\Cors());
 
-/**
- *
- * Sessão
- *
- */
-//$app->add(new \NZord\Middlewares\Session($container->get('settings')['session']));
 
 /**
  *
@@ -67,22 +67,24 @@ $app->add(new \NZord\Middlewares\Cors());
  *
  */
 $app->add(function ($request, $response, $next) {
-    $gUrl    = $request->getServerParams();
-    $request = $request->withAttribute('session', $this->session);
+    $gUrl = $request->getServerParams();
 
-    $uri  = $request->getUri();
-    $request = $request->withAttribute('url', (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? $_SERVER['HTTP_X_FORWARDED_PROTO'] : $uri->getScheme() ). '://' . $gUrl['SERVER_NAME'] . $gUrl['REQUEST_URI']);
+    $request = $request->withAttribute('session', $this->session);
+    $uri     = $request->getUri();
+
+    $scheme = isset($_SERVER['HTTP_X_FORWARDED_PROTO'])     
+                    ? $_SERVER['HTTP_X_FORWARDED_PROTO'] 
+                    : $uri->getScheme();
+
+    $request = $request->withAttribute('url', $scheme. '://'  . $gUrl['SERVER_NAME'] . $gUrl['REQUEST_URI']);
     
     return $next($request, $response);  
 });
 
-// //
-// // Fix: schema https
-// //
+/**
+ *
+ * Sessão
+ *
+ */
 
-// $app->add(function ($request,$response,$next) {
-//     $uri = $request->getUri()->withScheme('https');
-//     $request = $request->withUri($uri);
-    
-//     return $next($request, $response);
-// });
+ $app->add(new \NZord\Middlewares\Session($container->get('settings')['session']));
